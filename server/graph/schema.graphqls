@@ -2,17 +2,17 @@
 # go run github.com/99designs/gqlgen generate
 
 enum player_status {
-    offline
-    online 
-    away
-    snooze
-    looking_to_trade
-    looking_to_play
+	offline
+	online
+	away
+	snooze
+	looking_to_trade
+	looking_to_play
 }
 
 #! generic fields
 type price_overview {
-	currency: String = "USD"
+	currency: String!
 	initial: Int!
 	final: Int!
 	discount_percent: Int
@@ -24,46 +24,46 @@ type release_date {
 }
 
 type playtime_platforms {
-    linux: Int
-    mac: Int
-    windows: Int
+	linux: Int
+	mac: Int
+	windows: Int
 }
 
 #! endpoints
 
 type GameDetails {
-    steam_appid: ID!
-    name: String!
-    required_age: Int
-    short_description: String
-    supported_languages: String
-    developers: [String]
-    publishers: [String]
-    price_overview: price_overview
-    genres: [String]
-    release_date: release_date
-    header_image: String
+	steam_appid: ID!
+	name: String!
+	required_age: Int
+	short_description: String
+	supported_languages: String
+	developers: [String]
+	publishers: [String]
+	price_overview: price_overview
+	genres: [String]
+	release_date: release_date
+	header_image: String
 }
 
 type UserOwnedGames {
-    appid: ID!
-    playtime_forever: Int
-    playtime_platforms: playtime_platforms
-    rtime_last_played: Int
+	appid: ID!
+	playtime_forever: Int
+	playtime_platforms: playtime_platforms
+	rtime_last_played: Int
 }
 
 # for some reason its "persona" instead of "person" lmao
 type GetPlayerSummaries {
-    steamid: ID!
-    persona_state: player_status
-    persona_name: String!
-    profile_url: String!
-    avatarfull: String
-    lastlogoff: Int
+	steamid: ID!
+	persona_state: player_status
+	persona_name: String!
+	profile_url: String!
+	avatarfull: String
+	lastlogoff: Int
 }
 
 type Query {
-    getGameDetails(steam_appid: ID!): GameDetails!
-    getUserOwnedGames(steamid: ID!): [UserOwnedGames]!
-    getPlayerSummaries(steamids: [ID!]!): [GetPlayerSummaries]!
+	getGameDetails(steam_appid: ID!): GameDetails!
+	getUserOwnedGames(steamid: ID!): [UserOwnedGames]!
+	getPlayerSummaries(steamids: [ID!]!): [GetPlayerSummaries]!
 }
