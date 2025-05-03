@@ -2,15 +2,16 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
+	e "serverGo/essentials"
 	"serverGo/graph"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
-	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/gin-gonic/gin"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
@@ -21,6 +22,14 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
+
+	// envVar := ReadEnv()
+	r := gin.Default()
+	r.SetTrustedProxies([]string{"http://localhost:4200"})
+
+	// middlewares
+	r.Use(e.RateLimiter())
+	r.Use(e.Timeout(time.Second * 4))
 
 	//? creates a new Server instance using the schema from the .graphqls file
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
@@ -41,13 +50,14 @@ func main() {
 	})
 
 	//* playground
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	r.GET("/", e.PlaygroundHandler())
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 
 	//* route
-	http.Handle("/query", srv)
+	r.POST("/query", e.QueryHandler(srv))
+	// http.Handle("/query", srv)
 
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	if err := r.Run(":" + port); err != nil {
 		log.Fatalln(err)
 	}
 }

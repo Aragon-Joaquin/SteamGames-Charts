@@ -1,1 +1,25 @@
-<p>landing works!</p>
+<h2>How much time i've wasted on steam?</h2>
+
+<form>
+  <label for="steamId">Enter your Steam ID:</label>
+  <input
+    type="text"
+    pattern="^[0-9]"
+    minlength="5"
+    id="steamId"
+    name="steamId"
+    placeholder="Enter your Steam ID"
+    required
+  />
+  @if (userName.hasError('maxlength') || userName.hasError('minlength')) {
+  <form-error-message
+    errorName="SteamID's should be more than 5 and less than 20 digits"
+  />
+  } @if (userName.hasError('required')) {
+  <form-error-message errorName="Field is required" />
+  } @if (userName.hasError('pattern')) {
+  <form-error-message errorName="Only numbers are valid" />
+  }
+
+  <button type="submit" (click)="onSubmit()">Submit</button>
+</form>
