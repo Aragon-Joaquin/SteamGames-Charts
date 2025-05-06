@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	e "serverGo/essentials"
+	u "serverGo/utils"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +18,8 @@ func main() {
 		port = defaultPort
 	}
 
-	// envVar := ReadEnv()
+	u.ReadEnv()
+
 	r := gin.Default()
 	r.SetTrustedProxies([]string{"http://localhost:4200"})
 

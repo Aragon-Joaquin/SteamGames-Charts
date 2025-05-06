@@ -2,5 +2,3 @@
 # Just execute: go run github.com/99designs/gqlgen generate
 model/*
 generated.go
-resolver.go
-schema.resolvers.go
