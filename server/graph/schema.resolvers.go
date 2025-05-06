@@ -6,23 +6,45 @@ package graph
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"serverGo/graph/model"
 	u "serverGo/utils"
 )
 
+type GenericStruct struct {
+	Success bool              `json:"success"`
+	Data    model.GameDetails `json:"data"`
+}
+
 // GetGameDetails is the resolver for the getGameDetails field.
 func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid string) (*model.GameDetails, error) {
-	fmt.Printf("%v\n", r.Resolver)
 	end, err := u.MakePublicEndpoint("getGameDetails")
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	r.Resolver.FetchAPI(ctx, steamAppid, end)
-	return nil, nil
-	// panic(fmt.Errorf("not implemented: GetGameDetails - getGameDetails"))
+	end.AddQueries(u.QueriesStruct{Key: "appids", Val: steamAppid})
+
+	go func() {
+		r.Resolver.FetchAPI(ctx, steamAppid, end.URL.String())
+	}()
+
+	/*val, _ :=*/
+	<-r.Resolver.ResultsChan
+
+	var wrapper GenericStruct
+
+	if err := json.Unmarshal([]byte(r.BodyResponse), &wrapper); err != nil {
+		return nil, err
+	}
+
+	fmt.Println("\n", string(r.BodyResponse))
+	fmt.Println("\n", wrapper.Data)
+
+	return &wrapper.Data, nil
 }
 
 // GetUserOwnedGames is the resolver for the getUserOwnedGames field.
@@ -37,7 +59,7 @@ func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []strin
 
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver {
-	res := make(chan string)
+	res := make(chan *http.Response)
 	//! &queryResolver{r}
 	return &queryResolver{Resolver: &Resolver{ResultsChan: res}}
 }
