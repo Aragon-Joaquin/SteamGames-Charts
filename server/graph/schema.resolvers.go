@@ -24,7 +24,7 @@ func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int) (*mo
 	end.AddQueries(u.QueriesStruct{Key: "appids", Val: steamAppid})
 
 	go func() {
-		r.Resolver.FetchAPI(ctx, string(steamAppid), end.URL.String())
+		r.Resolver.FetchAPI(ctx, string(rune(steamAppid)), end.URL.String())
 	}()
 
 	<-r.Resolver.ResultsChan
@@ -37,7 +37,7 @@ func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int) (*mo
 		return nil, err
 	}
 
-	isReal := wrapper[string(steamAppid)]
+	isReal := wrapper[string(rune(steamAppid))]
 
 	if len(isReal) == 0 {
 		return nil, errors.New("something went wrong while parsing the json")
