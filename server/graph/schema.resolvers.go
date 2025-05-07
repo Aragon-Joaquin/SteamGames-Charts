@@ -49,7 +49,8 @@ func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid string) (
 
 // GetUserOwnedGames is the resolver for the getUserOwnedGames field.
 func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid string) ([]*model.UserOwnedGames, error) {
-	panic(fmt.Errorf("not implemented: GetUserOwnedGames - getUserOwnedGames"))
+
+	return nil, nil
 }
 
 // GetPlayerSummaries is the resolver for the getPlayerSummaries field.

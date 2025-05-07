@@ -47,13 +47,15 @@ type GameDetails {
 
 type UserOwnedGames {
 	appid: ID!
+	name: String!
+	img_icon_url: String
 	playtime_forever: Int
 	playtime_platforms: playtime_platforms
 	rtime_last_played: Int
 }
 
 # for some reason its "persona" instead of "person" lmao
-type GetPlayerSummaries {
+type PlayerSummaries {
 	steamid: ID!
 	persona_state: player_status
 	persona_name: String!
@@ -62,8 +64,36 @@ type GetPlayerSummaries {
 	lastlogoff: Int
 }
 
+type FriendList {
+	steamid: ID!
+	relationship: String!
+	friends_since: Int!
+}
+
+#! Request Types
+
+type GDetailsRes {
+	success: Boolean!
+	data: GameDetails!
+}
+
+type UOGamesRes {
+	game_count: Int!
+	games: [UserOwnedGames]!
+}
+
+type PSummariesRes {
+	players: [PlayerSummaries!]!
+}
+
+type FListRes {
+	friends: [FriendList!]!
+}
+
+#! Query
 type Query {
-	getGameDetails(steam_appid: ID!): GameDetails!
-	getUserOwnedGames(steamid: ID!): [UserOwnedGames]!
-	getPlayerSummaries(steamids: [ID!]!): [GetPlayerSummaries]!
+	getGameDetails(steam_appid: ID!): GDetailsRes!
+	getUserOwnedGames(steamid: ID!): [UOGamesRes]!
+	getPlayerSummaries(steamids: [ID!]!): [PSummariesRes]!
+	getFriendList(steamids: [ID!]!): [FListRes]!
 }

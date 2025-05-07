@@ -27,7 +27,14 @@ https://store.steampowered.com/api/appdetails?appids=214170
 
 https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=XXXXXXXXXXXXXXXXXXX&steamid=76561197960435530&format=json
 
+    // end.AddQueries(
+    // 	u.QueriesStruct{Key: "steamid", Val: steamid},
+    // 	u.QueriesStruct{Key: "include_played_free_games", Val: "true"},
+    // 	u.QueriesStruct{Key: "include_appinfo", Val: "true"})
+
 - appid
+- name (with include_appinfo ON)
+- img_icon_url (with include_appinfo ON)
 - playtime_forever (in minutes)
 - playtime_windows_forever (in minutes)
 - playtime_linux_forever (in minutes)
@@ -38,6 +45,10 @@ https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=XXXXXXXXXXX
 
 in some future
 http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&steamid=76561197960435530&relationship=friend
+
+    steamid: ID!
+    relationship: String!
+    friends_since: Int!
 
 #### GetPlayerSummaries
 

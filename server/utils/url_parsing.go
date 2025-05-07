@@ -21,7 +21,7 @@ const (
 
 var API_ENDPOINTS = map[string]string{
 	//! needs key
-	// "getPlayerData": "/ISteamUserStats/GetPlayerSummaries/v0002/",
+	"getPlayer":  "/ISteamUserStats/GetPlayerSummaries/v0002/",
 	"getFriends": "/ISteamUserStats/GetFriendList/v0001/",
 	"getStats":   "/ISteamUserStats/GetUserStatsForGame/v0002/",
 
