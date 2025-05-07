@@ -6,13 +6,10 @@ import (
 	"net/http"
 )
 
-type Resolver struct {
-	ResultsChan  chan *http.Response
-	BodyResponse []byte
-}
+type Resolver struct{}
 
-func (r *Resolver) FetchAPI(ctx context.Context, idSearch string, end string) {
-	defer close(r.ResultsChan)
+func (r *Resolver) FetchAPI(ctx context.Context, idSearch string, end string, ResultsChan chan *ResChanType) {
+	defer close(ResultsChan)
 
 	// creating req
 	req, err := http.NewRequestWithContext(ctx, "GET", end, nil)
@@ -34,9 +31,11 @@ func (r *Resolver) FetchAPI(ctx context.Context, idSearch string, end string) {
 	if err != nil {
 		panic(err)
 	}
-	r.BodyResponse = b
 
-	r.ResultsChan <- response
+	ResultsChan <- &ResChanType{
+		BodyResponse: b,
+		Reponse:      response,
+	}
 }
 
 func ReadBody(body io.ReadCloser) {

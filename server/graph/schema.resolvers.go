@@ -9,8 +9,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"serverGo/graph/model"
 	u "serverGo/utils"
+	"strconv"
 )
 
 // GetGameDetails is the resolver for the getGameDetails field.
@@ -21,37 +23,26 @@ func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int) (*mo
 		return nil, err
 	}
 
-	end.AddQueries(u.QueriesStruct{Key: "appids", Val: steamAppid})
+	end.AddQueries(u.QueriesStruct{Key: "appids", Val: strconv.Itoa(steamAppid)})
 
 	go func() {
-		r.Resolver.FetchAPI(ctx, string(rune(steamAppid)), end.URL.String())
+		r.Resolver.FetchAPI(ctx, strconv.Itoa(steamAppid), end.URL.String(), r.ResChan)
 	}()
 
-	<-r.Resolver.ResultsChan
+	resp := <-r.ResChan
 
-	var wrapper map[string]json.RawMessage
+	var wrapper map[string]*model.GDetailsRes
 
-	fmt.Println("\n", string(r.BodyResponse))
-
-	if err := json.Unmarshal(r.BodyResponse, &wrapper); err != nil {
+	if err := json.Unmarshal(resp.BodyResponse, &wrapper); err != nil {
 		return nil, err
 	}
 
-	isReal := wrapper[string(rune(steamAppid))]
-
-	if len(isReal) == 0 {
-		return nil, errors.New("something went wrong while parsing the json")
+	wrapperInfo := wrapper[strconv.Itoa(steamAppid)]
+	if wrapperInfo != nil {
+		return wrapperInfo, nil
 	}
+	return nil, errors.New("couldn't extract the data from the json")
 
-	var finalStruct model.GDetailsRes
-	if err := json.Unmarshal(isReal, &finalStruct); err != nil {
-		return nil, errors.New("failed to unmarshal JSON into GDetailsRes: " + err.Error())
-	}
-
-	fmt.Println("\n", string(r.BodyResponse))
-	fmt.Println("\n", finalStruct)
-
-	return nil, nil
 }
 
 // GetUserOwnedGames is the resolver for the getUserOwnedGames field.
@@ -67,9 +58,20 @@ func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int) 
 // GetFriendList is the resolver for the getFriendList field.
 func (r *queryResolver) GetFriendList(ctx context.Context, steamids []int) ([]*model.FListRes, error) {
 	panic(fmt.Errorf("not implemented: GetFriendList - getFriendList"))
+
+}
+
+type ResChanType struct {
+	BodyResponse []byte
+	Reponse      *http.Response
 }
 
 // Query returns QueryResolver implementation.
-func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+func (r *Resolver) Query() QueryResolver {
+	return &queryResolver{Resolver: r, ResChan: make(chan *ResChanType)}
+}
 
-type queryResolver struct{ *Resolver }
+type queryResolver struct {
+	*Resolver
+	ResChan chan *ResChanType
+}

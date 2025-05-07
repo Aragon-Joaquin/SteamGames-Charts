@@ -11,7 +11,7 @@ enum player_status {
 }
 
 #! generic fields
-type price_overview {
+type price_overview_types {
 	currency: String!
 	initial: Int!
 	final: Int!
@@ -19,14 +19,19 @@ type price_overview {
 	final_formatted: String!
 }
 
-type release_date {
+type release_date_types {
 	date: String
 }
 
-type playtime_platforms {
+type playtime_platforms_types {
 	linux: Int
 	mac: Int
 	windows: Int
+}
+
+type genres_types {
+	id: String!
+	description: String
 }
 
 #! endpoints
@@ -39,9 +44,9 @@ type GameDetails {
 	supported_languages: String
 	developers: [String]
 	publishers: [String]
-	price_overview: price_overview
-	genres: [String]
-	release_date: release_date
+	price_overview: price_overview_types
+	genres: [genres_types]!
+	release_date: release_date_types
 	header_image: String
 }
 
@@ -50,7 +55,7 @@ type UserOwnedGames {
 	name: String!
 	img_icon_url: String
 	playtime_forever: Int
-	playtime_platforms: playtime_platforms
+	playtime_platforms: playtime_platforms_types
 	rtime_last_played: Int
 }
 
