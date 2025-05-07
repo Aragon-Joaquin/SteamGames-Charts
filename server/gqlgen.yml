@@ -43,7 +43,7 @@ resolver:
 
   # Only for follow-schema layout:
   dir: graph
-  filename_template: "{name}.resolvers.go"
+  filename_template: '{name}.resolvers.go'
 
   # Optional: turn on to not generate template comments above resolvers
   # omit_template_comment: false
@@ -131,11 +131,13 @@ autobind:
 models:
   ID:
     model:
+      - github.com/99designs/gqlgen/graphql.IntID # a go integer
+      - github.com/99designs/gqlgen/graphql.UintID # or a go uint
       - github.com/99designs/gqlgen/graphql.ID
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
-  # gqlgen provides a default GraphQL UUID convenience wrapper for github.com/google/uuid 
+  # gqlgen provides a default GraphQL UUID convenience wrapper for github.com/google/uuid
   # but you can override this to provide your own GraphQL UUID implementation
   UUID:
     model:

@@ -7,19 +7,14 @@ package graph
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"net/http"
 	"serverGo/graph/model"
 	u "serverGo/utils"
 )
 
-type GenericStruct struct {
-	Success bool              `json:"success"`
-	Data    model.GameDetails `json:"data"`
-}
-
 // GetGameDetails is the resolver for the getGameDetails field.
-func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid string) (*model.GameDetails, error) {
+func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int) (*model.GDetailsRes, error) {
 	end, err := u.MakePublicEndpoint("getGameDetails")
 
 	if err != nil {
@@ -29,40 +24,52 @@ func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid string) (
 	end.AddQueries(u.QueriesStruct{Key: "appids", Val: steamAppid})
 
 	go func() {
-		r.Resolver.FetchAPI(ctx, steamAppid, end.URL.String())
+		r.Resolver.FetchAPI(ctx, string(steamAppid), end.URL.String())
 	}()
 
-	/*val, _ :=*/
 	<-r.Resolver.ResultsChan
 
-	var wrapper GenericStruct
+	var wrapper map[string]json.RawMessage
 
-	if err := json.Unmarshal([]byte(r.BodyResponse), &wrapper); err != nil {
+	fmt.Println("\n", string(r.BodyResponse))
+
+	if err := json.Unmarshal(r.BodyResponse, &wrapper); err != nil {
 		return nil, err
 	}
 
+	isReal := wrapper[string(steamAppid)]
+
+	if len(isReal) == 0 {
+		return nil, errors.New("something went wrong while parsing the json")
+	}
+
+	var finalStruct model.GDetailsRes
+	if err := json.Unmarshal(isReal, &finalStruct); err != nil {
+		return nil, errors.New("failed to unmarshal JSON into GDetailsRes: " + err.Error())
+	}
+
 	fmt.Println("\n", string(r.BodyResponse))
-	fmt.Println("\n", wrapper.Data)
-
-	return &wrapper.Data, nil
-}
-
-// GetUserOwnedGames is the resolver for the getUserOwnedGames field.
-func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid string) ([]*model.UserOwnedGames, error) {
+	fmt.Println("\n", finalStruct)
 
 	return nil, nil
 }
 
+// GetUserOwnedGames is the resolver for the getUserOwnedGames field.
+func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid int) ([]*model.UOGamesRes, error) {
+	return nil, nil
+}
+
 // GetPlayerSummaries is the resolver for the getPlayerSummaries field.
-func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []string) ([]*model.GetPlayerSummaries, error) {
+func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int) ([]*model.PSummariesRes, error) {
 	panic(fmt.Errorf("not implemented: GetPlayerSummaries - getPlayerSummaries"))
 }
 
-// Query returns QueryResolver implementation.
-func (r *Resolver) Query() QueryResolver {
-	res := make(chan *http.Response)
-	//! &queryResolver{r}
-	return &queryResolver{Resolver: &Resolver{ResultsChan: res}}
+// GetFriendList is the resolver for the getFriendList field.
+func (r *queryResolver) GetFriendList(ctx context.Context, steamids []int) ([]*model.FListRes, error) {
+	panic(fmt.Errorf("not implemented: GetFriendList - getFriendList"))
 }
+
+// Query returns QueryResolver implementation.
+func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type queryResolver struct{ *Resolver }

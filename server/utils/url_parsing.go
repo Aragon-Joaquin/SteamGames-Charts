@@ -11,7 +11,7 @@ type URL_Endpoint struct {
 
 type QueriesStruct struct {
 	Key string
-	Val string
+	Val int
 }
 
 const (
@@ -33,10 +33,10 @@ func (u *URL_Endpoint) AddQueries(query ...QueriesStruct) {
 
 	q := u.URL.Query()
 	for _, qs := range query {
-		if qs.Key == "" || qs.Val == "" {
+		if qs.Key == "" || qs.Val == 0 {
 			continue
 		}
-		q.Set(qs.Key, qs.Val)
+		q.Set(qs.Key, string(qs.Val))
 	}
 
 	u.URL.RawQuery = q.Encode()
