@@ -37,12 +37,10 @@ func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int) (*mo
 	}
 
 	return val, nil
-
 }
 
 // GetUserOwnedGames is the resolver for the getUserOwnedGames field.
 func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid int) (*model.UOGamesRes, error) {
-
 	end, err := u.MakePublicEndpoint("getOwnGames")
 
 	if err != nil {
@@ -77,9 +75,8 @@ func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int) 
 }
 
 // GetFriendList is the resolver for the getFriendList field.
-func (r *queryResolver) GetFriendList(ctx context.Context, steamids []int) ([]*model.FListRes, error) {
+func (r *queryResolver) GetFriendList(ctx context.Context, steamids []int) (*model.FListRes, error) {
 	panic(fmt.Errorf("not implemented: GetFriendList - getFriendList"))
-
 }
 
 type ResChanType struct {
