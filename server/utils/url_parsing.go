@@ -21,9 +21,9 @@ const (
 
 var API_ENDPOINTS = map[string]string{
 	//! needs key
-	"getPlayer":  "/ISteamUserStats/GetPlayerSummaries/v0002/",
-	"getFriends": "/ISteamUserStats/GetFriendList/v0001/",
-	"getStats":   "/ISteamUserStats/GetUserStatsForGame/v0002/",
+	"getPlayer":   "/ISteamUserStats/GetPlayerSummaries/v0002/",
+	"getFriends":  "/ISteamUserStats/GetFriendList/v0001/",
+	"getOwnGames": "/IPlayerService/GetOwnedGames/v0001/",
 
 	//! doesn't need key
 	"getGameDetails": "/api/appdetails",

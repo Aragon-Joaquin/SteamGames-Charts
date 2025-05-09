@@ -6,8 +6,6 @@ package graph
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"serverGo/graph/model"
@@ -30,28 +28,51 @@ func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int) (*mo
 	}()
 
 	resp := <-r.ResChan
-
 	var wrapper map[string]*model.GDetailsRes
 
-	if err := json.Unmarshal(resp.BodyResponse, &wrapper); err != nil {
+	val, err := u.UnmarshalMapping(wrapper, &resp.BodyResponse, strconv.Itoa(steamAppid))
+
+	if err != nil {
 		return nil, err
 	}
 
-	wrapperInfo := wrapper[strconv.Itoa(steamAppid)]
-	if wrapperInfo != nil {
-		return wrapperInfo, nil
-	}
-	return nil, errors.New("couldn't extract the data from the json")
+	return val, nil
 
 }
 
 // GetUserOwnedGames is the resolver for the getUserOwnedGames field.
-func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid int) ([]*model.UOGamesRes, error) {
-	return nil, nil
+func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid int) (*model.UOGamesRes, error) {
+
+	end, err := u.MakePublicEndpoint("getOwnGames")
+
+	if err != nil {
+		return nil, err
+	}
+	steamidString := strconv.Itoa(steamid)
+
+	end.AddQueries(
+		u.QueriesStruct{Key: "steamid", Val: steamidString},
+		u.QueriesStruct{Key: "include_played_free_games", Val: "true"},
+		u.QueriesStruct{Key: "include_appinfo", Val: "true"})
+
+	go func() {
+		r.Resolver.FetchAPI(ctx, steamidString, end.URL.String(), r.ResChan)
+	}()
+
+	resp := <-r.ResChan
+	var wrapper *model.UOGamesRes
+
+	val, err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse, steamidString)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return val, nil
 }
 
 // GetPlayerSummaries is the resolver for the getPlayerSummaries field.
-func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int) ([]*model.PSummariesRes, error) {
+func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int) (*model.PSummariesRes, error) {
 	panic(fmt.Errorf("not implemented: GetPlayerSummaries - getPlayerSummaries"))
 }
 
