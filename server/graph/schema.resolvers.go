@@ -6,7 +6,7 @@ package graph
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"net/http"
 	"serverGo/graph/model"
 	u "serverGo/utils"
@@ -71,12 +71,45 @@ func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid int) (*mo
 
 // GetPlayerSummaries is the resolver for the getPlayerSummaries field.
 func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int) (*model.PSummariesRes, error) {
-	panic(fmt.Errorf("not implemented: GetPlayerSummaries - getPlayerSummaries"))
+	if len(steamids) >= u.MAX_PLAYERS_SUMMARIES || len(steamids) <= 0 {
+		return nil, errors.New("can only fetch between 1 and " + strconv.Itoa(u.MAX_PLAYERS_SUMMARIES) + " steam profiles.")
+	}
+
+	end, err := u.MakePublicEndpoint("getPlayer")
+	if err != nil {
+		return nil, err
+	}
+
+	separator := u.SliceIntoString(steamids)
+
+	end.AddQueries(u.QueriesStruct{Key: "steamids", Val: separator})
+
+	go func() {
+		r.Resolver.FetchAPI(ctx, separator, end.URL.String(), r.ResChan)
+	}()
+
+	resp := <-r.ResChan
+	var wrapper *model.PSummariesRes
+
+	val, err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse, separator)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return val, nil
 }
 
 // GetFriendList is the resolver for the getFriendList field.
 func (r *queryResolver) GetFriendList(ctx context.Context, steamids []int) (*model.FListRes, error) {
-	panic(fmt.Errorf("not implemented: GetFriendList - getFriendList"))
+	_, err := u.MakePublicEndpoint("getFriends")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+
 }
 
 type ResChanType struct {
