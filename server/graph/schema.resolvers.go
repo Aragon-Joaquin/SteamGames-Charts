@@ -101,15 +101,31 @@ func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int) 
 }
 
 // GetFriendList is the resolver for the getFriendList field.
-func (r *queryResolver) GetFriendList(ctx context.Context, steamids []int) (*model.FListRes, error) {
-	_, err := u.MakePublicEndpoint("getFriends")
+func (r *queryResolver) GetFriendList(ctx context.Context, steamid int) (*model.FListRes, error) {
+	end, err := u.MakePublicEndpoint("getFriends")
 
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	steamidString := strconv.Itoa(steamid)
 
+	end.AddQueries(u.QueriesStruct{Key: "steamid", Val: steamidString})
+
+	go func() {
+		r.Resolver.FetchAPI(ctx, steamidString, end.URL.String(), r.ResChan)
+	}()
+
+	resp := <-r.ResChan
+	var wrapper *model.FListRes
+
+	val, err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse, steamidString)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return val, nil
 }
 
 type ResChanType struct {

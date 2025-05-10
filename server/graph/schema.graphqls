@@ -100,5 +100,5 @@ type Query {
 	getGameDetails(steam_appid: ID!): GDetailsRes!
 	getUserOwnedGames(steamid: ID!): UOGamesRes!
 	getPlayerSummaries(steamids: [ID!]!): PSummariesRes!
-	getFriendList(steamids: [ID!]!): FListRes!
+	getFriendList(steamid: ID!): FListRes!
 }
