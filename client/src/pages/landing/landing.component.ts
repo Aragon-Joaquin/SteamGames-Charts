@@ -1,7 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Apollo } from 'apollo-angular';
 import { ErrorHandlerComponent } from './components/error-handler/error-handler.component';
-import { Apollo, gql } from 'apollo-angular';
 
 @Component({
   selector: 'app-landing',
@@ -9,7 +9,7 @@ import { Apollo, gql } from 'apollo-angular';
   styleUrl: './landing.component.css',
   imports: [ReactiveFormsModule, ErrorHandlerComponent],
 })
-export class LandingComponent implements OnInit {
+export class LandingComponent {
   apolloService = inject(Apollo);
 
   userName = new FormControl('', [
@@ -20,26 +20,7 @@ export class LandingComponent implements OnInit {
   ]);
 
   onSubmit() {
+    console.log(this.userName);
     this.userName.reset();
-  }
-
-  ngOnInit(): void {
-    //! just to try
-    this.apolloService
-      .watchQuery({
-        query: gql`
-          {
-            __type(name: "String") {
-              name
-              description
-              specifiedByURL
-              isOneOf
-            }
-          }
-        `,
-      })
-      .valueChanges.subscribe((vals) => {
-        console.log(vals);
-      });
   }
 }
