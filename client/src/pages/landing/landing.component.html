@@ -1,11 +1,11 @@
 @let steamName = ['S', 't', 'e', 'a', 'm'];
 <article class="landing">
-  <div class="circle"></div>
-  <div class="circle"></div>
-  <div class="circle"></div>
-
   <header class="landing-title">
     <h2 class="title">
+      <!-- lightning -->
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
       How much time I've wasted on <br />
       @for (letter of steamName; track $index) {
       <span class="steam-title">{{ letter }}</span>
@@ -39,5 +39,5 @@
     <button type="submit">Submit</button>
   </form>
 
-  <footer class="landing-footer">cool fire effect</footer>
+  <footer class="landing-footer"></footer>
 </article>
