@@ -5,3 +5,5 @@ export const API_ENDPOINTS = {
   GetFriends: 'getFriends',
   GetStats: 'getStats',
 } as const;
+
+export const STEAM_ID_DIGITS = 17 as const;

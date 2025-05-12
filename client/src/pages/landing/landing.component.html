@@ -7,19 +7,25 @@
       <div class="circle"></div>
       <div class="circle"></div>
       How much time I've wasted on <br />
-      @for (letter of steamName; track $index) {
-      <span class="steam-title">{{ letter }}</span>
-      } ?
+
+      <span class="steam-title">
+        @for (letter of steamName; track $index) {
+        <p [style]="'animation-delay: calc(' + $index + '* 0.4s) !important;'">
+          {{ letter }}
+        </p>
+        }
+      </span>
     </h2>
   </header>
 
-  <form class="landing-form" (ngSubmit)="onSubmit()">
+  <form class="landing-form" (ngSubmit)="onSubmit($event)">
     <label for="steamId"
       >Enter your Steam ID:
       <input
+        (input)="onInputChange($event)"
         type="text"
         pattern="^[0-9]"
-        minlength="5"
+        minlength="17"
         id="steamId"
         name="steamId"
         placeholder="e.g: 76561197960435530"
@@ -36,7 +42,7 @@
     <form-error-message errorName="Only numbers are valid" />
     }
 
-    <button type="submit">Submit</button>
+    <!-- <button type="submit">Submit</button> -->
   </form>
 
   <footer class="landing-footer"></footer>

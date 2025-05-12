@@ -7,7 +7,6 @@ package graph
 import (
 	"context"
 	"errors"
-	"net/http"
 	"serverGo/graph/model"
 	u "serverGo/utils"
 	"strconv"
@@ -15,7 +14,7 @@ import (
 
 // GetGameDetails is the resolver for the getGameDetails field.
 func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int) (*model.GDetailsRes, error) {
-	end, err := u.MakePublicEndpoint("getGameDetails")
+	end, err := u.ConstructEndpoint(u.API_ENDPOINTS["getGameDetails"])
 
 	if err != nil {
 		return nil, err
@@ -24,7 +23,8 @@ func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int) (*mo
 	end.AddQueries(u.QueriesStruct{Key: "appids", Val: strconv.Itoa(steamAppid)})
 
 	go func() {
-		r.Resolver.FetchAPI(ctx, strconv.Itoa(steamAppid), end.URL.String(), r.ResChan)
+		u.FetchAPI(ctx, strconv.Itoa(steamAppid), end.URL.String(), r.ResChan)
+		defer close(r.ResChan)
 	}()
 
 	resp := <-r.ResChan
@@ -41,7 +41,7 @@ func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int) (*mo
 
 // GetUserOwnedGames is the resolver for the getUserOwnedGames field.
 func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid int) (*model.UOGamesRes, error) {
-	end, err := u.MakePublicEndpoint("getOwnGames")
+	end, err := u.ConstructEndpoint(u.API_ENDPOINTS["getOwnGames"])
 
 	if err != nil {
 		return nil, err
@@ -54,7 +54,8 @@ func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid int) (*mo
 		u.QueriesStruct{Key: "include_appinfo", Val: "true"})
 
 	go func() {
-		r.Resolver.FetchAPI(ctx, steamidString, end.URL.String(), r.ResChan)
+		u.FetchAPI(ctx, steamidString, end.URL.String(), r.ResChan)
+		defer close(r.ResChan)
 	}()
 
 	resp := <-r.ResChan
@@ -75,34 +76,44 @@ func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int) 
 		return nil, errors.New("can only fetch between 1 and " + strconv.Itoa(u.MAX_PLAYERS_SUMMARIES) + " steam profiles.")
 	}
 
-	end, err := u.MakePublicEndpoint("getPlayer")
+	end, err := u.MakeSubEndpoint("VanityUrl")
+
 	if err != nil {
 		return nil, err
 	}
 
 	separator := u.SliceIntoString(steamids)
+	end.FetchSubEndpoint(ctx, separator)
 
-	end.AddQueries(u.QueriesStruct{Key: "steamids", Val: separator})
+	return nil, nil
+	// end, err := u.ConstructEndpoint(u.API_ENDPOINTS["getPlayer"])
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	go func() {
-		r.Resolver.FetchAPI(ctx, separator, end.URL.String(), r.ResChan)
-	}()
+	//
 
-	resp := <-r.ResChan
-	var wrapper *model.PSummariesRes
+	// end.AddQueries(u.QueriesStruct{Key: "steamids", Val: separator})
 
-	val, err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse, separator)
+	// go func() {
+	// 	r.Resolver.FetchAPI(ctx, separator, end.URL.String(), r.ResChan)
+	// }()
 
-	if err != nil {
-		return nil, err
-	}
+	// resp := <-r.ResChan
+	// var wrapper *model.PSummariesRes
 
-	return val, nil
+	// val, err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse, separator)
+
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// return val, nil
 }
 
 // GetFriendList is the resolver for the getFriendList field.
 func (r *queryResolver) GetFriendList(ctx context.Context, steamid int) (*model.FListRes, error) {
-	end, err := u.MakePublicEndpoint("getFriends")
+	end, err := u.ConstructEndpoint(u.API_ENDPOINTS["getFriends"])
 
 	if err != nil {
 		return nil, err
@@ -113,7 +124,8 @@ func (r *queryResolver) GetFriendList(ctx context.Context, steamid int) (*model.
 	end.AddQueries(u.QueriesStruct{Key: "steamid", Val: steamidString})
 
 	go func() {
-		r.Resolver.FetchAPI(ctx, steamidString, end.URL.String(), r.ResChan)
+		u.FetchAPI(ctx, steamidString, end.URL.String(), r.ResChan)
+		defer close(r.ResChan)
 	}()
 
 	resp := <-r.ResChan
@@ -128,17 +140,12 @@ func (r *queryResolver) GetFriendList(ctx context.Context, steamid int) (*model.
 	return val, nil
 }
 
-type ResChanType struct {
-	BodyResponse []byte
-	Reponse      *http.Response
-}
-
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver {
-	return &queryResolver{Resolver: r, ResChan: make(chan *ResChanType)}
+	return &queryResolver{Resolver: r, ResChan: make(chan *u.ResChanType)}
 }
 
 type queryResolver struct {
 	*Resolver
-	ResChan chan *ResChanType
+	ResChan chan *u.ResChanType
 }

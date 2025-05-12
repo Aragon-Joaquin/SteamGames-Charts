@@ -87,12 +87,25 @@
     font-size: 2.5rem;
 
     & .steam-title {
-      display: inline-block;
-      background: linear-gradient(to bottom, #1b2838 0%, #3eb8ff 75%);
-      font-family: monospace;
-      background-clip: text;
-      color: transparent;
+      & > p {
+        display: inline-block;
+        font-size: 3.5rem;
+        font-family: monospace;
+        background: linear-gradient(to bottom, #1b2838 0%, #3eb8ff 75%);
+        background-clip: text;
+        color: transparent;
+        animation: animateLetter 2s ease-in-out infinite alternate;
+      }
     }
+  }
+}
+
+@keyframes animateLetter {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(8px);
   }
 }
 
@@ -147,10 +160,19 @@
     }
   }
   & > button {
-    padding: 2px 4px;
+    padding: 8px 14px;
     width: 100%;
-    max-width: 300px;
+
+    font-size: 0.9rem;
+    font-weight: 500;
     background: var(--dark3-color);
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background: var(--dark2-color);
+      scale: 1.05;
+      cursor: pointer;
+    }
   }
 }
 

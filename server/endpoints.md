@@ -60,3 +60,7 @@ http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=XXXXXXXXXXX
 - avatarfull (big img)
 - lastlogoff (unix int)
 <!-- - loccountrycode (country abbreviation) - in some future maybe-->
+
+## Specific endpoints to interfaces that i use:
+
+- https://steamapi.xpaw.me/#ISteamUser/ResolveVanityURL

@@ -1,6 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Apollo } from 'apollo-angular';
+import { debounceTime, Subject } from 'rxjs';
+import { STEAM_ID_DIGITS } from '../../utils/constants';
 import { ErrorHandlerComponent } from './components/error-handler/error-handler.component';
 
 @Component({
@@ -9,7 +11,7 @@ import { ErrorHandlerComponent } from './components/error-handler/error-handler.
   styleUrl: './landing.component.css',
   imports: [ReactiveFormsModule, ErrorHandlerComponent],
 })
-export class LandingComponent {
+export class LandingComponent implements OnInit, OnDestroy {
   apolloService = inject(Apollo);
 
   userName = new FormControl('', [
@@ -19,8 +21,28 @@ export class LandingComponent {
     Validators.pattern(/^\d+/),
   ]);
 
-  onSubmit() {
+  searchInput = new Subject<string>();
+  ngOnInit(): void {
+    this.searchInput.pipe(debounceTime(500)).subscribe((inputVal) => {
+      console.log(inputVal);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.searchInput.complete();
+  }
+
+  onSubmit(e: Event) {
+    e.preventDefault();
     console.log(this.userName);
-    this.userName.reset();
+  }
+
+  onInputChange(e: Event) {
+    const inputVal = e.target as HTMLInputElement;
+    console.log(inputVal?.value.length);
+    if (inputVal?.value == null || inputVal.value.length != STEAM_ID_DIGITS)
+      return;
+
+    this.searchInput.next(inputVal.value);
   }
 }
