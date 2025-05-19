@@ -59,7 +59,7 @@ func SearchUser() gin.HandlerFunc {
 		}
 
 		fmt.Println(steamInt)
-		resp, err := gqlClient.Query().GetPlayerSummaries(ctx, make([]int, steamInt))
+		resp, err := gqlClient.Query().GetPlayerSummaries(ctx, make([]int64, steamInt))
 
 		if err != nil {
 			e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusBadRequest, Message: err.Error()})

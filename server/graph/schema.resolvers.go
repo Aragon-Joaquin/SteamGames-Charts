@@ -13,14 +13,16 @@ import (
 )
 
 // GetGameDetails is the resolver for the getGameDetails field.
-func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int) (*model.GDetailsRes, error) {
+func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int64) (*model.GDetailsRes, error) {
 	end, err := u.ConstructEndpoint(u.API_ENDPOINTS["getGameDetails"])
 
 	if err != nil {
 		return nil, err
 	}
 
-	end.AddQueries(u.QueriesStruct{Key: "appids", Val: strconv.Itoa(steamAppid)})
+	steamidString := strconv.FormatInt(steamAppid, 10)
+
+	end.AddQueries(u.QueriesStruct{Key: "appids", Val: steamidString})
 
 	go func() {
 		u.FetchAPI(ctx, end.URL.String(), r.ResChan)
@@ -30,7 +32,7 @@ func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int) (*mo
 	resp := <-r.ResChan
 	var wrapper map[string]*model.GDetailsRes
 
-	val, err := u.UnmarshalMapping(wrapper, &resp.BodyResponse, strconv.Itoa(steamAppid))
+	val, err := u.UnmarshalMapping(wrapper, &resp.BodyResponse, steamidString)
 
 	if err != nil {
 		return nil, err
@@ -40,13 +42,14 @@ func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int) (*mo
 }
 
 // GetUserOwnedGames is the resolver for the getUserOwnedGames field.
-func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid int) (*model.UOGamesRes, error) {
+func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid int64) (*model.UOGamesRes, error) {
 	end, err := u.ConstructEndpoint(u.API_ENDPOINTS["getOwnGames"])
 
 	if err != nil {
 		return nil, err
 	}
-	steamidString := strconv.Itoa(steamid)
+
+	steamidString := strconv.FormatInt(steamid, 10)
 
 	end.AddQueries(
 		u.QueriesStruct{Key: "steamid", Val: steamidString},
@@ -69,7 +72,7 @@ func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid int) (*mo
 }
 
 // GetPlayerSummaries is the resolver for the getPlayerSummaries field.
-func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int) (*model.PSummariesRes, error) {
+func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int64) (*model.PSummariesRes, error) {
 	if len(steamids) >= u.MAX_PLAYERS_SUMMARIES || len(steamids) <= 0 {
 		return nil, errors.New("can only fetch between 1 and " + strconv.Itoa(u.MAX_PLAYERS_SUMMARIES) + " steam profiles.")
 	}
@@ -99,14 +102,14 @@ func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int) 
 }
 
 // GetFriendList is the resolver for the getFriendList field.
-func (r *queryResolver) GetFriendList(ctx context.Context, steamid int) (*model.FListRes, error) {
+func (r *queryResolver) GetFriendList(ctx context.Context, steamid int64) (*model.FListRes, error) {
 	end, err := u.ConstructEndpoint(u.API_ENDPOINTS["getFriends"])
 
 	if err != nil {
 		return nil, err
 	}
 
-	steamidString := strconv.Itoa(steamid)
+	steamidString := strconv.FormatInt(steamid, 10)
 
 	end.AddQueries(u.QueriesStruct{Key: "steamid", Val: steamidString})
 

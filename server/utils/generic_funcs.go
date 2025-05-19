@@ -6,15 +6,15 @@ import (
 )
 
 type SlicesType interface {
-	[]int | []string
+	[]int64 | []string
 }
 
 func SliceIntoString[T SlicesType](slice T) string {
 	var steamidString []string
 
-	if intSlice, ok := any(slice).([]int); ok {
+	if intSlice, ok := any(slice).([]int64); ok {
 		for _, val := range intSlice {
-			steamidString = append(steamidString, strconv.Itoa(val))
+			steamidString = append(steamidString, strconv.FormatInt(val, 10))
 		}
 	}
 
