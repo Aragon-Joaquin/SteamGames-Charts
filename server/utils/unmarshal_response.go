@@ -4,26 +4,22 @@ import (
 	"encoding/json"
 	"errors"
 	"reflect"
-	"serverGo/graph/model"
 )
 
-type modelGraph interface {
-	*model.GDetailsRes | *model.UOGamesRes | *model.PSummariesRes | *model.FListRes
-}
-
-func UnmarshalWithoutMapping[T modelGraph](graphModel T, body *[]byte, param string) (T, error) {
-	var wrapper T
-	if err := json.Unmarshal(*body, &wrapper); err != nil {
-		return nil, err
+func UnmarshalWithoutMapping[T any](graphModel T, body *[]byte) error {
+	if err := json.Unmarshal(*body, &graphModel); err != nil {
+		return err
 	}
 
-	return wrapper, nil
+	return nil
 }
 
 // ! is this necessary? it looks nasty good i like it
-func UnmarshalMapping[T map[string]U, U modelGraph](wrapper T, body *[]byte, param string) (U, error) {
+func UnmarshalMapping[T map[string]U, U any](wrapper T, body *[]byte, param string) (U, error) {
+	var emptyVal U
+
 	if err := json.Unmarshal(*body, &wrapper); err != nil {
-		return nil, err
+		return emptyVal, err
 	}
 
 	wrapperInfo := wrapper[param]
@@ -31,5 +27,5 @@ func UnmarshalMapping[T map[string]U, U modelGraph](wrapper T, body *[]byte, par
 		return wrapperInfo, nil
 	}
 
-	return nil, errors.New("could't access the json")
+	return emptyVal, errors.New("could't access the json")
 }

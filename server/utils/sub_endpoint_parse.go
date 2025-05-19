@@ -37,12 +37,11 @@ func MakeSubEndpoint(subEnd string, queries ...QueriesStruct) (URL_SubEndpoint, 
 	}, nil
 }
 
-func (r *URL_SubEndpoint) FetchSubEndpoint(ctx context.Context, params string) *ResChanType {
+func (r *URL_SubEndpoint) FetchSubEndpoint(ctx context.Context, params string) {
 
 	go func() {
 		FetchAPI(ctx, params, r.URL_Endpoint.URL.String(), r.ResChan)
 		defer close(r.ResChan)
 	}()
 
-	return <-r.ResChan
 }

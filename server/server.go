@@ -30,6 +30,7 @@ func main() {
 
 	//* routes
 	r.GET("/", e.PlaygroundHandler())
+	r.GET("/search/user", e.SearchUser())
 	r.POST("/query", e.QueryHandler(port))
 
 	if err := r.Run(":" + port); err != nil {

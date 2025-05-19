@@ -61,13 +61,11 @@ func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid int) (*mo
 	resp := <-r.ResChan
 	var wrapper *model.UOGamesRes
 
-	val, err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse, steamidString)
-
-	if err != nil {
+	if err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse); err != nil {
 		return nil, err
 	}
 
-	return val, nil
+	return wrapper, nil
 }
 
 // GetPlayerSummaries is the resolver for the getPlayerSummaries field.
@@ -76,39 +74,28 @@ func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int) 
 		return nil, errors.New("can only fetch between 1 and " + strconv.Itoa(u.MAX_PLAYERS_SUMMARIES) + " steam profiles.")
 	}
 
-	end, err := u.MakeSubEndpoint("VanityUrl")
-
+	end, err := u.ConstructEndpoint(u.API_ENDPOINTS["getPlayer"])
 	if err != nil {
 		return nil, err
 	}
 
 	separator := u.SliceIntoString(steamids)
-	end.FetchSubEndpoint(ctx, separator)
 
-	return nil, nil
-	// end, err := u.ConstructEndpoint(u.API_ENDPOINTS["getPlayer"])
-	// if err != nil {
-	// 	return nil, err
-	// }
+	end.AddQueries(u.QueriesStruct{Key: "steamids", Val: separator})
 
-	//
+	go func() {
+		u.FetchAPI(ctx, separator, end.URL.String(), r.ResChan)
+		defer close(r.ResChan)
+	}()
 
-	// end.AddQueries(u.QueriesStruct{Key: "steamids", Val: separator})
+	resp := <-r.ResChan
+	var wrapper *model.PSummariesRes
 
-	// go func() {
-	// 	r.Resolver.FetchAPI(ctx, separator, end.URL.String(), r.ResChan)
-	// }()
+	if err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse); err != nil {
+		return nil, err
+	}
 
-	// resp := <-r.ResChan
-	// var wrapper *model.PSummariesRes
-
-	// val, err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse, separator)
-
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// return val, nil
+	return wrapper, nil
 }
 
 // GetFriendList is the resolver for the getFriendList field.
@@ -131,13 +118,11 @@ func (r *queryResolver) GetFriendList(ctx context.Context, steamid int) (*model.
 	resp := <-r.ResChan
 	var wrapper *model.FListRes
 
-	val, err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse, steamidString)
-
-	if err != nil {
+	if err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse); err != nil {
 		return nil, err
 	}
 
-	return val, nil
+	return wrapper, nil
 }
 
 // Query returns QueryResolver implementation.
