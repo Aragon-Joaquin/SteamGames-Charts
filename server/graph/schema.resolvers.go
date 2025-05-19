@@ -23,7 +23,7 @@ func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int) (*mo
 	end.AddQueries(u.QueriesStruct{Key: "appids", Val: strconv.Itoa(steamAppid)})
 
 	go func() {
-		u.FetchAPI(ctx, strconv.Itoa(steamAppid), end.URL.String(), r.ResChan)
+		u.FetchAPI(ctx, end.URL.String(), r.ResChan)
 		defer close(r.ResChan)
 	}()
 
@@ -54,7 +54,7 @@ func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid int) (*mo
 		u.QueriesStruct{Key: "include_appinfo", Val: "true"})
 
 	go func() {
-		u.FetchAPI(ctx, steamidString, end.URL.String(), r.ResChan)
+		u.FetchAPI(ctx, end.URL.String(), r.ResChan)
 		defer close(r.ResChan)
 	}()
 
@@ -84,7 +84,7 @@ func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int) 
 	end.AddQueries(u.QueriesStruct{Key: "steamids", Val: separator})
 
 	go func() {
-		u.FetchAPI(ctx, separator, end.URL.String(), r.ResChan)
+		u.FetchAPI(ctx, end.URL.String(), r.ResChan)
 		defer close(r.ResChan)
 	}()
 
@@ -111,7 +111,7 @@ func (r *queryResolver) GetFriendList(ctx context.Context, steamid int) (*model.
 	end.AddQueries(u.QueriesStruct{Key: "steamid", Val: steamidString})
 
 	go func() {
-		u.FetchAPI(ctx, steamidString, end.URL.String(), r.ResChan)
+		u.FetchAPI(ctx, end.URL.String(), r.ResChan)
 		defer close(r.ResChan)
 	}()
 

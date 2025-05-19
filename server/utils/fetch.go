@@ -11,7 +11,7 @@ type ResChanType struct {
 	Reponse      *http.Response
 }
 
-func FetchAPI(ctx context.Context, idSearch string, end string, ResultsChan chan *ResChanType) {
+func FetchAPI(ctx context.Context, end string, ResultsChan chan *ResChanType) {
 
 	// creating req
 	req, err := http.NewRequestWithContext(ctx, "GET", end, nil)
