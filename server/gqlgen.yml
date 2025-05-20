@@ -160,3 +160,6 @@ models:
     model:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
+  StringID: #custom type
+    model:
+      - github.com/99designs/gqlgen/graphql.String

@@ -1,6 +1,8 @@
 # once finished this, just execute this:
 # go run github.com/99designs/gqlgen generate
 
+scalar StringID
+
 enum player_status {
 	offline
 	online
@@ -61,7 +63,7 @@ type UserOwnedGames {
 
 # for some reason its "persona" instead of "person" lmao
 type PlayerSummaries {
-	steamid: ID!
+	steamid: StringID!
 	persona_state: player_status
 	persona_name: String!
 	profile_url: String!
@@ -70,7 +72,7 @@ type PlayerSummaries {
 }
 
 type FriendList {
-	steamid: ID!
+	steamid: StringID!
 	relationship: String!
 	friends_since: Int!
 }
