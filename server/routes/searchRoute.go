@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -39,27 +38,21 @@ func SearchUser() gin.HandlerFunc {
 		var response map[string]t.ResolveVanityURL
 		resMap, err2 := u.UnmarshalMapping(response, &res.BodyResponse, "response")
 
-		if err2 != nil {
-			e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusBadRequest, Message: err2.Error()})
+		if err2 != nil || resMap.Success != 1 {
+			e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusBadRequest, Message: "Unsuccesful request."})
 			return
 		}
 
-		var gqlClient *graph.Resolver
-
-		if resMap.Success != 1 {
-			e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusBadRequest, Message: resMap.Message})
-			return
-		}
-
-		steamInt, err3 := strconv.Atoi(resMap.Steamid)
+		steamInt, err3 := strconv.ParseInt(resMap.Steamid, 10, 64)
 
 		if err3 != nil {
 			e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusBadRequest, Message: resMap.Message})
 			return
 		}
 
-		fmt.Println(steamInt)
-		resp, err := gqlClient.Query().GetPlayerSummaries(ctx, make([]int64, steamInt))
+		var gqlClient *graph.Resolver
+
+		resp, err := gqlClient.Query().GetPlayerSummaries(ctx, []int64{steamInt})
 
 		if err != nil {
 			e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusBadRequest, Message: err.Error()})

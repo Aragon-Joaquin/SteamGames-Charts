@@ -82,9 +82,7 @@ func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int64
 		return nil, err
 	}
 
-	separator := u.SliceIntoString(steamids)
-
-	end.AddQueries(u.QueriesStruct{Key: "steamids", Val: separator})
+	end.AddQueries(u.QueriesStruct{Key: "steamids", Val: u.SliceIntoString(steamids)})
 
 	go func() {
 		u.FetchAPI(ctx, end.URL.String(), r.ResChan)
@@ -92,13 +90,15 @@ func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int64
 	}()
 
 	resp := <-r.ResChan
-	var wrapper *model.PSummariesRes
+	var wrapper map[string]*model.PSummariesRes
 
-	if err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse); err != nil {
+	res, err := u.UnmarshalMapping(wrapper, &resp.BodyResponse, "response")
+
+	if err != nil {
 		return nil, err
 	}
 
-	return wrapper, nil
+	return res, nil
 }
 
 // GetFriendList is the resolver for the getFriendList field.

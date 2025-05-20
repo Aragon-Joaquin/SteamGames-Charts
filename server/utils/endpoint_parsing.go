@@ -23,7 +23,7 @@ const (
 
 // this is access both by the client and server
 var API_ENDPOINTS = map[string]t.EndpointsStruct{
-	"getPlayer":   {Endpoint: "/ISteamUserStats/GetPlayerSummaries/v0002/", IsPrivate: true},
+	"getPlayer":   {Endpoint: "/ISteamUser/GetPlayerSummaries/v0002/", IsPrivate: true},
 	"getFriends":  {Endpoint: "/ISteamUserStats/GetFriendList/v0001/", IsPrivate: true},
 	"getOwnGames": {Endpoint: "/IPlayerService/GetOwnedGames/v0001/", IsPrivate: true},
 
