@@ -3,9 +3,9 @@
   <header class="landing-title">
     <h2 class="title">
       <!-- lightning -->
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
+      <div class="circle" aria-hidden></div>
+      <div class="circle" aria-hidden></div>
+      <div class="circle" aria-hidden></div>
       How much time I've wasted on <br />
 
       <span class="steam-title">
@@ -18,7 +18,7 @@
     </h2>
   </header>
 
-  <form class="landing-form" (ngSubmit)="onSubmit($event)">
+  <form class="landing-form" (submit)="$event.preventDefault()">
     <label for="steamId"
       >Enter your Steam ID:
       <input
@@ -28,7 +28,8 @@
         minlength="17"
         id="steamId"
         name="steamId"
-        placeholder="e.g: 76561197960435530"
+        autocomplete="off"
+        placeholder="e.g: 76561197960435530, ohnePixel"
         required
       />
     </label>

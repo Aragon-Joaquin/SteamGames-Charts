@@ -1,19 +1,41 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { API_ENDPOINTS } from '../utils/constants';
+import { Apollo } from 'apollo-angular';
+import { map } from 'rxjs';
+import { AdaptHTTPRequest } from '../adapters/httpAdapters';
+import { GRAPHQL_ENDPOINTS, HTTPPaths, POSTHTTPRoutes } from './endpoints';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApicallsService {
   httpClient = inject(HttpClient);
-  constructor() {}
+  apolloService = inject(Apollo);
 
-  getData(endpoint: (typeof API_ENDPOINTS)[keyof typeof API_ENDPOINTS]) {
-    if (!endpoint || !API_ENDPOINTS[endpoint as keyof typeof API_ENDPOINTS]) {
+  GETGraphQLEndpoint(
+    endpoint: (typeof GRAPHQL_ENDPOINTS)[keyof typeof GRAPHQL_ENDPOINTS]
+  ) {
+    if (
+      !endpoint ||
+      !GRAPHQL_ENDPOINTS[endpoint as keyof typeof GRAPHQL_ENDPOINTS]
+    ) {
       throw new Error('Bad Endpoint');
     }
+  }
 
-    return this.httpClient.get(endpoint);
+  POSTHttpEndpoint<
+    T extends (typeof POSTHTTPRoutes)[keyof typeof POSTHTTPRoutes]['createBody']
+  >(
+    endpoint: (typeof HTTPPaths)[keyof typeof HTTPPaths],
+    body: T extends Function ? Parameters<T>[0] : null
+  ) {
+    const route = POSTHTTPRoutes[endpoint as keyof typeof POSTHTTPRoutes];
+    if (route == null || body == null) return;
+
+    return this.httpClient.post(endpoint, JSON.stringify(body)).pipe(
+      map((value) => {
+        return AdaptHTTPRequest(endpoint, value);
+      })
+    );
   }
 }

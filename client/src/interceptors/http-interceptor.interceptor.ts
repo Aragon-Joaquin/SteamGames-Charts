@@ -6,7 +6,6 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
     },
-    withCredentials: true,
     reportProgress: true,
     responseType: 'json',
   });
