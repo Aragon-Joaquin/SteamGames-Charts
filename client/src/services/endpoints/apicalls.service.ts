@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
-import { MakeEndpoint } from '../utils/constants';
+import { MakeEndpoint } from '../../utils/constants';
 import { GRAPHQL_ENDPOINTS, HTTPPaths, POSTHTTPRoutes } from './endpoints';
 
 @Injectable({

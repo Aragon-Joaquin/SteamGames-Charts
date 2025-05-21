@@ -45,15 +45,19 @@
       @if (showUsers().length > 0 ) {
       <div class="users-list">
         @for (user of showUsers(); track $index) {
-        <span class="user-card">
-          <img [src]="user.avatarfull" alt="User avatar" class="user-avatar" />
+        <a [routerLink]="`/dashboard/${user.profile_url}`" class="user-card">
+          <img
+            [src]="user.avatarfull"
+            alt="User avatar"
+            class="user-avatar"
+            (error)="onErrorImg($event)"
+          />
+
           <span class="user-info">
-            <a class="user-name" [href]="user.profile_url">{{
-              user.persona_name
-            }}</a>
-            <p class="user-logoff">{{ user.lastlogoff }}</p>
+            <h5 class="user-name">{{ user.persona_name }}</h5>
+            <p class="user-logoff">{{ user.lastlogoff }} ago</p>
           </span>
-        </span>
+        </a>
         }
       </div>
       }

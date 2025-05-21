@@ -1,4 +1,4 @@
-import { HTTPPaths } from '../services/endpoints';
+import { HTTPPaths } from '../services/endpoints/endpoints';
 import {
   SearchUserAdapted,
   SearchUserResponse,

@@ -1,19 +1,20 @@
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { debounceTime, Subject } from 'rxjs';
 import { SearchUserAdapted } from '../../adapters/responses/HTTPResponses';
-import { ApicallsService } from '../../services/apicalls.service';
-import { HTTPPaths, SEARCH_USER } from '../../services/endpoints';
+import { ApicallsService } from '../../services/endpoints/apicalls.service';
+import { HTTPPaths, SEARCH_USER } from '../../services/endpoints/endpoints';
 import { ErrorHandlerComponent } from './components/error-handler/error-handler.component';
 
 @Component({
   selector: 'app-landing',
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.css',
-  imports: [ReactiveFormsModule, ErrorHandlerComponent],
+  imports: [ReactiveFormsModule, ErrorHandlerComponent, RouterModule],
 })
 export class LandingComponent implements OnInit, OnDestroy {
-  apiCalls = inject(ApicallsService);
+  private apiCalls = inject(ApicallsService);
 
   userName = new FormControl('', [
     Validators.required,
@@ -27,14 +28,14 @@ export class LandingComponent implements OnInit, OnDestroy {
       avatarfull: '',
       lastlogoff: 2,
       persona_name: 'john doe',
-      profile_url: '',
+      profile_url: 'john doe',
       steamid: '2',
     },
     {
       avatarfull: '',
       lastlogoff: 2,
       persona_name: 'john doe',
-      profile_url: '',
+      profile_url: 'doe',
       steamid: '2',
     },
   ]);
@@ -69,4 +70,10 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.lastVal = inputVal;
     this.searchInput.next(inputVal);
   }
+
+  onErrorImg(e: Event) {
+    (e.target as HTMLImageElement).src = 'img/not-found.webp';
+    console.log((e.target as HTMLImageElement).src);
+  }
 }
+1;
