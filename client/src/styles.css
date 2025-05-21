@@ -1,9 +1,16 @@
+@import url("./css-reset.css");
+
 :root {
   --dark1-color: #191b1f;
   --dark2-color: #2a2a3d;
   --dark3-color: #1e1e2f;
 
   --white1-color: #e2e2e2;
+  --white2-color: #c9c9c9;
+
+  --accent1-color: #5a3d6d;
+  --accent2-color: #4e3460;
+  --accent3-color: #432b54;
 }
 
 * {

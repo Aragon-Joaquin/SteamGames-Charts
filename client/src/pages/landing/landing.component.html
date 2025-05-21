@@ -18,33 +18,47 @@
     </h2>
   </header>
 
-  <form class="landing-form" (submit)="$event.preventDefault()">
-    <label for="steamId"
-      >Enter your Steam ID:
-      <input
-        (input)="onInputChange($event)"
-        type="text"
-        pattern="^[0-9]"
-        minlength="17"
-        id="steamId"
-        name="steamId"
-        autocomplete="off"
-        placeholder="e.g: 76561197960435530, ohnePixel"
-        required
+  <section class="main-section">
+    <form class="landing-form" (submit)="$event.preventDefault()">
+      <label for="steamId"
+        >Enter your Steam ID:
+        <input
+          (input)="onInputChange($event)"
+          type="text"
+          id="steamId"
+          name="steamId"
+          minlength="3"
+          autocomplete="off"
+          placeholder="e.g: 76561197960435530, ohnePixel"
+          required
+        />
+      </label>
+      @if (userName.hasError('minlength')) {
+      <form-error-message
+        errorName="Vanities URL's should be at least more than 3 characters"
       />
-    </label>
-    @if (userName.hasError('maxlength') || userName.hasError('minlength')) {
-    <form-error-message
-      errorName="SteamID's should be more than 5 and less than 20 digits"
-    />
-    } @if ( userName.dirty && userName.hasError('required')) {
-    <form-error-message errorName="Field is required" />
-    } @if (userName.hasError('pattern')) {
-    <form-error-message errorName="Only numbers are valid" />
-    }
+      } @if ( userName.dirty && userName.hasError('required')) {
+      <form-error-message errorName="Field is required" />
+      }
 
-    <!-- <button type="submit">Submit</button> -->
-  </form>
+      <!-- <button type="submit">Submit</button> -->
+      @if (showUsers().length > 0 ) {
+      <div class="users-list">
+        @for (user of showUsers(); track $index) {
+        <span class="user-card">
+          <img [src]="user.avatarfull" alt="User avatar" class="user-avatar" />
+          <span class="user-info">
+            <a class="user-name" [href]="user.profile_url">{{
+              user.persona_name
+            }}</a>
+            <p class="user-logoff">{{ user.lastlogoff }}</p>
+          </span>
+        </span>
+        }
+      </div>
+      }
+    </form>
+  </section>
 
   <footer class="landing-footer"></footer>
 </article>

@@ -1,6 +1,7 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, Subject } from 'rxjs';
+import { SearchUserAdapted } from '../../adapters/responses/HTTPResponses';
 import { ApicallsService } from '../../services/apicalls.service';
 import { HTTPPaths, SEARCH_USER } from '../../services/endpoints';
 import { ErrorHandlerComponent } from './components/error-handler/error-handler.component';
@@ -16,18 +17,43 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   userName = new FormControl('', [
     Validators.required,
-    Validators.minLength(5),
-    Validators.maxLength(20),
-    Validators.pattern(/^\d+/),
+    Validators.minLength(3),
   ]);
 
   lastVal: string = '';
-
   searchInput = new Subject<string>();
+  showUsers = signal<SearchUserAdapted[] | []>([
+    {
+      avatarfull: '',
+      lastlogoff: 2,
+      persona_name: 'john doe',
+      profile_url: '',
+      steamid: '2',
+    },
+    {
+      avatarfull: '',
+      lastlogoff: 2,
+      persona_name: 'john doe',
+      profile_url: '',
+      steamid: '2',
+    },
+  ]);
+
   ngOnInit(): void {
     this.searchInput.pipe(debounceTime(500)).subscribe((inputVal) => {
-      this.apiCalls.POSTHttpEndpoint<typeof SEARCH_USER>(HTTPPaths.searchUser, {
-        VanityUrl: inputVal,
+      this.showUsers.set([]);
+      this.userName.patchValue(inputVal, { onlySelf: true });
+      if (!this.userName.valid) return;
+
+      const results = this.apiCalls.POSTHttpEndpoint<typeof SEARCH_USER>(
+        HTTPPaths.searchUser,
+        {
+          VanityUrl: inputVal,
+        }
+      );
+
+      results?.subscribe((el) => {
+        console.log(el);
       });
     });
   }

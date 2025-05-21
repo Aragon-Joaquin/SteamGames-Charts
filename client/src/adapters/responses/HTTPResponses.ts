@@ -9,3 +9,6 @@ export type SearchUserResponse = {
     }>;
   };
 };
+
+export type SearchUserAdapted =
+  SearchUserResponse['response']['players'][number];

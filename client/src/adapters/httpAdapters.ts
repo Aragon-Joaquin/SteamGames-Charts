@@ -1,10 +1,13 @@
 import { HTTPPaths } from '../services/endpoints';
-import { SearchUserResponse } from './responses/HTTPResponses';
+import {
+  SearchUserAdapted,
+  SearchUserResponse,
+} from './responses/HTTPResponses';
 
 const HASHMAP_ADAPTERS = {
   [HTTPPaths.searchUser]: function (
     res: SearchUserResponse
-  ): SearchUserResponse['response']['players'][number] {
+  ): SearchUserAdapted {
     const {
       response: {
         players: [

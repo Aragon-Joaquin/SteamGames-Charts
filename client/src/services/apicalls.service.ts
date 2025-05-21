@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
-import { map } from 'rxjs';
-import { AdaptHTTPRequest } from '../adapters/httpAdapters';
+import { MakeEndpoint } from '../utils/constants';
 import { GRAPHQL_ENDPOINTS, HTTPPaths, POSTHTTPRoutes } from './endpoints';
 
 @Injectable({
@@ -32,10 +31,11 @@ export class ApicallsService {
     const route = POSTHTTPRoutes[endpoint as keyof typeof POSTHTTPRoutes];
     if (route == null || body == null) return;
 
-    return this.httpClient.post(endpoint, JSON.stringify(body)).pipe(
-      map((value) => {
-        return AdaptHTTPRequest(endpoint, value);
-      })
-    );
+    return this.httpClient.post(MakeEndpoint(endpoint), JSON.stringify(body));
+    // .pipe(
+    //   map((value) => {
+    //     return AdaptHTTPRequest(endpoint, value);
+    //   })
+    //);
   }
 }
