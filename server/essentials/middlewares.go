@@ -10,7 +10,7 @@ import (
 )
 
 func RateLimiter() gin.HandlerFunc {
-	limiter := rate.NewLimiter(rate.Limit(time.Second), 2)
+	limiter := rate.NewLimiter(rate.Limit(1), int(time.Second*2))
 
 	return func(c *gin.Context) {
 		if limiter.Allow() {
