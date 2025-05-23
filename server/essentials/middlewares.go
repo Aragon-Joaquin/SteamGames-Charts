@@ -10,22 +10,25 @@ import (
 )
 
 func RateLimiter() gin.HandlerFunc {
-	limiter := rate.NewLimiter(rate.Limit(1), int(time.Second*2))
-
+	// 3 request per second
+	limiter := rate.NewLimiter(1, 3)
 	return func(c *gin.Context) {
 		if limiter.Allow() {
 			c.Next()
 		} else {
-			c.JSON(http.StatusTooManyRequests, gin.H{
-				"message": "Limit exceeded",
+			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{
+				"message": "Request limit exceeded",
 			})
 		}
 
 	}
 }
 
+// the timeout works before the c.Next() is executed
+// after that, if an endpoint or the server has delay it messed up everything
 func Timeout(timeout time.Duration) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		start := time.Now()
 		ctx, cancel := context.WithTimeout(c.Request.Context(), timeout)
 		defer cancel()
 
@@ -33,26 +36,30 @@ func Timeout(timeout time.Duration) gin.HandlerFunc {
 
 		go func() {
 			c.Next()
+
 			finished <- struct{}{}
+			defer close(finished)
 		}()
 
 		select {
 		case <-finished:
 		case <-ctx.Done():
-			c.JSON(http.DefaultMaxIdleConnsPerHost, gin.H{
-				"error": "Request took too long.",
+
+			c.AbortWithStatusJSON(http.StatusRequestTimeout, gin.H{
+				"message": "Request took too long: " + time.Since(start).Round(time.Millisecond).String(),
 			})
-			c.Abort()
+
 		}
 	}
+
 }
 
-type GinContextKey struct{}
+// type GinContextKey struct{}
 
-func GinContextMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		ctx := context.WithValue(c.Request.Context(), GinContextKey{}, c)
-		c.Request = c.Request.WithContext(ctx)
-		c.Next()
-	}
-}
+// func GinContextMiddleware() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		ctx := context.WithValue(c.Request.Context(), GinContextKey{}, c)
+// 		c.Request = c.Request.WithContext(ctx)
+// 		c.Next()
+// 	}
+// }

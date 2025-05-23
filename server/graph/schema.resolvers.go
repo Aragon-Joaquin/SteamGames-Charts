@@ -30,6 +30,11 @@ func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int64) (*
 	}()
 
 	resp := <-r.ResChan
+
+	if resp.Error != nil {
+		return nil, resp.Error
+	}
+
 	var wrapper map[string]*model.GDetailsRes
 
 	val, err := u.UnmarshalMapping(wrapper, &resp.BodyResponse, steamidString)
@@ -62,6 +67,11 @@ func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid int64) (*
 	}()
 
 	resp := <-r.ResChan
+
+	if resp.Error != nil {
+		return nil, resp.Error
+	}
+
 	var wrapper *model.UOGamesRes
 
 	if err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse); err != nil {
@@ -90,6 +100,11 @@ func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int64
 	}()
 
 	resp := <-r.ResChan
+
+	if resp.Error != nil {
+		return nil, resp.Error
+	}
+
 	var wrapper map[string]*model.PSummariesRes
 
 	res, err := u.UnmarshalMapping(wrapper, &resp.BodyResponse, "response")
@@ -119,6 +134,11 @@ func (r *queryResolver) GetFriendList(ctx context.Context, steamid int64) (*mode
 	}()
 
 	resp := <-r.ResChan
+
+	if resp.Error != nil {
+		return nil, resp.Error
+	}
+
 	var wrapper *model.FListRes
 
 	if err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse); err != nil {

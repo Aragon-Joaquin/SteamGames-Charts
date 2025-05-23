@@ -35,6 +35,11 @@ func SearchUser() gin.HandlerFunc {
 		end.FetchSubEndpoint(ctx)
 		res := <-end.ResChan
 
+		if res.Error != nil {
+			e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusBadRequest, Message: "Unsuccesful request."})
+			return
+		}
+
 		var response map[string]t.ResolveVanityURL
 		resMap, err2 := u.UnmarshalMapping(response, &res.BodyResponse, "response")
 

@@ -6,7 +6,6 @@ import (
 	e "serverGo/essentials"
 	ro "serverGo/routes"
 	u "serverGo/utils"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,8 +25,8 @@ func main() {
 
 	//* middlewares
 	r.Use(e.RateLimiter())
-	r.Use(e.Timeout(time.Second * 4))
-	r.Use(e.GinContextMiddleware())
+	r.Use(e.Timeout(u.MAX_TIMEOUT_TIME))
+	// r.Use(e.GinContextMiddleware())
 
 	//* routes
 	r.GET("/", e.PlaygroundHandler())
