@@ -1,8 +1,9 @@
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
 import { debounceTime, Subject } from 'rxjs';
 import { SearchUserAdapted } from '../../adapters/responses/HTTPResponses';
+import { SteamContextService } from '../../services';
 import { ApicallsService } from '../../services/endpoints/apicalls.service';
 import { HTTPPaths, SEARCH_USER } from '../../services/endpoints/endpoints';
 import { ErrorHandlerComponent } from './components/error-handler/error-handler.component';
@@ -11,10 +12,12 @@ import { ErrorHandlerComponent } from './components/error-handler/error-handler.
   selector: 'app-landing',
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.css',
-  imports: [ReactiveFormsModule, ErrorHandlerComponent, RouterModule],
+  imports: [ReactiveFormsModule, ErrorHandlerComponent],
 })
 export class LandingComponent implements OnInit, OnDestroy {
   private apiCalls = inject(ApicallsService);
+  private SteamContext = inject(SteamContextService);
+  private router = inject(Router);
 
   userName = new FormControl('', [
     Validators.required,
@@ -75,5 +78,13 @@ export class LandingComponent implements OnInit, OnDestroy {
     (e.target as HTMLImageElement).src = 'img/not-found.webp';
     console.log((e.target as HTMLImageElement).src);
   }
+
+  onClickUser(e: Event, idx: number) {
+    e.preventDefault();
+    const getUser = this.showUsers()[idx];
+
+    if (getUser == null) return;
+    this.SteamContext.currentUser.next(getUser);
+    this.router.navigateByUrl(`/dashboard/${getUser.profile_url ?? ''}`);
+  }
 }
-1;

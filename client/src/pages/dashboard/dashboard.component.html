@@ -1,19 +1,35 @@
 <!-- <header></header> -->
-<main>
-  <aside>
-    <ul>
+<main class="dashboard-layout">
+  <aside class="sidebar">
+    <h2 class="logo">
+      Logo
+      <img src="/svgs/chevron-arrow.svg" class="arrow-svg" />
+    </h2>
+    <ul class="sidebar-menu">
       <li>
-        <a routerLink="/dashboard" routerLinkActive="active">Overview</a>
+        <h5>Menu</h5>
+        <a> General</a>
       </li>
       <li>
+        <h5>Endpoints</h5>
         <a>Owned Games</a>
-      </li>
-      <li>
         <a>Friends</a>
       </li>
     </ul>
+
+    <span class="info-account"><!-- steam acc --></span>
   </aside>
-  <article>
+  <article class="main-graphs">
+    @switch (this.dashboardState()) { @case ("not_found") {
+    <div>
+      <h2>Dashboard not found</h2>
+      <p>Check if you are logged in</p>
+    </div>
+    } @default {
+    <div class="loading">
+      <img src="/svgs/loading.svg" class="loading-svg" />
+    </div>
+    } }
     <dashboard-overview></dashboard-overview>
   </article>
 </main>

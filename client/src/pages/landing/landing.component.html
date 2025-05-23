@@ -45,7 +45,11 @@
       @if (showUsers().length > 0 ) {
       <div class="users-list">
         @for (user of showUsers(); track $index) {
-        <a [routerLink]="`/dashboard/${user.profile_url}`" class="user-card">
+        <a
+          [href]="`/dashboard/${user.profile_url}`"
+          class="user-card"
+          (click)="onClickUser($event, $index)"
+        >
           <img
             [src]="user.avatarfull"
             alt="User avatar"

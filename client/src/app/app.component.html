@@ -1,1 +1,20 @@
 <router-outlet />
+
+<!-- Error Handling -->
+@let e = this.errorService.errorStatus(); @if (e != null) {
+
+<div class="alert alert-danger" role="alert">
+  <h5>
+    <strong>Error {{ e.httpError }}:</strong>
+    {{ e.message ?? "Unknown error" }}
+  </h5>
+  <p>{{ e.message ?? "Unknown error description" }}</p>
+  <button
+    type="button"
+    class="close-error"
+    (click)="this.errorService.hideError()"
+  >
+    Close
+  </button>
+</div>
+}
