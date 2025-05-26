@@ -26,22 +26,7 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   lastVal: string = '';
   searchInput = new Subject<string>();
-  showUsers = signal<SearchUserAdapted[] | []>([
-    {
-      avatarfull: '',
-      lastlogoff: 2,
-      persona_name: 'john doe',
-      profile_url: 'john doe',
-      steamid: '2',
-    },
-    {
-      avatarfull: '',
-      lastlogoff: 2,
-      persona_name: 'john doe',
-      profile_url: 'doe',
-      steamid: '2',
-    },
-  ]);
+  showUsers = signal<SearchUserAdapted[] | []>([]);
 
   ngOnInit(): void {
     this.searchInput.pipe(debounceTime(500)).subscribe((inputVal) => {
@@ -56,9 +41,26 @@ export class LandingComponent implements OnInit, OnDestroy {
         }
       );
 
-      results?.subscribe((el) => {
-        console.log(el);
-      });
+      //! delete this later
+      this.showUsers.set([
+        {
+          avatarfull: '',
+          lastlogoff: 2,
+          persona_name: 'john doe',
+          profile_url: 'john doe',
+          steamid: '2',
+        },
+        {
+          avatarfull: '',
+          lastlogoff: 2,
+          persona_name: 'john doe',
+          profile_url: 'doe',
+          steamid: '2',
+        },
+      ]);
+      // results?.subscribe((el) => {
+      //   console.log(el);
+      // });
     });
   }
 

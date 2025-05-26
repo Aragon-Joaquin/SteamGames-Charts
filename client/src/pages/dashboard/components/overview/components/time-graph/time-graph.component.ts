@@ -26,25 +26,7 @@ export class TimeGraphComponent implements AfterViewInit, OnDestroy {
   private width = 928;
   private height = 500;
 
-  private gapX = 40;
-
-  data: Partial<RecentlyPlayedAdapted>[] = [
-    {
-      appid: 632360,
-      name: 'Risk of Rain 2',
-      playtime_2weeks: 750,
-    },
-    {
-      appid: 427520,
-      name: 'Factorio',
-      playtime_2weeks: 55,
-    },
-    {
-      appid: 374320,
-      name: 'DARK SOULS™ III',
-      playtime_2weeks: 403,
-    },
-  ];
+  data: Partial<RecentlyPlayedAdapted>[] = [];
 
   createBarChart() {
     //! Defining data form
@@ -65,6 +47,7 @@ export class TimeGraphComponent implements AfterViewInit, OnDestroy {
     );
 
     svg.selectAll('g').remove();
+    svg.selectAll('text').remove();
     //! X axis
     const x = scaleBand()
       .domain(sortedData.map((e) => e.name ?? ''))
@@ -114,7 +97,7 @@ export class TimeGraphComponent implements AfterViewInit, OnDestroy {
       )
       .enter()
       .append('rect')
-      .attr('x', (d, i) => {
+      .attr('x', (_, i) => {
         return x(sortedData[i].name ?? '') ?? '';
       })
       .attr('y', (d) => y(d.value))
@@ -133,14 +116,16 @@ export class TimeGraphComponent implements AfterViewInit, OnDestroy {
       .attr('text-anchor', 'end')
       .attr('x', 60)
       .attr('y', 0)
+      .style('font-style', 'italic')
       .text('Minutes');
 
     svg
       .append('text')
       .attr('class', 'x label')
       .attr('text-anchor', 'end')
-      .attr('x', this.width + 100)
-      .attr('y', this.height - 20)
+      .attr('x', this.width)
+      .attr('y', this.height - 10)
+      .style('font-style', 'italic')
       .text('Game name');
   }
 

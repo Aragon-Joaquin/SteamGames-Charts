@@ -1,24 +1,20 @@
-@let steamName = ['S', 't', 'e', 'a', 'm'];
 <article class="landing">
   <header class="landing-title">
-    <h2 class="title">
-      <!-- lightning -->
-      <div class="circle" aria-hidden></div>
-      <div class="circle" aria-hidden></div>
-      <div class="circle" aria-hidden></div>
-      How much time I've wasted on <br />
-
-      <span class="steam-title">
-        @for (letter of steamName; track $index) {
-        <p [style]="'animation-delay: calc(' + $index + '* 0.4s) !important;'">
-          {{ letter }}
-        </p>
-        }
-      </span>
-    </h2>
+    <a
+      href="https://github.com/Aragon-Joaquin/SteamGames-Charts"
+      target="_blank"
+      class="primary-button"
+    >
+      <img
+        src="/svgs/github.svg"
+        alt="Github logo"
+        class="svgGithub"
+      />Github</a
+    >
   </header>
 
   <section class="main-section">
+    <h2 class="title">How much time I've wasted on steam?</h2>
     <form class="landing-form" (submit)="$event.preventDefault()">
       <label for="steamId"
         >Enter your Steam ID:
@@ -59,7 +55,7 @@
 
           <span class="user-info">
             <h5 class="user-name">{{ user.persona_name }}</h5>
-            <p class="user-logoff">{{ user.lastlogoff }} ago</p>
+            <p class="user-logoff">{{ user.lastlogoff }}m ago</p>
           </span>
         </a>
         }

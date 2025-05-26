@@ -43,3 +43,77 @@ body {
   min-height: 100dvh;
   overflow: hidden;
 }
+
+.primary-button,
+.secondary-button,
+.terciary-button {
+  background-color: #ffffff1a;
+  font-family: monospace, sans-serif;
+  backdrop-filter: blur(1px);
+  color: var(--white1-color);
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+
+  letter-spacing: 1px;
+  border: none;
+  padding: 7px 15px;
+  border-radius: 32px;
+
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    cursor: pointer;
+    background-color: #ffffff3a;
+  }
+}
+
+.secondary-button {
+  background-color: #e2e2e2ee;
+  color: var(--dark1-color);
+
+  &:hover {
+    background-color: #e2e2e288;
+  }
+}
+
+.terciary-button {
+  background: transparent;
+  color: var(--white1-color);
+  border: 1px solid var(--white3-color);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: balance;
+  position: relative;
+  text-align: center;
+  line-height: 1.2;
+  font-family: "Poppins-bold", sans-serif;
+}
+
+h1 {
+  font-size: 3rem;
+}
+h2 {
+  font-size: 2.5rem;
+}
+h3 {
+  font-size: 2rem;
+}
+h4 {
+  font-size: 1.5rem;
+}
+h5 {
+  font-size: 1.2rem;
+}
+h6 {
+  font-size: 1rem;
+}
