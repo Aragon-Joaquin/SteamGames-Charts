@@ -1,9 +1,21 @@
 <article class="landing">
-  <header class="landing-title">
+  <header class="landing-header">
+    <span class="header-connected">
+      <div class="users-count">
+        <h5>Online:</h5>
+        <p>36,140,218</p>
+      </div>
+      <div class="users-count">
+        <h5>In-Game:</h5>
+        <p>9,943,939</p>
+      </div>
+    </span>
     <a
       href="https://github.com/Aragon-Joaquin/SteamGames-Charts"
       target="_blank"
       class="primary-button"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
     >
       <img
         src="/svgs/github.svg"
@@ -13,56 +25,86 @@
     >
   </header>
 
-  <section class="main-section">
-    <h2 class="title">How much time I've wasted on steam?</h2>
-    <form class="landing-form" (submit)="$event.preventDefault()">
-      <label for="steamId"
-        >Enter your Steam ID:
-        <input
-          (input)="onInputChange($event)"
-          type="text"
-          id="steamId"
-          name="steamId"
-          minlength="3"
-          autocomplete="off"
-          placeholder="e.g: 76561197960435530, ohnePixel"
-          required
-        />
-      </label>
-      @if (userName.hasError('minlength')) {
-      <form-error-message
-        errorName="Vanities URL's should be at least more than 3 characters"
-      />
-      } @if ( userName.dirty && userName.hasError('required')) {
-      <form-error-message errorName="Field is required" />
-      }
+  <main class="main-section">
+    <section class="landing-presentation">
+      <span class="presentation-text">
+        <h1 class="title">
+          How much time I've wasted on
+          <strong class="steam-word">Steam</strong>?
+        </h1>
+        <p class="subtitle">
+          Discover how many hours you've spent playing your favorite Steam
+          games. For <strong>Free</strong>.
+        </p>
+      </span>
 
-      <!-- <button type="submit">Submit</button> -->
-      @if (showUsers().length > 0 ) {
-      <div class="users-list">
-        @for (user of showUsers(); track $index) {
-        <a
-          [href]="`/dashboard/${user.profile_url}`"
-          class="user-card"
-          (click)="onClickUser($event, $index)"
-        >
-          <img
-            [src]="user.avatarfull"
-            alt="User avatar"
-            class="user-avatar"
-            (error)="onErrorImg($event)"
+      <form class="landing-form" (submit)="$event.preventDefault()">
+        <button class="search-button terciary-button" type="submit">
+          Start Searching
+          <img src="/svgs/search.svg" alt="Search your account" />
+        </button>
+        <label for="steamId" class="form-label">
+          Enter your Steam ID:
+          <input
+            (input)="onInputChange($event)"
+            type="text"
+            id="steamId"
+            name="steamId"
+            minlength="3"
+            autocomplete="off"
+            placeholder="e.g: 76561197960435530, ohnePixel"
+            required
           />
+          @if (userName.hasError('minlength')) {
+          <form-error-message
+            errorName="Vanities URL's should be at least more than 3 characters"
+          />
+          } @if ( userName.dirty && userName.hasError('required')) {
+          <form-error-message errorName="Field is required" />
+          }
+        </label>
 
-          <span class="user-info">
-            <h5 class="user-name">{{ user.persona_name }}</h5>
-            <p class="user-logoff">{{ user.lastlogoff }}m ago</p>
-          </span>
-        </a>
+        <!-- <button type="submit">Submit</button> -->
+        @if (showUsers().length > 0 ) {
+        <div class="users-list">
+          @for (user of showUsers(); track $index) {
+          <a
+            [href]="`/dashboard/${user.profile_url}`"
+            class="user-card"
+            (click)="onClickUser($event, $index)"
+          >
+            <img
+              [src]="user.avatarfull"
+              alt="User avatar"
+              class="user-avatar"
+              (error)="onErrorImg($event)"
+            />
+
+            <span class="user-info">
+              <h5 class="user-name">{{ user.persona_name }}</h5>
+              <p class="user-logoff">{{ user.lastlogoff }}m ago</p>
+            </span>
+          </a>
+          }
+        </div>
         }
-      </div>
-      }
-    </form>
-  </section>
+      </form>
+    </section>
+    <div class="showcase-container" #imageContainer>
+      <img
+        src="/img/landing-games/csgo.webp"
+        alt="Counter Strike 2"
+        title="Counter Strike 2"
+        class="game-showcase visible"
+      />
+      <img
+        src="/img/landing-games/ror2.webp"
+        alt="Risk of Rain 2"
+        title="Risk of Rain 2"
+        class="game-showcase invisible"
+      />
+    </div>
+  </main>
 
   <footer class="landing-footer"></footer>
 </article>

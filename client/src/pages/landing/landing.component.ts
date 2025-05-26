@@ -28,6 +28,9 @@ export class LandingComponent implements OnInit, OnDestroy {
   searchInput = new Subject<string>();
   showUsers = signal<SearchUserAdapted[] | []>([]);
 
+  // @ViewChild('imageContainer')
+  // private imageContainer!: ElementRef<HTMLDivElement>;
+
   ngOnInit(): void {
     this.searchInput.pipe(debounceTime(500)).subscribe((inputVal) => {
       this.showUsers.set([]);
@@ -76,10 +79,8 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.searchInput.next(inputVal);
   }
 
-  onErrorImg(e: Event) {
-    (e.target as HTMLImageElement).src = 'img/not-found.webp';
-    console.log((e.target as HTMLImageElement).src);
-  }
+  onErrorImg = (e: Event) =>
+    ((e.target as HTMLImageElement).src = 'img/not-found.webp');
 
   onClickUser(e: Event, idx: number) {
     e.preventDefault();

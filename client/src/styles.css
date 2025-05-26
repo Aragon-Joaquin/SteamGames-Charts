@@ -10,9 +10,9 @@
   --white2-color: #c9c9c9;
   --white3-color: #8f8f8f;
 
-  --accent1-color: #5a3d6d;
-  --accent2-color: #4e3460;
-  --accent3-color: #432b54;
+  --accent1-color: #ccad80;
+  --accent2-color: #b38f5c;
+  --accent3-color: #996633;
 
   /*! fonts */
   --Poppins: "Poppins", sans-serif;
@@ -42,6 +42,20 @@ body {
   min-width: 100dvw;
   min-height: 100dvh;
   overflow: hidden;
+}
+
+.invisible,
+.visible {
+  transition: opacity 0.2s ease-in-out allow-discrete;
+}
+.invisible {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.visible {
+  opacity: 1;
+  visibility: visible;
 }
 
 .primary-button,

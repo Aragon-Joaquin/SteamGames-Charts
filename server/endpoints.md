@@ -64,3 +64,5 @@ http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=XXXXXXXXXXX
 ## Specific endpoints to interfaces that i use:
 
 - https://steamapi.xpaw.me/#ISteamUser/ResolveVanityURL
+- https://steamapi.xpaw.me/#IPlayerService/GetRecentlyPlayedGames
+- https://store.steampowered.com/about/ ([scrape for players online](https://store.steampowered.com/stats/userdata.json?days_back=3))
