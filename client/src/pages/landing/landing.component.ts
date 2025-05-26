@@ -2,12 +2,12 @@ import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { debounceTime, Subject } from 'rxjs';
-import { SearchUserAdapted } from '../../adapters/responses/HTTPResponses';
+
+import { SearchUserAdapted } from '../../adapters/responses';
 import { SteamContextService } from '../../services';
 import { ApicallsService } from '../../services/endpoints/apicalls.service';
 import { HTTPPaths, SEARCH_USER } from '../../services/endpoints/endpoints';
 import { ErrorHandlerComponent } from './components/error-handler/error-handler.component';
-
 @Component({
   selector: 'app-landing',
   templateUrl: './landing.component.html',

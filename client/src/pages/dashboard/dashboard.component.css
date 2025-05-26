@@ -56,6 +56,17 @@
   }
 }
 
+.main-graphs {
+  padding: 20px 30px;
+  flex-grow: 1;
+
+  & > .heading-title {
+    font-size: 1.9em;
+    font-family: var(--Poppins);
+    margin-bottom: 30px;
+  }
+}
+
 .arrow-svg {
   padding: 4px;
   background-color: var(--white2-color);

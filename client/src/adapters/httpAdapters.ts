@@ -1,8 +1,5 @@
 import { HTTPPaths } from '../services/endpoints/endpoints';
-import {
-  SearchUserAdapted,
-  SearchUserResponse,
-} from './responses/HTTPResponses';
+import { SearchUserAdapted, SearchUserResponse } from './responses';
 
 const HASHMAP_ADAPTERS = {
   [HTTPPaths.searchUser]: function (

@@ -15,6 +15,11 @@ export class ErrorHandlingService {
   public readonly errorStatus: WritableSignal<ErrorStatus | null> =
     signal<ErrorStatus | null>(null);
 
-  showError = (error: ErrorStatus) => this.errorStatus.set(error);
+  showError = (error: ErrorStatus) =>
+    this.errorStatus.set({
+      httpError: error?.httpError,
+      message: error?.message ?? 'Unknown Error',
+      description: error?.description ?? 'Unknown Error Description',
+    });
   hideError = () => this.errorStatus.set(null);
 }

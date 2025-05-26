@@ -38,14 +38,13 @@ export class ApicallsService {
     return this.httpClient
       .post(MakeEndpoint(endpoint), JSON.stringify(body))
       .pipe(
-        catchError((err, caught) => {
-          console.log({ err });
+        catchError((err, _caught) => {
           this.errorService.showError({
-            httpError: 500,
-            message: 'change this later',
-            description: '',
+            httpError: err?.status,
+            message: err?.name,
+            description: err?.statusText,
           });
-          return of(caught);
+          return of(null);
         }),
         map((value) => {
           if (value == null) return;

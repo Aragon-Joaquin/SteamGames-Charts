@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { SearchUserAdapted } from '../../adapters/responses/HTTPResponses';
+import { SearchUserAdapted } from '../../adapters/responses';
 import {
   ApicallsService,
   HTTPPaths,
@@ -11,11 +11,12 @@ import { OverviewComponent } from './components/overview/overview.component';
 
 const DASHBOARD_STATES = {
   // views
-  GENERAL: 'general',
-  OWNED_GAMES: 'owned_games',
-  FRIENDS: 'friends',
+  GENERAL: 'General',
+  OWNED_GAMES: 'Owned Games',
+  FRIENDS: 'Friends',
   // extras
-  NOT_FOUND: 'not_found',
+  NOT_FOUND: 'Not found',
+  LOADING: 'Loading',
 } as const;
 
 type DASHBOARD_STATE_GRABBER =
@@ -33,7 +34,7 @@ export class DashboardComponent implements OnInit {
   private apiCalls = inject(ApicallsService);
 
   public dashboardState = signal<DASHBOARD_STATE_GRABBER>(
-    DASHBOARD_STATES.GENERAL
+    DASHBOARD_STATES.LOADING
   );
 
   setDashboardState = (val: DASHBOARD_STATE_GRABBER) =>
@@ -52,5 +53,7 @@ export class DashboardComponent implements OnInit {
         ?.subscribe((res) =>
           this.steamContext.currentUser.next(res as SearchUserAdapted)
         );
+
+    this.dashboardState.set(DASHBOARD_STATES.GENERAL);
   }
 }

@@ -20,17 +20,15 @@
     <span class="info-account"><!-- steam acc --></span>
   </aside>
   <article class="main-graphs">
-    @switch (this.dashboardState()) { @case ("not_found") {
-    <div>
-      <h2>Dashboard not found</h2>
-      <p>Check if you are logged in</p>
-    </div>
-    } @default {
+    <h2 class="heading-title">{{ this.dashboardState() }}</h2>
+
+    @switch (this.dashboardState()) { @case ("Not found") { } @case ("General")
+    { <dashboard-overview></dashboard-overview>
+    } @case ("Owned Games") { }@case ("Friends") { } @default {
     <div class="loading">
       <img src="/svgs/loading.svg" class="loading-svg" />
     </div>
     } }
-    <dashboard-overview></dashboard-overview>
   </article>
 </main>
 <!-- <footer></footer> -->

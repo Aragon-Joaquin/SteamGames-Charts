@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { SearchUserAdapted } from '../../adapters/responses/HTTPResponses';
+import { SearchUserAdapted } from '../../adapters/responses';
 
 @Injectable({
   providedIn: 'root',

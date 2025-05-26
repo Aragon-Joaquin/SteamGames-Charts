@@ -1,0 +1,12 @@
+.overview-info-boxes {
+  display: flex;
+  gap: 40px;
+}
+
+.overview-graphs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 40px;
+}

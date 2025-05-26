@@ -1,0 +1,154 @@
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
+import { axisBottom, axisLeft, max, scaleBand, scaleLinear, select } from 'd3';
+import { RecentlyPlayedAdapted } from '../../../../../../adapters/responses';
+import { Graph, Rectangle } from '../../../../../../utils';
+@Component({
+  selector: 'overview-time-graph',
+  imports: [],
+  template: ` <svg class="timegraph" #timegraph></svg> `,
+  styles: `
+  .timegraph {
+    margin-top: 20px;
+  }
+  `,
+})
+
+// most played in 2 weeks
+export class TimeGraphComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('timegraph') private chartContainer!: ElementRef<HTMLElement>;
+
+  private width = 928;
+  private height = 500;
+
+  private gapX = 40;
+
+  data: Partial<RecentlyPlayedAdapted>[] = [
+    {
+      appid: 632360,
+      name: 'Risk of Rain 2',
+      playtime_2weeks: 750,
+    },
+    {
+      appid: 427520,
+      name: 'Factorio',
+      playtime_2weeks: 55,
+    },
+    {
+      appid: 374320,
+      name: 'DARK SOULS™ III',
+      playtime_2weeks: 403,
+    },
+  ];
+
+  createBarChart() {
+    //! Defining data form
+    const sortedData = this.data
+      .sort((a, b) => (b.playtime_2weeks ?? 0) - (a.playtime_2weeks ?? 0))
+      .slice(0, 10);
+
+    const svg = select(this.chartContainer.nativeElement)
+      .attr('width', this.width)
+      .attr('height', this.height)
+      .attr('viewBox', [0, 0, this.width, this.height])
+      .attr('style', 'max-width: 100%; height: auto; overflow: visible;');
+
+    const GraphClass = new Graph(
+      sortedData.map((e) => e.playtime_2weeks ?? 0),
+      this.height,
+      this.width
+    );
+
+    svg.selectAll('g').remove();
+    //! X axis
+    const x = scaleBand()
+      .domain(sortedData.map((e) => e.name ?? ''))
+      .range([40, this.width])
+      .padding(0.1);
+
+    const xAxis = svg
+      .append('g')
+      .attr('transform', `translate(0,${this.height - 30})`)
+      .call(axisBottom(x))
+      .style('font-size', '15px')
+      .style('z-index', '5');
+
+    xAxis.selectAll('line').style('stroke', 'black');
+    xAxis.selectAll('path').style('stroke', 'black');
+
+    xAxis
+      .selectAll('text')
+      .attr('transform', 'rotate(330,0,0) translate(0,0)')
+      .style('text-anchor', 'end')
+      .style('stroke', 'black');
+    //.style('fill', 'black');
+
+    //! Y axis
+    const y = scaleLinear()
+      .domain([0, max(sortedData, (d) => d.playtime_2weeks ?? 0) ?? 10])
+      .range([this.height - 30, 10]);
+
+    const yAxis = svg
+      .append('g')
+      .attr('transform', `translate(${40},0)`)
+      .call(axisLeft(y))
+      .style('font-size', '15px')
+      .style('z-index', '5');
+
+    yAxis.selectAll('line').style('stroke', 'black');
+    yAxis.selectAll('path').style('stroke', 'black');
+
+    yAxis.selectAll('text').style('stroke', 'black');
+    //.style('fill', 'black');
+
+    //! Drawing on graph
+    svg
+      .selectAll('rect')
+      .data(
+        sortedData.map((e) => new Rectangle(e.playtime_2weeks ?? 0, GraphClass))
+      )
+      .enter()
+      .append('rect')
+      .attr('x', (d, i) => {
+        return x(sortedData[i].name ?? '') ?? '';
+      })
+      .attr('y', (d) => y(d.value))
+      .attr('width', () => x.bandwidth())
+      .attr('height', (d) => y(0) - y(d.value))
+      .style('fill', (d) => d.GetColor())
+      .append('title')
+      .text((d, i) =>
+        (sortedData[i].name ?? '').concat(` (${d.value} minutes)`)
+      );
+
+    //! labels to axis
+    svg
+      .append('text')
+      .attr('class', 'x label')
+      .attr('text-anchor', 'end')
+      .attr('x', 60)
+      .attr('y', 0)
+      .text('Minutes');
+
+    svg
+      .append('text')
+      .attr('class', 'x label')
+      .attr('text-anchor', 'end')
+      .attr('x', this.width + 100)
+      .attr('y', this.height - 20)
+      .text('Game name');
+  }
+
+  ngAfterViewInit(): void {
+    this.createBarChart();
+  }
+
+  ngOnDestroy(): void {
+    select(this.chartContainer.nativeElement).selectAll('*').remove();
+  }
+}

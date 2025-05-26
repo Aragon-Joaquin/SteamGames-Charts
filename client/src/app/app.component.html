@@ -6,9 +6,9 @@
 <div class="alert alert-danger" role="alert">
   <h5>
     <strong>Error {{ e.httpError }}:</strong>
-    {{ e.message ?? "Unknown error" }}
+    {{ e.message }}
   </h5>
-  <p>{{ e.message ?? "Unknown error description" }}</p>
+  <p>{{ e.description }}</p>
   <button
     type="button"
     class="close-error"
