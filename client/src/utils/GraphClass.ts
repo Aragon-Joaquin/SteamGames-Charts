@@ -1,7 +1,4 @@
-import { RoundDecimals } from './constants';
-
 export class Graph {
-  data: Array<number> = [];
   height: number = 0;
   width: number = 0;
 
@@ -16,12 +13,20 @@ export class Graph {
     '#8DD17E',
     '#FF6F91',
     '#345995',
+    '#E74C3C',
+    '#F1C40F',
+    '#8E44AD',
+    '#16A085',
   ];
 
-  constructor(data: Array<number>, height: number, width: number) {
-    this.data = data;
-    this.height = height;
-    this.width = width;
+  constructor(width: number, height: number) {
+    this.height = height ?? 0;
+    this.width = width ?? 0;
+  }
+
+  pickRandomColor() {
+    const idx = Math.floor(Math.random() * this.colors.length);
+    return this.colors[idx] ?? '#CCCCCC';
   }
 }
 
@@ -34,21 +39,17 @@ export class Rectangle {
     this.graphVals = graph;
   }
 
-  CalculateRectHeight() {
-    const chartHeight = RoundDecimals(
-      this.graphVals.height / Math.max(...this.graphVals.data)
-    );
-    return RoundDecimals(chartHeight * this.value);
-  }
+  // CalculateRectHeight(data: number[]) {
+  //   const chartHeight = RoundDecimals(
+  //     this.graphVals.height / Math.max(...data)
+  //   );
+  //   return RoundDecimals(chartHeight * this.value);
+  // }
 
-  CalculateRectWidth(gap: number = 10) {
-    return (
-      RoundDecimals(this.graphVals.width / this.graphVals.data.length) - gap
-    );
-  }
+  // CalculateRectWidth(data: number[], gap: number = 10) {
+  //   return RoundDecimals(this.graphVals.width / data.length) - gap;
+  // }
 
-  GetColor() {
-    const idx = Math.floor(Math.random() * this.graphVals.colors.length);
-    return this.graphVals.colors[idx] ?? '#CCCCCC';
-  }
+  //! fix this
+  GetUniqueColor = () => this.graphVals.pickRandomColor();
 }

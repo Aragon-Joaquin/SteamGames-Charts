@@ -59,6 +59,7 @@
 .main-graphs {
   padding: 20px 30px;
   flex-grow: 1;
+  overflow-y: auto;
 
   & > .heading-title {
     font-size: 1.9em;

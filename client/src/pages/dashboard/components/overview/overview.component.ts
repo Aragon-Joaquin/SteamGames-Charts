@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
-import { InfoBoxesComponent } from './components/info-boxes/info-boxes.component';
-import { TimeGraphComponent } from './components/time-graph/time-graph.component';
+import {
+  InfoBoxesComponent,
+  PieChartComponent,
+  TimeGraphComponent,
+} from './components';
 
 @Component({
   selector: 'dashboard-overview',
-  imports: [InfoBoxesComponent, TimeGraphComponent],
+  imports: [InfoBoxesComponent, TimeGraphComponent, PieChartComponent],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.css',
 })

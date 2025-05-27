@@ -26,13 +26,15 @@ export class TimeGraphComponent implements AfterViewInit, OnDestroy {
   private width = 928;
   private height = 500;
 
+  private graphClass = new Graph(this.width, this.height);
+
   data: Partial<RecentlyPlayedAdapted>[] = [];
 
-  createBarChart() {
+  ngAfterViewInit(): void {
     //! Defining data form
     const sortedData = this.data
-      .sort((a, b) => (b.playtime_2weeks ?? 0) - (a.playtime_2weeks ?? 0))
-      .slice(0, 10);
+      .slice(0, 10)
+      .sort((a, b) => (b.playtime_2weeks ?? 0) - (a.playtime_2weeks ?? 0));
 
     const svg = select(this.chartContainer.nativeElement)
       .attr('width', this.width)
@@ -40,14 +42,10 @@ export class TimeGraphComponent implements AfterViewInit, OnDestroy {
       .attr('viewBox', [0, 0, this.width, this.height])
       .attr('style', 'max-width: 100%; height: auto; overflow: visible;');
 
-    const GraphClass = new Graph(
-      sortedData.map((e) => e.playtime_2weeks ?? 0),
-      this.height,
-      this.width
-    );
-
+    //! clean up
     svg.selectAll('g').remove();
     svg.selectAll('text').remove();
+
     //! X axis
     const x = scaleBand()
       .domain(sortedData.map((e) => e.name ?? ''))
@@ -93,7 +91,9 @@ export class TimeGraphComponent implements AfterViewInit, OnDestroy {
     svg
       .selectAll('rect')
       .data(
-        sortedData.map((e) => new Rectangle(e.playtime_2weeks ?? 0, GraphClass))
+        sortedData.map(
+          (e) => new Rectangle(e.playtime_2weeks ?? 0, this.graphClass)
+        )
       )
       .enter()
       .append('rect')
@@ -103,7 +103,7 @@ export class TimeGraphComponent implements AfterViewInit, OnDestroy {
       .attr('y', (d) => y(d.value))
       .attr('width', () => x.bandwidth())
       .attr('height', (d) => y(0) - y(d.value))
-      .style('fill', (d) => d.GetColor())
+      .style('fill', (d) => d.GetUniqueColor())
       .append('title')
       .text((d, i) =>
         (sortedData[i].name ?? '').concat(` (${d.value} minutes)`)
@@ -127,10 +127,6 @@ export class TimeGraphComponent implements AfterViewInit, OnDestroy {
       .attr('y', this.height - 10)
       .style('font-style', 'italic')
       .text('Game name');
-  }
-
-  ngAfterViewInit(): void {
-    this.createBarChart();
   }
 
   ngOnDestroy(): void {

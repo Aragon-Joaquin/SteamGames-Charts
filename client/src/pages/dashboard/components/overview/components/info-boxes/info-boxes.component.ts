@@ -8,7 +8,7 @@ import { Component, input } from '@angular/core';
       @if (svgName() != null) {
       <img [src]="'/svgs/' + svgName" [alt]="this.boxTitle()" />
       }
-      <h5 class="lmao">{{ boxTitle() }}</h5>
+      <h5>{{ boxTitle() }}</h5>
     </span>
     <span class="info-stats">
       <strong class="important-data">{{
@@ -18,7 +18,8 @@ import { Component, input } from '@angular/core';
   </div> `,
   styles: `
   .info-box {
-    width: 175px;
+    max-width: 200px;
+    min-width: 150px;
     display: flex;
     flex-direction: column;
     padding: 15px 20px;
@@ -27,10 +28,10 @@ import { Component, input } from '@angular/core';
   }
 
   .info-title {
-
     & > h5 {
-
-      color: var(--white2-color)
+      text-wrap: normal;
+      font-size: 0.8em;
+      color: var(--white3-color)
     }
   }
 
