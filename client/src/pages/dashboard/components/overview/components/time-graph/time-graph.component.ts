@@ -28,7 +28,7 @@ export class TimeGraphComponent implements AfterViewInit, OnDestroy {
 
   private graphClass = new Graph(this.width, this.height);
 
-  data: Partial<RecentlyPlayedAdapted>[] = [];
+  private data: Partial<RecentlyPlayedAdapted>[] = [];
 
   ngAfterViewInit(): void {
     //! Defining data form

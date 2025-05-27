@@ -7,15 +7,15 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 
-import { arc, pie, PieArcDatum, scaleOrdinal, select } from 'd3';
-import { Graph } from '../../../../../../utils';
+import { arc, pie, PieArcDatum, scaleOrdinal, select, selectAll } from 'd3';
+import { Graph, removeWhiteSpace } from '../../../../../../utils';
 
 @Component({
   selector: 'overview-pie-chart',
   imports: [],
   encapsulation: ViewEncapsulation.None,
   template: `<svg class="piechart" #piechart></svg> `,
-  styleUrl: './styles.css',
+  styles: ``,
 })
 
 // display genres
@@ -31,10 +31,10 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
   private graphClass = new Graph(this.width, this.height);
   private radius = Math.min(this.width, this.height) / 2 - this.margin;
 
-  data = [
+  private data = [
     { genre: 'action', quantity: 13 },
     { genre: 'novel', quantity: 3 },
-    { genre: 'platasdform', quantity: 7 },
+    { genre: 'souls like', quantity: 7 },
     { genre: 'fps', quantity: 3 },
   ];
 
@@ -55,7 +55,6 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
       .attr('height', this.height)
       .style('overflow', 'visible')
       .append('g')
-
       .attr(
         'transform',
         'translate(' + this.width / 2 + ',' + this.height / 2 + ')'
@@ -63,7 +62,11 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
 
     //! useful variables
     const colors = scaleOrdinal().range(this.graphClass.colors);
-    const pieGraph = pie<dataShape>().value((d) => d.quantity);
+
+    //this can be sorted inverse
+    const pieGraph = pie<dataShape>()
+      .sort(null)
+      .value((d) => d.quantity);
     const data_ready = pieGraph(sortedData);
 
     const innerArc = arc<PieArcDatum<dataShape>>()
@@ -75,6 +78,7 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
       .outerRadius(this.radius * 0.6);
 
     //! drawing
+
     svg
       .selectAll('*')
       .data(data_ready)
@@ -85,8 +89,49 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
       .attr('class', 'graphElement')
       .style('stroke-width', '3px')
       .style('opacity', 0.8)
-      .append('title')
-      .text((d) => d?.data?.genre ?? 'Unknown');
+      .style('position', 'relative')
+      .style('transition', 'all 0.3s ease-in-out')
+      .on('mouseover', function (_, d) {
+        selectAll('path').style('opacity', 0.4);
+        select(this)
+          .style('scale', 1.05)
+          .style('opacity', 1)
+          .style('cursor', 'pointer');
+
+        select(`.inner-text-${removeWhiteSpace(d.data.genre)}`).style(
+          'visibility',
+          'visible'
+        );
+      })
+      .on('mouseout', function (_, d) {
+        selectAll('path').style('opacity', 0.8);
+        select(this).style('scale', 1);
+
+        select(`.inner-text-${removeWhiteSpace(d.data.genre)}`).style(
+          'visibility',
+          'hidden'
+        );
+      });
+
+    svg
+      .selectAll('text')
+      .data(data_ready)
+      .join('text')
+      .text((d) => d.data.genre.toLocaleUpperCase())
+      .attr(
+        'transform',
+        (d) => `translate(${innerArc.centroid(d)}, ${innerArc.centroid(d)})`
+      )
+      .attr(
+        'class',
+        (d) => `inner-text inner-text-${removeWhiteSpace(d.data.genre)}`
+      )
+      .style('visibility', 'hidden')
+      .style('text-anchor', 'middle')
+      .style('font-size', '16px')
+      .style('font-family', 'monospace')
+      .style('font-weight', '600')
+      .style('fill', 'black');
 
     svg
       .selectAll('allPolylines')
@@ -96,11 +141,11 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
       .style('fill', 'none')
       .attr('stroke-width', 1)
       .attr('points', (d) => {
-        const posA = innerArc.centroid(d); // line insertion in the slice
-        const posB = outerArc.centroid(d); // line break: we use the other arc generator that has been built only for that
-        const posC = outerArc.centroid(d); // Label position = almost the same as posB
-        const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2; // we need the angle to see if the X position will be at the extreme right or extreme left
-        posC[0] = this.radius * 0.87 * (midangle < Math.PI ? 1 : -1); // multiply by 1 or -1 to put it on the right or on the left
+        const posA = innerArc.centroid(d);
+        const posB = outerArc.centroid(d);
+        const posC = outerArc.centroid(d);
+        const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+        posC[0] = this.radius * 0.87 * (midangle < Math.PI ? 1 : -1);
         return [posA, posB, posC].map((point) => point.join(' '));
       });
     svg
@@ -121,8 +166,13 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
       .style('text-anchor', (d) => {
         const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
         return midangle < Math.PI ? 'start' : 'end';
-      });
+      })
+      .append('title')
+      .text((d) => d.data.genre);
+
+    // return [sortedData, colors.range()];
   }
+
   ngOnDestroy(): void {
     select(this.chartContainer.nativeElement).selectAll('*').remove();
   }
