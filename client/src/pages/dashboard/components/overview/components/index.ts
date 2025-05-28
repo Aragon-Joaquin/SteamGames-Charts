@@ -1,3 +1,3 @@
-export * from './info-boxes/info-boxes.component';
-export * from './pie-chart/pie-chart.component';
-export * from './time-graph/time-graph.component';
+export * from './info-boxes.component';
+export * from './pie-chart.component';
+export * from './time-graph.component';

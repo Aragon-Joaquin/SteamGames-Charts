@@ -6,8 +6,8 @@ import {
   ViewChild,
 } from '@angular/core';
 import { axisBottom, axisLeft, max, scaleBand, scaleLinear, select } from 'd3';
-import { RecentlyPlayedAdapted } from '../../../../../../adapters/responses';
-import { Graph, Rectangle } from '../../../../../../utils';
+import { RecentlyPlayedAdapted } from '../../../../../adapters/responses';
+import { Graph, Rectangle } from '../../../../../utils';
 @Component({
   selector: 'overview-time-graph',
   imports: [],

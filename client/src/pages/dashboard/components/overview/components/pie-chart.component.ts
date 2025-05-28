@@ -2,13 +2,16 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  input,
   OnDestroy,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 
 import { arc, pie, PieArcDatum, scaleOrdinal, select, selectAll } from 'd3';
-import { Graph, removeWhiteSpace } from '../../../../../../utils';
+import { Graph, removeWhiteSpace } from '../../../../../utils';
+
+type dataShape = { genre: string; quantity: number };
 
 @Component({
   selector: 'overview-pie-chart',
@@ -31,18 +34,15 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
   private graphClass = new Graph(this.width, this.height);
   private radius = Math.min(this.width, this.height) / 2 - this.margin;
 
-  private data = [
-    { genre: 'action', quantity: 13 },
-    { genre: 'novel', quantity: 3 },
-    { genre: 'souls like', quantity: 7 },
-    { genre: 'fps', quantity: 3 },
-  ];
+  data = input<dataShape[]>([
+    { genre: 'No available information', quantity: 1 },
+  ]);
+
+  helperArrows = input<boolean>(false);
 
   // guide from https://d3-graph-gallery.com/graph/donut_label.html cuz this is insane
   ngAfterViewInit(): void {
-    type dataShape = (typeof this.data)[number];
-
-    const sortedData = this.data
+    const sortedData = this.data()
       .slice(0, this.MAXIMUM_ELEMENTS)
       .sort((a, b) => (b?.quantity ?? 0) - (a?.quantity ?? 0));
 
@@ -116,22 +116,26 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
     svg
       .selectAll('text')
       .data(data_ready)
-      .join('text')
-      .text((d) => d.data.genre.toLocaleUpperCase())
-      .attr(
-        'transform',
-        (d) => `translate(${innerArc.centroid(d)}, ${innerArc.centroid(d)})`
-      )
+      .join('foreignObject')
+      .text((d) => d.data.genre)
+      .attr('x', `-${this.radius * 0.4}`)
+      .attr('y', `-${this.radius * 0.4}`)
       .attr(
         'class',
         (d) => `inner-text inner-text-${removeWhiteSpace(d.data.genre)}`
       )
+      .style('width', `${this.radius * 0.8}px`)
+      .style('height', `${this.radius * 0.8}px`)
       .style('visibility', 'hidden')
       .style('text-anchor', 'middle')
+      .style('align-content', 'center')
       .style('font-size', '16px')
       .style('font-family', 'monospace')
       .style('font-weight', '600')
-      .style('fill', 'black');
+      .style('text-align', 'center')
+      .style('color', 'black');
+
+    if (!this.helperArrows()) return;
 
     svg
       .selectAll('allPolylines')
