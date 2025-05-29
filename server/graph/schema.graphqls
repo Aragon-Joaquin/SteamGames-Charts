@@ -3,15 +3,6 @@
 
 scalar StringID
 
-enum player_status {
-	offline
-	online
-	away
-	snooze
-	looking_to_trade
-	looking_to_play
-}
-
 #! generic fields
 type price_overview_types {
 	currency: String!
@@ -64,9 +55,9 @@ type UserOwnedGames {
 # for some reason its "persona" instead of "person" lmao
 type PlayerSummaries {
 	steamid: StringID!
-	persona_state: player_status
-	persona_name: String!
-	profile_url: String!
+	personastate: Int!
+	personaname: String!
+	profileurl: String!
 	avatarfull: String
 	lastlogoff: Int
 }

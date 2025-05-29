@@ -5,7 +5,6 @@ import {
   input,
   OnDestroy,
   ViewChild,
-  ViewEncapsulation,
 } from '@angular/core';
 
 import { arc, pie, PieArcDatum, scaleOrdinal, select, selectAll } from 'd3';
@@ -16,7 +15,6 @@ type dataShape = { genre: string; quantity: number };
 @Component({
   selector: 'overview-pie-chart',
   imports: [],
-  encapsulation: ViewEncapsulation.None,
   template: `<svg class="piechart" #piechart></svg> `,
   styles: ``,
 })
@@ -34,17 +32,18 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
   private graphClass = new Graph(this.width, this.height);
   private radius = Math.min(this.width, this.height) / 2 - this.margin;
 
-  data = input<dataShape[]>([
-    { genre: 'No available information', quantity: 1 },
-  ]);
-
+  data = input.required<dataShape[] | []>();
   helperArrows = input<boolean>(false);
 
   // guide from https://d3-graph-gallery.com/graph/donut_label.html cuz this is insane
   ngAfterViewInit(): void {
-    const sortedData = this.data()
-      .slice(0, this.MAXIMUM_ELEMENTS)
-      .sort((a, b) => (b?.quantity ?? 0) - (a?.quantity ?? 0));
+    console.log(this.data().length);
+    const sortedData =
+      this.data()?.length > 0
+        ? this.data()
+            .slice(0, this.MAXIMUM_ELEMENTS)
+            .sort((a, b) => (b?.quantity ?? 0) - (a?.quantity ?? 0))
+        : [{ genre: 'No available information', quantity: 1 }];
 
     //! clean up
     select(this.chartContainer.nativeElement).selectAll('*').remove();
@@ -61,7 +60,11 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
       );
 
     //! useful variables
-    const colors = scaleOrdinal().range(this.graphClass.colors);
+    const colors = scaleOrdinal().range(
+      this.data().length > 0
+        ? this.graphClass.colors
+        : [this.graphClass.notFoundColor]
+    );
 
     //this can be sorted inverse
     const pieGraph = pie<dataShape>()
@@ -84,7 +87,7 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
       .data(data_ready)
       .join('path')
       .attr('d', innerArc)
-      .attr('fill', (_, i) => (colors.range()[i] as string) ?? '#ccc')
+      .attr('fill', (_, i) => colors.range()[i] as string)
       .attr('stroke', 'white')
       .attr('class', 'graphElement')
       .style('stroke-width', '3px')

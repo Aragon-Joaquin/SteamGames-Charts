@@ -8,5 +8,14 @@
 <section class="overview-graphs">
   <overview-time-graph></overview-time-graph>
 
-  <overview-pie-chart></overview-pie-chart>
+  <div>
+    <span>
+      <h4>Favorite genres</h4>
+      <overview-pie-chart [data]="[]"></overview-pie-chart>
+    </span>
+
+    <span>
+      <h4>Games you have with 0 hours played</h4>
+    </span>
+  </div>
 </section>

@@ -32,7 +32,7 @@ export class LandingComponent implements OnInit, OnDestroy {
   // private imageContainer!: ElementRef<HTMLDivElement>;
 
   ngOnInit(): void {
-    this.searchInput.pipe(debounceTime(500)).subscribe((inputVal) => {
+    this.searchInput.pipe(debounceTime(700)).subscribe((inputVal) => {
       this.showUsers.set([]);
       this.userName.patchValue(inputVal, { onlySelf: true });
       if (!this.userName.valid) return;
@@ -44,26 +44,9 @@ export class LandingComponent implements OnInit, OnDestroy {
         }
       );
 
-      //! delete this later
-      this.showUsers.set([
-        {
-          avatarfull: '',
-          lastlogoff: 2,
-          persona_name: 'john doe',
-          profile_url: 'john doe',
-          steamid: '2',
-        },
-        {
-          avatarfull: '',
-          lastlogoff: 2,
-          persona_name: 'john doe',
-          profile_url: 'doe',
-          steamid: '2',
-        },
-      ]);
-      // results?.subscribe((el) => {
-      //   console.log(el);
-      // });
+      results?.subscribe((el) => {
+        return this.showUsers.set(el ?? []);
+      });
     });
   }
 

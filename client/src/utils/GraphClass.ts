@@ -2,7 +2,7 @@ export class Graph {
   height: number = 0;
   width: number = 0;
 
-  colors: Array<string> = [
+  readonly colors: Array<string> = [
     '#FF6384',
     '#36A2EB',
     '#FFCE56',
@@ -19,6 +19,8 @@ export class Graph {
     '#16A085',
   ];
 
+  readonly notFoundColor = '#CCCCCC';
+
   constructor(width: number, height: number) {
     this.height = height ?? 0;
     this.width = width ?? 0;
@@ -26,7 +28,7 @@ export class Graph {
 
   pickRandomColor() {
     const idx = Math.floor(Math.random() * this.colors.length);
-    return this.colors[idx] ?? '#CCCCCC';
+    return this.colors[idx] ?? this.notFoundColor;
   }
 }
 

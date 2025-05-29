@@ -1,6 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { SearchUserAdapted } from '../../adapters/responses';
 import {
   ApicallsService,
   HTTPPaths,
@@ -51,7 +50,7 @@ export class DashboardComponent implements OnInit {
           VanityUrl: getRoute,
         })
         ?.subscribe((res) =>
-          this.steamContext.currentUser.next(res as SearchUserAdapted)
+          this.steamContext.currentUser.next(res?.at(0) ?? null)
         );
 
     this.dashboardState.set(DASHBOARD_STATES.GENERAL);

@@ -1,24 +1,25 @@
 import {
   ApplicationConfig,
-  provideZoneChangeDetection,
   inject,
+  provideZoneChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
-import { routes } from './app.routes';
-import {
-  provideClientHydration,
-  withEventReplay,
-} from '@angular/platform-browser';
 import {
   provideHttpClient,
   withFetch,
   withInterceptors,
 } from '@angular/common/http';
-import { httpInterceptor } from '../interceptors/http-interceptor.interceptor';
+import {
+  provideClientHydration,
+  withEventReplay,
+} from '@angular/platform-browser';
+import { InMemoryCache } from '@apollo/client/core';
 import { provideApollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
-import { InMemoryCache } from '@apollo/client/core';
+import { httpInterceptor } from '../interceptors/http-interceptor.interceptor';
+import { SERVER_URL } from '../utils';
+import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -31,7 +32,7 @@ export const appConfig: ApplicationConfig = {
 
       return {
         link: httpLink.create({
-          uri: 'http://localhost:8080/query',
+          uri: `${SERVER_URL}/query]`,
         }),
         cache: new InMemoryCache(),
       };

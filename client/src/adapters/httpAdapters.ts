@@ -1,24 +1,39 @@
 import { HTTPPaths } from '../services/endpoints/endpoints';
-import { SearchUserAdapted, SearchUserResponse } from './responses';
+import { UnixToDate } from '../utils';
+import {
+  SearchUserAdapted,
+  SearchUserResponse,
+  USER_STATES,
+} from './responses';
 
 const HASHMAP_ADAPTERS = {
   [HTTPPaths.searchUser]: function (
     res: SearchUserResponse
-  ): SearchUserAdapted {
+  ): SearchUserAdapted[] {
     const {
-      response: {
-        players: [
-          { steamid, persona_name, profile_url, avatarfull, lastlogoff },
-        ],
-      },
+      response: { players },
     } = res;
-    return {
-      steamid: steamid ?? -1,
-      persona_name: persona_name ?? '',
-      profile_url: profile_url ?? '',
-      avatarfull: avatarfull ?? '',
-      lastlogoff: lastlogoff ?? -1,
-    };
+    return players.map(
+      ({
+        steamid,
+        personaname,
+        personastate,
+        profileurl,
+        avatarfull,
+        lastlogoff,
+      }) => ({
+        steamid: steamid ?? -1,
+        state:
+          USER_STATES[personastate as keyof typeof USER_STATES] ?? 'Unknown',
+        persona_name: personaname ?? '',
+        profile_url: profileurl ?? '',
+        avatarfull: avatarfull ?? '',
+        lastlogoff: new UnixToDate(
+          lastlogoff ?? 0,
+          USER_STATES[personastate as keyof typeof USER_STATES]
+        ).getDifferenceTime(),
+      })
+    );
   },
 } as const;
 

@@ -43,51 +43,54 @@
           Start Searching
           <img src="/svgs/search.svg" alt="Search your account" />
         </button>
-        <label for="steamId" class="form-label">
-          Enter your Steam ID:
-          <input
-            (input)="onInputChange($event)"
-            type="text"
-            id="steamId"
-            name="steamId"
-            minlength="3"
-            autocomplete="off"
-            placeholder="e.g: 76561197960435530, ohnePixel"
-            required
-          />
-          @if (userName.hasError('minlength')) {
-          <form-error-message
-            errorName="Vanities URL's should be at least more than 3 characters"
-          />
-          } @if ( userName.dirty && userName.hasError('required')) {
-          <form-error-message errorName="Field is required" />
-          }
-        </label>
 
-        <!-- <button type="submit">Submit</button> -->
-        @if (showUsers().length > 0 ) {
-        <div class="users-list">
-          @for (user of showUsers(); track $index) {
-          <a
-            [href]="`/dashboard/${user.profile_url}`"
-            class="user-card"
-            (click)="onClickUser($event, $index)"
-          >
-            <img
-              [src]="user.avatarfull"
-              alt="User avatar"
-              class="user-avatar"
-              (error)="onErrorImg($event)"
+        <div>
+          <label for="steamId" class="form-label">
+            Enter your Steam ID:
+            <input
+              (input)="onInputChange($event)"
+              type="text"
+              id="steamId"
+              name="steamId"
+              minlength="3"
+              autocomplete="off"
+              placeholder="e.g: 76561197960435530, ohnePixel"
+              required
             />
+            @if (userName.hasError('minlength')) {
+            <form-error-message
+              errorName="Vanities URL's should be at least more than 3 characters"
+            />
+            } @if ( userName.dirty && userName.hasError('required')) {
+            <form-error-message errorName="Field is required" />
+            }
+          </label>
 
-            <span class="user-info">
-              <h5 class="user-name">{{ user.persona_name }}</h5>
-              <p class="user-logoff">{{ user.lastlogoff }}m ago</p>
-            </span>
-          </a>
+          <!-- <button type="submit">Submit</button> -->
+          @if (showUsers().length > 0 ) {
+          <div class="users-list">
+            @for (user of showUsers(); track $index) {
+            <a
+              [href]="`/dashboard/${user.profile_url}`"
+              class="user-card"
+              (click)="onClickUser($event, $index)"
+            >
+              <img
+                [src]="user.avatarfull"
+                alt="User avatar"
+                class="user-avatar"
+                (error)="onErrorImg($event)"
+              />
+
+              <span class="user-info">
+                <h5 class="user-name">{{ user.persona_name }}</h5>
+                <p class="user-logoff">{{ user.lastlogoff }}</p>
+              </span>
+            </a>
+            }
+          </div>
           }
         </div>
-        }
       </form>
     </section>
     <div class="showcase-container" #imageContainer>
