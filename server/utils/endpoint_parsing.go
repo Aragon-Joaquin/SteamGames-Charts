@@ -16,18 +16,13 @@ type QueriesStruct struct {
 	Val string
 }
 
-const (
-	PRIVATE_API_URL = "https://api.steampowered.com"
-	PUBLIC_API_URL  = "https://store.steampowered.com"
-)
-
 // this is access both by the client and server
 var API_ENDPOINTS = map[string]t.EndpointsStruct{
-	"getPlayer":   {Endpoint: "/ISteamUser/GetPlayerSummaries/v0002/", IsPrivate: true},
-	"getFriends":  {Endpoint: "/ISteamUserStats/GetFriendList/v0001/", IsPrivate: true},
-	"getOwnGames": {Endpoint: "/IPlayerService/GetOwnedGames/v0001/", IsPrivate: true},
+	"getPlayer":   {Endpoint: "/ISteamUser/GetPlayerSummaries/v0002/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
+	"getFriends":  {Endpoint: "/ISteamUserStats/GetFriendList/v0001/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
+	"getOwnGames": {Endpoint: "/IPlayerService/GetOwnedGames/v0001/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
 
-	"getGameDetails": {Endpoint: "/api/appdetails", IsPrivate: false},
+	"getGameDetails": {Endpoint: "/api/appdetails", IsPrivate: false, DomainName: t.STORE_STEAMPOWERED},
 }
 
 func (u *URL_Endpoint) AddQueries(query ...QueriesStruct) {
@@ -43,17 +38,17 @@ func (u *URL_Endpoint) AddQueries(query ...QueriesStruct) {
 }
 
 func ConstructEndpoint(end t.EndpointsStruct) (URL_Endpoint, error) {
+	if EnvVars.API_KEY == "" || EnvVars.DOMAIN_NAME == "" {
+		return URL_Endpoint{}, errors.New("no environments variables set")
+	}
 
 	if reflect.ValueOf(end).IsZero() {
 		return URL_Endpoint{}, errors.New("empty endpoint struct")
 	}
 
-	if EnvVars.API_KEY == "" || EnvVars.DOMAIN_NAME == "" {
-		return makePublicEndpoint(end.Endpoint)
-	}
-
+	//! private
 	if end.IsPrivate && end.Endpoint != "" {
-		u, err := getEndpoint(PRIVATE_API_URL, end.Endpoint)
+		u, err := getEndpoint(end.DomainName.ApiUrl(), end.Endpoint)
 
 		if err != nil {
 			return URL_Endpoint{}, err
@@ -67,8 +62,14 @@ func ConstructEndpoint(end t.EndpointsStruct) (URL_Endpoint, error) {
 		return URL_Endpoint{URL: u}, nil
 	}
 
+	//! public
 	if end.Endpoint != "" {
-		return makePublicEndpoint(end.Endpoint)
+		u, err := getEndpoint(end.DomainName.ApiUrl(), end.Endpoint)
+		if err != nil {
+			return URL_Endpoint{}, err
+		}
+
+		return URL_Endpoint{u}, nil
 	}
 
 	return URL_Endpoint{}, errors.New("invalid endpoint")
@@ -83,14 +84,4 @@ func getEndpoint(urlChain string, end string) (*url.URL, error) {
 	}
 
 	return u, nil
-
-}
-
-func makePublicEndpoint(endpoint string) (URL_Endpoint, error) {
-	u, err := getEndpoint(PUBLIC_API_URL, endpoint)
-	if err != nil {
-		return URL_Endpoint{}, err
-	}
-
-	return URL_Endpoint{u}, nil
 }

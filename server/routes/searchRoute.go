@@ -36,7 +36,7 @@ func SearchUser() gin.HandlerFunc {
 		res := <-end.ResChan
 
 		if res.Error != nil {
-			e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusBadRequest, Message: "Unsuccesful request."})
+			e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusBadRequest, Message: res.Error.Error()})
 			return
 		}
 

@@ -13,7 +13,8 @@ type URL_SubEndpoint struct {
 
 // only server can query & resolve
 var API_SUBENDPOINTS = map[string]t.EndpointsStruct{
-	"VanityUrl": {Endpoint: "/ISteamUser/ResolveVanityURL/v1/", IsPrivate: true},
+	"VanityUrl":  {Endpoint: "/ISteamUser/ResolveVanityURL/v1/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
+	"TotalUsers": {Endpoint: "/ISteamChartsService/GetGamesByConcurrentPlayers/v1/", IsPrivate: false, DomainName: t.API_STEAMPOWERED},
 }
 
 func MakeSubEndpoint(subEnd string, queries ...QueriesStruct) (URL_SubEndpoint, error) {
