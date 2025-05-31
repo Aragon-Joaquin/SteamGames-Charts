@@ -27,6 +27,25 @@ type genres_types {
 	description: String
 }
 
+type Achievement {
+	name: String!
+	defaultvalue: Int!
+	displayName: String!
+	hidden: Int!
+	description: String
+	icon: String!
+	icongray: String!
+}
+
+type GameStats {
+	achievements: [Achievement!]!
+}
+
+type Achievement_Percentage {
+	name: String!
+	percent: Float!
+}
+
 #! endpoints
 
 type GameDetails {
@@ -68,6 +87,38 @@ type FriendList {
 	friends_since: Int!
 }
 
+type RecentlyGames {
+	appid: ID!
+	name: String!
+	playtime_2weeks: Int
+	playtime_forever: Int
+	img_icon_url: String
+	playtime_windows_forever: Int
+	playtime_mac_forever: Int
+	playtime_linux_forever: Int
+	playtime_deck_forever: Int
+}
+
+type SchemaForGame {
+	gameName: String!
+	gameVersion: String!
+	availableGameStats: GameStats!
+}
+
+type AchievementPercentages {
+	achievements: [Achievement_Percentage!]!
+}
+
+# this is cased differently than the others for some reason
+type PlayerBans {
+	SteamId: StringID!
+	CommunityBanned: Boolean!
+	VACBanned: Boolean!
+	NumberOfVACBans: Int!
+	DaysSinceLastBan: Int!
+	NumberOfGameBans: Int!
+	EconomyBan: String!
+}
 #! Request Types
 
 type GDetailsRes {
@@ -88,10 +139,31 @@ type FListRes {
 	friends: [FriendList!]!
 }
 
+type RGamesRes {
+	total_count: Int!
+	games: [RecentlyGames!]!
+}
+
+type SchemaRes {
+	game: SchemaForGame!
+}
+
+type APercentagesRes {
+	achievementpercentages: AchievementPercentages!
+}
+
+type PBansRes {
+	players: [PlayerBans!]!
+}
+
 #! Query
 type Query {
 	getGameDetails(steam_appid: ID!): GDetailsRes!
 	getUserOwnedGames(steamid: ID!): UOGamesRes!
 	getPlayerSummaries(steamids: [ID!]!): PSummariesRes!
 	getFriendList(steamid: ID!): FListRes!
+	getRecentGames(steamid: ID!): RGamesRes!
+	getSchemaForGame(appid: ID!): SchemaRes!
+	getAchievementPercentages(gameid: ID!): APercentagesRes!
+	getPlayerBans(steamids: [ID!]!): PBansRes!
 }

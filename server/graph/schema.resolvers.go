@@ -7,6 +7,7 @@ package graph
 import (
 	"context"
 	"errors"
+	"fmt"
 	"serverGo/graph/model"
 	u "serverGo/utils"
 	"strconv"
@@ -146,6 +147,26 @@ func (r *queryResolver) GetFriendList(ctx context.Context, steamid int64) (*mode
 	}
 
 	return wrapper, nil
+}
+
+// GetRecentGames is the resolver for the getRecentGames field.
+func (r *queryResolver) GetRecentGames(ctx context.Context, steamid int64) (*model.RGamesRes, error) {
+	panic(fmt.Errorf("not implemented: GetRecentGames - getRecentGames"))
+}
+
+// GetSchemaForGame is the resolver for the getSchemaForGame field.
+func (r *queryResolver) GetSchemaForGame(ctx context.Context, appid int64) (*model.SchemaRes, error) {
+	panic(fmt.Errorf("not implemented: GetSchemaForGame - getSchemaForGame"))
+}
+
+// GetAchievementPercentages is the resolver for the getAchievementPercentages field.
+func (r *queryResolver) GetAchievementPercentages(ctx context.Context, gameid int64) (*model.APercentagesRes, error) {
+	panic(fmt.Errorf("not implemented: GetAchievementPercentages - getAchievementPercentages"))
+}
+
+// GetPlayerBans is the resolver for the getPlayerBans field.
+func (r *queryResolver) GetPlayerBans(ctx context.Context, steamids []int64) (*model.PBansRes, error) {
+	panic(fmt.Errorf("not implemented: GetPlayerBans - getPlayerBans"))
 }
 
 // Query returns QueryResolver implementation.

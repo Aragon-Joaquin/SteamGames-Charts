@@ -61,8 +61,23 @@ http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=XXXXXXXXXXX
 - lastlogoff (unix int)
 <!-- - loccountrycode (country abbreviation) - in some future maybe-->
 
+#### Recently played games
+
+http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=XXXXXXXXXXXXXXXXX&steamid=76561197960434622&format=json
+
+#### Schema game
+
+https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=XXXXXXXXXXXXXXXXX&appid=632360
+
+#### global achievement
+
+https://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/
+
+#### player bans
+
+https://api.steampowered.com/ISteamUser/GetPlayerBans/v1/
+
 ## Specific endpoints to interfaces that i use:
 
 - https://steamapi.xpaw.me/#ISteamUser/ResolveVanityURL
-- https://steamapi.xpaw.me/#IPlayerService/GetRecentlyPlayedGames
 - https://store.steampowered.com/about/ ([scrape for players online](https://api.steampowered.com/ISteamChartsService/GetGamesByConcurrentPlayers/v1/))
