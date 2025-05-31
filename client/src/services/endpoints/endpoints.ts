@@ -8,6 +8,7 @@ export const GRAPHQL_ENDPOINTS = {
 //! http routes
 export const HTTPPaths = {
   searchUser: '/search/user',
+  totalUsers: '/search/totalUsers',
 } as const;
 
 //* METHODS*
@@ -25,3 +26,10 @@ export const POSTHTTPRoutes = {
     createBody: SEARCH_USER,
   },
 };
+
+//* EXPORT AS TYPES
+const getRoutes = [HTTPPaths.totalUsers] as const;
+export type GETHTTPType = (typeof getRoutes)[number];
+
+const postRoutes = [HTTPPaths.searchUser] as const;
+export type POSTHTTPType = (typeof postRoutes)[number];

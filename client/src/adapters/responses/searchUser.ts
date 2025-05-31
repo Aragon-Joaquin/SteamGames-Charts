@@ -1,3 +1,5 @@
+import { UNIX_RESPONSES } from '../../utils';
+
 export type SearchUserResponse = {
   response: {
     players: Array<{
@@ -17,7 +19,7 @@ export type SearchUserAdapted = {
   persona_name: string | '';
   profile_url: string | '';
   avatarfull: string;
-  lastlogoff: string;
+  lastlogoff: UNIX_RESPONSES;
 };
 
 export const USER_STATES = {

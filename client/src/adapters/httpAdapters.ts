@@ -3,8 +3,12 @@ import { UnixToDate } from '../utils';
 import {
   SearchUserAdapted,
   SearchUserResponse,
+  totalUsersAdapted,
+  totalUsersResponse,
   USER_STATES,
 } from './responses';
+
+const UNDEFINED_NUMBER = -1 as const;
 
 const HASHMAP_ADAPTERS = {
   [HTTPPaths.searchUser]: function (
@@ -22,25 +26,49 @@ const HASHMAP_ADAPTERS = {
         avatarfull,
         lastlogoff,
       }) => ({
-        steamid: steamid ?? -1,
+        steamid: steamid ?? UNDEFINED_NUMBER,
         state:
           USER_STATES[personastate as keyof typeof USER_STATES] ?? 'Unknown',
         persona_name: personaname ?? '',
         profile_url: profileurl ?? '',
         avatarfull: avatarfull ?? '',
         lastlogoff: new UnixToDate(
-          lastlogoff ?? 0,
+          lastlogoff,
           USER_STATES[personastate as keyof typeof USER_STATES]
         ).getDifferenceTime(),
       })
     );
   },
+  [HTTPPaths.totalUsers]: function (
+    res: totalUsersResponse
+  ): totalUsersAdapted {
+    const {
+      response: { last_update, Ranks },
+    } = res;
+    return {
+      last_update: new UnixToDate(last_update).parseMinutes() ?? '???',
+      Ranks: Ranks.map(({ rank, appid, concurrent_in_game, peak_in_game }) => ({
+        rank: rank ?? UNDEFINED_NUMBER,
+        appid: appid ?? UNDEFINED_NUMBER,
+        concurrent_in_game: concurrent_in_game ?? UNDEFINED_NUMBER,
+        peak_in_game: peak_in_game ?? UNDEFINED_NUMBER,
+      })),
+    };
+  },
 } as const;
 
-export function AdaptHTTPRequest(endpoint: string, val: Object) {
-  const resultHash =
-    HASHMAP_ADAPTERS[endpoint as keyof typeof HASHMAP_ADAPTERS];
+export type ADAPTERS_PARAMETERS = Parameters<
+  (typeof HASHMAP_ADAPTERS)[keyof typeof HASHMAP_ADAPTERS]
+>[0];
+
+export function AdaptHTTPRequest<T extends keyof typeof HASHMAP_ADAPTERS>(
+  endpoint: T,
+  val: Parameters<(typeof HASHMAP_ADAPTERS)[T]>[0]
+) {
+  const resultHash = HASHMAP_ADAPTERS[endpoint];
 
   if (resultHash == null) return;
-  return resultHash(val as Parameters<typeof resultHash>[0]);
+  return (resultHash as (args: typeof val) => ReturnType<typeof resultHash>)(
+    val
+  );
 }
