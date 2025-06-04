@@ -61,6 +61,10 @@ export type ADAPTERS_PARAMETERS = Parameters<
   (typeof HASHMAP_ADAPTERS)[keyof typeof HASHMAP_ADAPTERS]
 >[0];
 
+export type HASHMAP_GENERIC<
+  T extends (typeof HTTPPaths)[keyof typeof HTTPPaths]
+> = (typeof HASHMAP_ADAPTERS)[T];
+
 export function AdaptHTTPRequest<T extends keyof typeof HASHMAP_ADAPTERS>(
   endpoint: T,
   val: Parameters<(typeof HASHMAP_ADAPTERS)[T]>[0]

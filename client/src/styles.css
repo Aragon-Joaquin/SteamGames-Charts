@@ -46,7 +46,7 @@ body {
 
 .invisible,
 .visible {
-  transition: opacity 0.2s ease-in-out allow-discrete;
+  transition: all 0.5s ease-in-out allow-discrete;
 }
 .invisible {
   opacity: 0;

@@ -1,14 +1,20 @@
+@let total = this.totalUsers();
+
 <article class="landing">
   <header class="landing-header">
     <span class="header-connected">
       <div class="users-count">
         <h5>Online:</h5>
-        <p>36,140,218</p>
+        <p>{{ total?.concurrentNow }}</p>
       </div>
       <div class="users-count">
-        <h5>In-Game:</h5>
-        <p>9,943,939</p>
+        <h5>Peak Today:</h5>
+        <p>{{ total?.peakToday }}</p>
       </div>
+
+      <span
+        >Last update: <strong>{{ total?.last_update }}</strong></span
+      >
     </span>
     <a
       href="https://github.com/Aragon-Joaquin/SteamGames-Charts"
@@ -104,7 +110,7 @@
         src="/img/landing-games/ror2.webp"
         alt="Risk of Rain 2"
         title="Risk of Rain 2"
-        class="game-showcase invisible"
+        class="game-showcase"
       />
     </div>
   </main>
