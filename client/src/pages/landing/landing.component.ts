@@ -120,9 +120,8 @@ export class LandingComponent implements OnInit, OnDestroy, AfterViewInit {
     const getName = (idx: number) => allImagesSrc[idx % allImagesSrc.length];
 
     //! if rxjs gets tedious, i'll use the setInterval
-    interval(3000).subscribe((idx) => {
-      console.log('now');
-      let currentName = getName(idx);
+    interval(5000).subscribe((idx) => {
+      const currentName = getName(idx);
       if (idx % 2 == 0) {
         imgTwo.src = `/img/landing-games/${currentName}`;
         imgTwo.title = currentName.split('.')[0];
