@@ -7,7 +7,10 @@ import (
 	e "serverGo/essentials"
 	ro "serverGo/routes"
 	u "serverGo/utils"
+	"time"
 
+	"github.com/gin-contrib/cache"
+	"github.com/gin-contrib/cache/persistence"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,20 +28,20 @@ func main() {
 	u.ReadEnv()
 
 	r := gin.Default()
+	store := persistence.NewInMemoryStore(time.Second)
 	r.SetTrustedProxies([]string{CLIENT_URL})
 
 	//* middlewares
 	r.Use(e.RateLimiter())
 	r.Use(e.CORS([]string{CLIENT_URL}))
 	r.Use(e.Timeout(u.MAX_TIMEOUT_TIME))
-	// r.Use(e.GinContextMiddleware())
 
 	//* routes
 	r.GET("/", e.PlaygroundHandler())
 	r.POST("/query", e.QueryHandler(port))
 
 	r.POST("/search/user", ro.SearchUser())
-	r.GET("/search/totalUsers", ro.GetTotalUsers())
+	r.GET("/search/totalUsers", cache.CachePage(store, time.Minute, ro.GetTotalUsers()))
 
 	r.NoRoute(func(c *gin.Context) {
 		e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusNotFound, Message: "Route not found or non existing. Check if the http method and/or url is correct."})

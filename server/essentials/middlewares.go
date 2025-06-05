@@ -65,13 +65,3 @@ func CORS(originsUrl []string) gin.HandlerFunc {
 		MaxAge:           12 * time.Hour,
 	})
 }
-
-// type GinContextKey struct{}
-
-// func GinContextMiddleware() gin.HandlerFunc {
-// 	return func(c *gin.Context) {
-// 		ctx := context.WithValue(c.Request.Context(), GinContextKey{}, c)
-// 		c.Request = c.Request.WithContext(ctx)
-// 		c.Next()
-// 	}
-// }
