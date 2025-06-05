@@ -1,19 +1,24 @@
 @let total = this.totalUsers();
 
-<div></div>
 <article class="landing">
   <header class="landing-header">
     <span class="header-connected">
       <div class="users-count">
-        <h5>Online:</h5>
-        <p>{{ total?.concurrentNow }}</p>
+        <span class="count-header">
+          <div class="circle"></div>
+          <h5>Playing now:</h5>
+        </span>
+        <p class="count-total">{{ total?.concurrentNow }}</p>
       </div>
       <div class="users-count">
-        <h5>Peak Today:</h5>
-        <p>{{ total?.peakToday }}</p>
+        <span class="count-header">
+          <div class="circle circleBlue"></div>
+          <h5>Peak Today:</h5>
+        </span>
+        <p class="count-total">{{ total?.peakToday }}</p>
       </div>
 
-      <span
+      <span class="count-update"
         >Last update: <strong>{{ total?.last_update }}</strong></span
       >
     </span>
@@ -63,10 +68,14 @@
         </button>
         @if (userName.hasError('minlength')) {
         <form-error-message
+          class="form-error-msg"
           errorName="Vanities URL's should be at least more than 3 characters"
         />
-        } @if ( userName.dirty && userName.hasError('required')) {
-        <form-error-message errorName="Field is required" />
+        } @if (userName.dirty && userName.hasError('required')) {
+        <form-error-message
+          class="form-error-msg"
+          errorName="Field is required"
+        />
         }
 
         <!-- <button type="submit">Submit</button> -->

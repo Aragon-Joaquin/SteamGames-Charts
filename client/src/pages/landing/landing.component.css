@@ -45,9 +45,11 @@
   }
 }
 
+/*? counter */
 .header-connected {
   display: flex;
   flex-direction: row;
+  align-items: center;
   gap: 20px;
 
   & > .users-count {
@@ -57,6 +59,41 @@
     display: flex;
     gap: 10px;
     flex-direction: row;
+
+    & > .count-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      & > .circle {
+        background-color: #baff2e;
+        width: 7px;
+        height: 7px;
+        border-radius: 9999px;
+      }
+
+      & > .circleBlue {
+        background-color: #2ebfff;
+      }
+
+      & > h5 {
+        color: var(--white1-color);
+        opacity: 0.7;
+        font-weight: 500;
+        font-family: sans-serif;
+        font-size: 0.9em;
+      }
+    }
+
+    & > .count-total {
+      font-weight: 600;
+    }
+  }
+
+  & > .count-update {
+    display: flex;
+    gap: 0 5px;
+    align-items: flex-end;
   }
 }
 
@@ -144,6 +181,7 @@
 }
 
 .landing-form {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0px;
@@ -216,6 +254,13 @@
       visibility: hidden;
     }
   }
+}
+
+.form-error-msg {
+  position: absolute;
+  font-size: 0.9em;
+  bottom: 0;
+  transform: translate(0, calc(100% + 5px));
 }
 
 .users-list {

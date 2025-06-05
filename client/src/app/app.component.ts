@@ -6,7 +6,7 @@ import { ErrorHandlingService } from '../services';
   selector: 'app-root',
   imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styles: ``,
+  styleUrl: `./app.styles.css`,
 })
 export class AppComponent {
   public errorService = inject(ErrorHandlingService);

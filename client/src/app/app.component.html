@@ -1,20 +1,19 @@
 <router-outlet />
 
 <!-- Error Handling -->
-@let e = this.errorService.errorStatus(); @if (e != null) {
-
-<div class="alert alert-danger" role="alert">
-  <h5>
-    <strong>Error {{ e.httpError }}:</strong>
-    {{ e.message }}
+@let e = this.errorService.errorStatus(); @if (e?.httpError != 0 && e != null) {
+<div class="alert-error" role="alert">
+  <h5 class="error-header">
+    <strong>Error {{ e?.httpError }}: </strong>
+    {{ e?.message }}
   </h5>
-  <p>{{ e.description }}</p>
+  <p class="error-desc">{{ e?.description }}</p>
   <button
     type="button"
     class="close-error"
     (click)="this.errorService.hideError()"
   >
-    Close
+    <img src="/svgs/close.svg" alt="Close error" />
   </button>
 </div>
 }

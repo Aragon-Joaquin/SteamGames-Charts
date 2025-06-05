@@ -7,3 +7,9 @@ export const MakeEndpoint = (end: string) => `${SERVER_URL}${end ?? '/'}`;
 export const RoundDecimals = (val: number) => Math.round(val * 100) / 100;
 
 export const removeWhiteSpace = (val: string) => val.replace(/ /g, '');
+
+export const numberFormat = (val: number) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'decimal',
+    maximumFractionDigits: 1,
+  }).format(val);

@@ -16,7 +16,7 @@ import { SearchUserAdapted } from '../../adapters/responses';
 import { SteamContextService } from '../../services';
 import { ApicallsService } from '../../services/endpoints/apicalls.service';
 import { HTTPPaths, SEARCH_USER } from '../../services/endpoints/endpoints';
-import { UNIX_RESPONSES } from '../../utils';
+import { numberFormat, UNIX_RESPONSES } from '../../utils';
 import { ErrorHandlerComponent } from './components/error-handler/error-handler.component';
 @Component({
   selector: 'app-landing',
@@ -39,22 +39,24 @@ export class LandingComponent implements OnInit, OnDestroy, AfterViewInit {
   showUsers = signal<SearchUserAdapted[] | []>([]);
   totalUsers = signal<{
     last_update: UNIX_RESPONSES;
-    peakToday: number;
-    concurrentNow: number;
+    peakToday: string;
+    concurrentNow: string;
   } | null>(null);
 
   ngOnInit(): void {
     this.apiCalls.GETHttpEndpoint(HTTPPaths.totalUsers)?.subscribe((res) => {
       return this.totalUsers.set({
         last_update: res?.last_update ?? '???',
-        concurrentNow:
+        concurrentNow: numberFormat(
           res?.Ranks.reduce(
             (acc, { concurrent_in_game }) => acc + concurrent_in_game,
             0
-          ) ?? 0,
-        peakToday:
+          ) ?? 0
+        ),
+        peakToday: numberFormat(
           res?.Ranks.reduce((acc, { peak_in_game }) => acc + peak_in_game, 0) ??
-          0,
+            0
+        ),
       });
     });
 

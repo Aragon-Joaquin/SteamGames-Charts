@@ -10,9 +10,8 @@
   --white2-color: #c9c9c9;
   --white3-color: #8f8f8f;
 
-  --accent1-color: #ccad80;
-  --accent2-color: #b38f5c;
-  --accent3-color: #996633;
+  --textDescriptive: #757575;
+  --errorColor: #cb2f2f;
 
   /*! fonts */
   --Poppins: "Poppins", sans-serif;
