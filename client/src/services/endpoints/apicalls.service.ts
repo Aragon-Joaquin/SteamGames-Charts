@@ -5,6 +5,7 @@ import { catchError, map, Observable, of } from 'rxjs';
 import { AdaptHTTPRequest, HASHMAP_GENERIC } from '../../adapters/httpAdapters';
 import { MakeEndpoint } from '../../utils/constants';
 import { ErrorHandlingService } from '../errors/error-handling.service';
+import { FallbackError } from '../errors/errorTypes';
 import {
   GETHTTPType,
   GRAPHQL_ENDPOINTS,
@@ -35,36 +36,47 @@ export class ApicallsService {
   POSTHttpEndpoint<
     T extends (typeof POSTHTTPRoutes)[keyof typeof POSTHTTPRoutes]['createBody'],
     Z extends POSTHTTPType
-  >(endpoint: Z, body: T extends Function ? Parameters<T>[0] : null) {
+  >(
+    endpoint: Z,
+    body: T extends Function ? Parameters<T>[0] : null,
+    fb?: FallbackError
+  ) {
     const route = POSTHTTPRoutes[endpoint as keyof typeof POSTHTTPRoutes];
     if (route == null || body == null) return;
 
     return this.PipeResolver<Z>(
       this.httpClient.post(MakeEndpoint(endpoint), JSON.stringify(body)),
-      endpoint
+      endpoint,
+      fb
     );
   }
 
-  GETHttpEndpoint<T extends GETHTTPType>(endpoint: T) {
+  GETHttpEndpoint<T extends GETHTTPType>(endpoint: T, fb?: FallbackError) {
     if (endpoint == null) return;
 
     return this.PipeResolver<T>(
       this.httpClient.get(MakeEndpoint(endpoint)),
-      endpoint
+      endpoint,
+      fb
     );
   }
 
   private PipeResolver<T extends (typeof HTTPPaths)[keyof typeof HTTPPaths]>(
     obs: Observable<Object>,
-    endpoint: T
+    endpoint: T,
+    fb?: FallbackError
   ) {
     return obs.pipe(
-      catchError((err, _caught) => {
-        this.errorService.showError({
-          httpError: err?.status,
-          message: err?.name,
-          description: err?.statusText,
-        });
+      catchError((err, _) => {
+        console.log(err);
+        this.errorService.showError(
+          {
+            httpError: err?.status,
+            message: err?.statusText,
+            description: err?.error?.message,
+          },
+          fb
+        );
         return of(null);
       }),
       map((value) => {

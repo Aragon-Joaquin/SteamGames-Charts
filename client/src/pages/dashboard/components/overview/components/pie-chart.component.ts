@@ -37,7 +37,7 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
 
   // guide from https://d3-graph-gallery.com/graph/donut_label.html cuz this is insane
   ngAfterViewInit(): void {
-    console.log(this.data().length);
+    this.data().length;
     const sortedData =
       this.data()?.length > 0
         ? this.data()

@@ -67,9 +67,11 @@
       gap: 4px;
       & > .circle {
         background-color: #baff2e;
-        width: 7px;
-        height: 7px;
+        width: 10px;
+        height: 10px;
         border-radius: 9999px;
+
+        animation: pulse 3s ease-in-out infinite;
       }
 
       & > .circleBlue {
@@ -92,8 +94,9 @@
 
   & > .count-update {
     display: flex;
+    align-self: self-end;
     gap: 0 5px;
-    align-items: flex-end;
+    font-size: 0.8em;
   }
 }
 
@@ -133,7 +136,6 @@
     aspect-ratio: 2 / 3;
     width: 100%;
     border-radius: 4px;
-    filter: brightness(90%);
     &:nth-child(1) {
       z-index: 5;
     }
@@ -148,7 +150,7 @@
     z-index: 10;
     border-radius: 2px;
     translate: translate(-1px, -1px);
-    box-shadow: 0px 0px 10px 15px var(--dark1-color) inset;
+    box-shadow: 0px 0px 40px 10px var(--dark1-color) inset;
   }
 }
 
@@ -168,7 +170,24 @@
       text-align: start;
 
       & > .steam-word {
+        position: relative;
+        display: inline-flex;
+
+        background: linear-gradient(
+          135deg,
+          #1b2838 0%,
+          #2a475e 10%,
+          #66c0f4 40%,
+          #2a475e 60%,
+          #1b2838 100%
+        );
+        background-size: 300% 100%;
+        background-position: center;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
         font-weight: inherit;
+        animation: flashingLights 10s ease-in-out infinite alternate;
       }
     }
 
@@ -264,6 +283,9 @@
 }
 
 .users-list {
+  position: absolute;
+  top: calc(100% + 2px);
+  width: 400px;
   height: fit-content;
   background: var(--white2-color);
   border-radius: 6px;
@@ -287,7 +309,7 @@
         color: var(--dark2-color);
       }
       & > .user-logoff {
-        color: var(--accent2-color);
+        color: var(--textDescriptive);
         font-size: 0.9em;
       }
     }
@@ -315,4 +337,47 @@
 
 .user-info > * {
   color: var(--dark2-color);
+}
+
+/*! FOOTER  */
+
+.landing-footer {
+  position: fixed;
+  inset: 0;
+  top: 100%;
+  transform: translate(0, -100%);
+
+  width: 100%;
+  box-shadow: 0px 0px 100px 50px var(--dark3-color);
+}
+
+/* Animations */
+
+@keyframes flashingLights {
+  0% {
+    background-position: 0% 0;
+  }
+
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 7px rgba(0, 0, 0, 0);
+    filter: brightness(1.2);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    filter: brightness(1);
+  }
 }

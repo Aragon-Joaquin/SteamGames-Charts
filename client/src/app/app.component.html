@@ -1,7 +1,7 @@
 <router-outlet />
 
 <!-- Error Handling -->
-@let e = this.errorService.errorStatus(); @if (e?.httpError != 0 && e != null) {
+@let e = this.errorService.errorStatus(); @if (e != null) {
 <div class="alert-error" role="alert">
   <h5 class="error-header">
     <strong>Error {{ e?.httpError }}: </strong>

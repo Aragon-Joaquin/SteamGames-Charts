@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
 import { debounceTime, interval, Subject } from 'rxjs';
 
 import { SearchUserAdapted } from '../../adapters/responses';
-import { SteamContextService } from '../../services';
+import { FALLBACK_ERROR_MAP, SteamContextService } from '../../services';
 import { ApicallsService } from '../../services/endpoints/apicalls.service';
 import { HTTPPaths, SEARCH_USER } from '../../services/endpoints/endpoints';
 import { numberFormat, UNIX_RESPONSES } from '../../utils';
@@ -44,23 +44,27 @@ export class LandingComponent implements OnInit, OnDestroy, AfterViewInit {
   } | null>(null);
 
   ngOnInit(): void {
-    this.apiCalls.GETHttpEndpoint(HTTPPaths.totalUsers)?.subscribe((res) => {
-      return this.totalUsers.set({
-        last_update: res?.last_update ?? '???',
-        concurrentNow: numberFormat(
-          res?.Ranks.reduce(
-            (acc, { concurrent_in_game }) => acc + concurrent_in_game,
-            0
-          ) ?? 0
-        ),
-        peakToday: numberFormat(
-          res?.Ranks.reduce((acc, { peak_in_game }) => acc + peak_in_game, 0) ??
-            0
-        ),
+    this.apiCalls
+      .GETHttpEndpoint(HTTPPaths.totalUsers, FALLBACK_ERROR_MAP.ServerNotFound)
+      ?.subscribe((res) => {
+        return this.totalUsers.set({
+          last_update: res?.last_update ?? '???',
+          concurrentNow: numberFormat(
+            res?.Ranks.reduce(
+              (acc, { concurrent_in_game }) => acc + concurrent_in_game,
+              0
+            ) ?? 0
+          ),
+          peakToday: numberFormat(
+            res?.Ranks.reduce(
+              (acc, { peak_in_game }) => acc + peak_in_game,
+              0
+            ) ?? 0
+          ),
+        });
       });
-    });
 
-    this.searchInput.pipe(debounceTime(700)).subscribe((inputVal) => {
+    this.searchInput.pipe(debounceTime(600)).subscribe((inputVal) => {
       this.showUsers.set([]);
       this.userName.patchValue(inputVal, { onlySelf: true });
       if (!this.userName.valid) return;
@@ -68,9 +72,11 @@ export class LandingComponent implements OnInit, OnDestroy, AfterViewInit {
       const results = this.apiCalls.POSTHttpEndpoint<
         typeof SEARCH_USER,
         typeof HTTPPaths.searchUser
-      >(HTTPPaths.searchUser, {
-        VanityUrl: inputVal,
-      });
+      >(
+        HTTPPaths.searchUser,
+        { VanityUrl: inputVal },
+        FALLBACK_ERROR_MAP.ServerNotFound
+      );
 
       results?.subscribe((el) => {
         return this.showUsers.set(el ?? []);
