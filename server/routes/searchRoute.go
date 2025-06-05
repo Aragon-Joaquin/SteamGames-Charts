@@ -43,8 +43,13 @@ func SearchUser() gin.HandlerFunc {
 		var response map[string]t.ResolveVanityURL
 		resMap, err2 := u.UnmarshalMapping(response, &res.BodyResponse, "response")
 
-		if err2 != nil || resMap.Success != 1 {
-			e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusBadRequest, Message: "Unsuccesful request."})
+		if err2 != nil {
+			e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusInternalServerError, Message: err2.Error()})
+			return
+		}
+
+		if resMap.Success != 1 {
+			e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusBadRequest, Message: "Vanity URL " + req.VanityUrl + " seems to not exist"})
 			return
 		}
 
