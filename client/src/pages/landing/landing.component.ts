@@ -15,7 +15,7 @@ import { debounceTime, interval, Subject } from 'rxjs';
 import { SearchUserAdapted } from '../../adapters/responses';
 import { FALLBACK_ERROR_MAP, SteamContextService } from '../../services';
 import { ApicallsService } from '../../services/endpoints/apicalls.service';
-import { HTTPPaths, SEARCH_USER } from '../../services/endpoints/endpoints';
+import { HTTPPaths, SEARCH_USER } from '../../services/endpoints/HTTPendpoints';
 import { numberFormat, UNIX_RESPONSES } from '../../utils';
 import { ErrorHandlerComponent } from './components/error-handler/error-handler.component';
 @Component({

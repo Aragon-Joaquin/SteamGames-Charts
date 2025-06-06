@@ -1,11 +1,3 @@
-//! graphql
-export const GRAPHQL_ENDPOINTS = {
-  GetPlayerData: 'getPlayerData',
-  GetFriends: 'getFriends',
-  GetStats: 'getStats',
-} as const;
-
-//! http routes
 export const HTTPPaths = {
   searchUser: '/search/user',
   totalUsers: '/search/totalUsers',

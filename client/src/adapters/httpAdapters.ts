@@ -1,4 +1,4 @@
-import { HTTPPaths } from '../services/endpoints/endpoints';
+import { HTTPPaths } from '../services/endpoints/HTTPendpoints';
 import { UnixToDate } from '../utils';
 import {
   SearchUserAdapted,

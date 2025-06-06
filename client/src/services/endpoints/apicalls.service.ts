@@ -1,18 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Apollo } from 'apollo-angular';
+import { Apollo, gql } from 'apollo-angular';
 import { catchError, map, Observable, of } from 'rxjs';
 import { AdaptHTTPRequest, HASHMAP_GENERIC } from '../../adapters/httpAdapters';
 import { MakeEndpoint } from '../../utils/constants';
 import { ErrorHandlingService } from '../errors/error-handling.service';
 import { FallbackError } from '../errors/errorTypes';
 import {
+  getGraphqlEndpoints,
   GETHTTPType,
-  GRAPHQL_ENDPOINTS,
   HTTPPaths,
   POSTHTTPRoutes,
   POSTHTTPType,
-} from './endpoints';
+} from './index';
 
 @Injectable({
   providedIn: 'root',
@@ -22,17 +22,25 @@ export class ApicallsService {
   private apolloService = inject(Apollo);
   private errorService = inject(ErrorHandlingService);
 
-  GETGraphQLEndpoint(
-    endpoint: (typeof GRAPHQL_ENDPOINTS)[keyof typeof GRAPHQL_ENDPOINTS]
-  ) {
-    if (
-      !endpoint ||
-      !GRAPHQL_ENDPOINTS[endpoint as keyof typeof GRAPHQL_ENDPOINTS]
-    ) {
-      throw new Error('Bad Endpoint');
-    }
+  //! APOLLO SENDERS
+  GraphQLEndpoint(endpoints: Array<getGraphqlEndpoints>) {
+    const endSet = new Set(endpoints);
+
+    this.apolloService
+      .watchQuery({
+        query: gql`
+          {
+            rates(currency: "USD") {
+              currency
+              rate
+            }
+          }
+        `,
+      })
+      .valueChanges.subscribe((result: any) => {});
   }
 
+  //! HTTP SENDERS
   POSTHttpEndpoint<
     T extends (typeof POSTHTTPRoutes)[keyof typeof POSTHTTPRoutes]['createBody'],
     Z extends POSTHTTPType
@@ -68,7 +76,6 @@ export class ApicallsService {
   ) {
     return obs.pipe(
       catchError((err, _) => {
-        console.log(err);
         this.errorService.showError(
           {
             httpError: err?.status,

@@ -9,4 +9,6 @@ export class SteamContextService {
   constructor() {}
 
   public currentUser = new BehaviorSubject<SearchUserAdapted | null>(null);
+
+  public DashboardState = new BehaviorSubject<null>(null);
 }
