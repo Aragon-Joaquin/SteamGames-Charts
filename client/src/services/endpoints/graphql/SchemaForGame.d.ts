@@ -10,7 +10,7 @@ type GameStats = {
   }>;
 };
 
-export type SchemaForGame = {
+export type SchemaForGameType = {
   game: Array<{
     gameName: string;
     gameVersion: string;

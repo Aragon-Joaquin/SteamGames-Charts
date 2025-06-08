@@ -1,4 +1,4 @@
-export type AchievementPercentages = {
+export type AchievementPercentagesType = {
   achievementpercentages: {
     achievements: Array<{
       name: string;

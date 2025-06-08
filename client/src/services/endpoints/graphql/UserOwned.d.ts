@@ -4,7 +4,7 @@ type PlaytimePlatformsTypes = {
   windows: number;
 };
 
-export type UserOwnedGames = {
+export type UserOwnedGamesType = {
   appid: string;
   name: string;
   img_icon_url?: string;

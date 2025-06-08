@@ -1,3 +1,4 @@
-export * from './apicalls.service';
-export * from './APOLLOendpoints';
+export * from './graphqlcalls.service';
+export * from './GRAPHQLendpoints';
+export * from './httpcalls.service';
 export * from './HTTPendpoints';

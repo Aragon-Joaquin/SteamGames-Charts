@@ -1,3 +1,14 @@
+import {
+  AchievementPercentagesType,
+  FriendListType,
+  GameDetailsType,
+  PlayerBansType,
+  PlayerSummariesType,
+  RecentGamesType,
+  SchemaForGameType,
+  UserOwnedGamesType,
+} from './graphql';
+
 export type AllGraphQLEndpoints =
   | 'GameDetails'
   | 'UserOwnedGames'
@@ -7,6 +18,23 @@ export type AllGraphQLEndpoints =
   | 'SchemaForGame'
   | 'AchievementPercentages'
   | 'PlayerBans';
+
+export type GRAPHQL_QUERYPARAM =
+  | 'steam_appid'
+  | 'steamid'
+  | 'steamids'
+  | 'appid'
+  | 'gameid';
+
+export type GraphQLResponses =
+  | AchievementPercentagesType
+  | FriendListType
+  | GameDetailsType
+  | PlayerSummariesType
+  | PlayerBansType
+  | RecentGamesType
+  | SchemaForGameType
+  | UserOwnedGamesType;
 
 type GetEndpoints<T extends AllGraphQLEndpoints> = {
   [K in T]: `get${K}`;
@@ -25,14 +53,3 @@ export const GRAPHQL_ENDPOINTS: GetEndpoints<AllGraphQLEndpoints> = {
 
 export type getGraphqlEndpoints =
   (typeof GRAPHQL_ENDPOINTS)[keyof typeof GRAPHQL_ENDPOINTS];
-
-export const GRAPHQL_FIELDS: Record<getGraphqlEndpoints, string[]> = {
-  getAchievementPercentages: [],
-  getFriendList: [],
-  getGameDetails: [],
-  getPlayerBans: [],
-  getPlayerSummaries: [],
-  getRecentGames: [],
-  getSchemaForGame: [],
-  getUserOwnedGames: [],
-} as const;

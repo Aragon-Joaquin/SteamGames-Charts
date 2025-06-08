@@ -1,46 +1,24 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Apollo, gql } from 'apollo-angular';
 import { catchError, map, Observable, of } from 'rxjs';
 import { AdaptHTTPRequest, HASHMAP_GENERIC } from '../../adapters/httpAdapters';
-import { MakeEndpoint } from '../../utils/constants';
+import { MakeEndpoint } from '../../utils';
 import { ErrorHandlingService } from '../errors/error-handling.service';
 import { FallbackError } from '../errors/errorTypes';
 import {
-  getGraphqlEndpoints,
   GETHTTPType,
   HTTPPaths,
   POSTHTTPRoutes,
   POSTHTTPType,
-} from './index';
+} from './HTTPendpoints';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ApicallsService {
+export class HTTPCallsService {
   private httpClient = inject(HttpClient);
-  private apolloService = inject(Apollo);
   private errorService = inject(ErrorHandlingService);
 
-  //! APOLLO SENDERS
-  GraphQLEndpoint(endpoints: Array<getGraphqlEndpoints>) {
-    const endSet = new Set(endpoints);
-
-    this.apolloService
-      .watchQuery({
-        query: gql`
-          {
-            rates(currency: "USD") {
-              currency
-              rate
-            }
-          }
-        `,
-      })
-      .valueChanges.subscribe((result: any) => {});
-  }
-
-  //! HTTP SENDERS
   POSTHttpEndpoint<
     T extends (typeof POSTHTTPRoutes)[keyof typeof POSTHTTPRoutes]['createBody'],
     Z extends POSTHTTPType

@@ -1,4 +1,4 @@
-export type FriendList = {
+export type FriendListType = {
   steamid: string;
   relationship: string;
   friends_since: number;

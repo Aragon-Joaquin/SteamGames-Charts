@@ -1,4 +1,4 @@
-export type PlayerBans = {
+export type PlayerBansType = {
   players: Array<{
     SteamId: string;
     CommunityBanned: boolean;

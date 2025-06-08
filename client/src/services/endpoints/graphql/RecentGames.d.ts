@@ -1,4 +1,4 @@
-export type RecentGames = {
+export type RecentGamesType = {
   total_count: number;
   games: Array<{
     appid: number;

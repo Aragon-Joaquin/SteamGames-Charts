@@ -7,7 +7,7 @@ const PlayerStatus = {
   LookingToPlay: 'looking_to_play',
 } as const;
 
-export type PlayerSummaries = {
+export type PlayerSummariesType = {
   steamid: string;
   persona_state: (typeof PlayerStatus)[keyof typeof PlayerStatus];
   persona_name: string;
