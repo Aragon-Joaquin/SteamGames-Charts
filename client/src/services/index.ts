@@ -1,4 +1,3 @@
-export * from './endpoints/apicalls.service';
 export * from './endpoints/HTTPendpoints';
 
 export * from './context/steam-context.service';

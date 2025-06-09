@@ -1,10 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {
-  ApicallsService,
-  HTTPPaths,
-  SteamContextService,
-} from '../../services';
+import { HTTPPaths, SteamContextService } from '../../services';
+import { HTTPCallsService } from '../../services/endpoints';
 import { MIN_VANITYURL } from '../../utils/constants';
 import { OverviewComponent } from './components/overview/overview.component';
 
@@ -30,7 +27,7 @@ type DASHBOARD_STATE_GRABBER =
 export class DashboardComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private steamContext = inject(SteamContextService);
-  private apiCalls = inject(ApicallsService);
+  private HTTPCalls = inject(HTTPCallsService);
 
   public dashboardState = signal<DASHBOARD_STATE_GRABBER>(
     DASHBOARD_STATES.LOADING
@@ -45,13 +42,11 @@ export class DashboardComponent implements OnInit {
       return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
     const UserSearched = this.steamContext.currentUser.getValue();
     if (UserSearched == null)
-      this.apiCalls
-        .POSTHttpEndpoint(HTTPPaths.searchUser, {
-          VanityUrl: getRoute,
-        })
-        ?.subscribe((res) =>
-          this.steamContext.currentUser.next(res?.at(0) ?? null)
-        );
+      this.HTTPCalls.POSTHttpEndpoint(HTTPPaths.searchUser, {
+        VanityUrl: getRoute,
+      })?.subscribe((res) =>
+        this.steamContext.currentUser.next(res?.at(0) ?? null)
+      );
 
     this.dashboardState.set(DASHBOARD_STATES.GENERAL);
   }

@@ -6,3 +6,12 @@ export type AchievementPercentagesType = {
     }>;
   };
 };
+
+export const AchievementPercentagesStringify = `
+      achievementpercentages {
+        achievements {
+          name
+          percent
+        }
+      }
+  ` as const;

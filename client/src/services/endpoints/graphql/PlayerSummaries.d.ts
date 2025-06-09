@@ -8,10 +8,23 @@ const PlayerStatus = {
 } as const;
 
 export type PlayerSummariesType = {
-  steamid: string;
-  persona_state: (typeof PlayerStatus)[keyof typeof PlayerStatus];
-  persona_name: string;
-  profile_url: string;
-  avatarfull?: string;
-  lastlogoff: number;
+  players: Array<{
+    steamid: string;
+    persona_state: (typeof PlayerStatus)[keyof typeof PlayerStatus];
+    persona_name: string;
+    profile_url: string;
+    avatarfull?: string;
+    lastlogoff: number;
+  }>;
 };
+
+export const PlayerSummariesStringified = `
+players {
+  steamid
+  persona_state
+  persona_names
+  profile_url
+  avatarfull
+  lastlogoff
+}
+` as const;

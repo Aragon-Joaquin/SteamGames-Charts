@@ -12,3 +12,17 @@ export type RecentGamesType = {
     playtime_deck_forever?: number;
   }>;
 };
+export const RecentGamesStringified = `
+  total_count
+  games {
+    appid
+    name
+    playtime_2weeks
+    playtime_forever
+    img_icon_url
+    playtime_windows_forever
+    playtime_mac_forever
+    playtime_linux_forever
+    playtime_deck_forever
+  }
+` as const;

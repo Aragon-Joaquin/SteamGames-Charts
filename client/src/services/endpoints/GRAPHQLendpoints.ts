@@ -19,7 +19,7 @@ export type AllGraphQLEndpoints =
   | 'AchievementPercentages'
   | 'PlayerBans';
 
-export type GRAPHQL_QUERYPARAM =
+export type AllGraphQLIDs =
   | 'steam_appid'
   | 'steamid'
   | 'steamids'

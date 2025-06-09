@@ -9,3 +9,16 @@ export type PlayerBansType = {
     EconomyBan: string;
   }>;
 };
+
+export const PlayerBansStringified = `
+  players {
+    SteamId
+    CommunityBanned
+    VACBanned
+    NumberOfVACBans
+    DaysSinceLastBan
+    NumberOfGameBans
+    EconomyBan
+  }
+
+` as const;

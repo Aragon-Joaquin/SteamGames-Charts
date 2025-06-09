@@ -17,3 +17,11 @@ export type SchemaForGameType = {
     availableGameStats: GameStats;
   }>;
 };
+
+export const SchemaForGameStringified = `
+	game {
+    gameName
+    gameVersion
+    availableGameStats
+  }
+` as const;
