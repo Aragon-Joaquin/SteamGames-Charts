@@ -6,7 +6,7 @@ import {
   totalUsersAdapted,
   totalUsersResponse,
   USER_STATES,
-} from './responses';
+} from './HTTPresponses';
 
 const UNDEFINED_NUMBER = -1 as const;
 

@@ -1,4 +1,4 @@
-import { ALL_USER_STATES, USER_STATES } from '../adapters/responses';
+import { ALL_USER_STATES, USER_STATES } from '../adapters/HTTPresponses';
 
 export type UNIX_RESPONSES = [
   '???',

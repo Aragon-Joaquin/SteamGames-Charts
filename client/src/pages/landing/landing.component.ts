@@ -12,7 +12,7 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { debounceTime, interval, Subject } from 'rxjs';
 
-import { SearchUserAdapted } from '../../adapters/responses';
+import { SearchUserAdapted } from '../../adapters/HTTPresponses';
 import { FALLBACK_ERROR_MAP, SteamContextService } from '../../services';
 import {
   HTTPCallsService,
@@ -106,8 +106,8 @@ export class LandingComponent implements OnInit, OnDestroy, AfterViewInit {
     const getUser = this.showUsers()[idx];
 
     if (getUser == null) return;
-    this.SteamContext.currentUser.next(getUser);
-    this.router.navigateByUrl(`/dashboard/${getUser.profile_url ?? ''}`);
+    this.SteamContext.addCurrentUser(getUser);
+    this.router.navigateByUrl(`/dashboard/${getUser.steamid ?? ''}`);
   }
   @ViewChild('imageContainer')
   private imageContainer!: ElementRef<HTMLDivElement>;

@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import { ErrorHandlingService } from '../errors/error-handling.service';
+import { ErrorMessages, ErrorStatus } from '../errors/errorTypes';
 import {
   AllGraphQLEndpoints,
   GRAPHQL_ENDPOINTS,
@@ -71,18 +72,17 @@ export class GRAPHQLCallsService {
       id: T extends 'getPlayerBans' | 'getPlayerSummaries' ? number[] : number;
     }>
   ) {
-    const allEndpoints = [...(new Set(endpoints) ?? [])].map(({ end }, idx) => {
+    const allEndpoints = endpoints.map(({ end }, idx) => {
       const hashmapFunc = this.HASHMAP_GRAPHQLFIELDS[end];
 
       if (hashmapFunc == undefined) return;
       return hashmapFunc(idx);
     });
 
-    const finalQuery = allEndpoints.join('\n');
     this.apolloService
       .watchQuery<GraphQLResponses>({
         query: gql`
-          ${finalQuery}
+          ${allEndpoints.join('\n')}
         `,
         variables: Object.assign(
           {},
@@ -90,9 +90,21 @@ export class GRAPHQLCallsService {
             [`id${idx + 1}`]: id,
           }))
         ),
+        errorPolicy: 'all',
       })
-      .valueChanges.subscribe((result) => {
-        console.log(result.data);
+      .valueChanges.pipe((el) => {
+        return el;
+      })
+      .subscribe((result) => {
+        const { error, data } = result;
+        if (error != null)
+          return this.errorService.showError({
+            httpError: ErrorStatus.InternalServerError,
+            message: error?.name ?? ErrorMessages.UnknownError,
+            description: error?.cause?.name ?? ErrorMessages.UnknownError,
+          });
+
+        console.log(data);
       });
   }
 }
