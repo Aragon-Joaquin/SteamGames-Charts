@@ -15,7 +15,7 @@ export type SearchUserResponse = {
 
 export type SearchUserAdapted = {
   steamid: string;
-  state: string;
+  state: (typeof USER_STATES)[keyof typeof USER_STATES];
   persona_name: string | '';
   profile_url: string | '';
   avatarfull: string;

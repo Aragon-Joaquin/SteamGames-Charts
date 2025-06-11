@@ -9,6 +9,8 @@ import {
   SchemaForGameType,
   UserOwnedGamesType,
 } from '../services/endpoints/graphql';
+import { UnixToDate } from '../utils';
+import { SearchUserAdapted, USER_STATES } from './HTTPresponses';
 
 //! not in use (yet)
 const HASHMAP_ADAPTERS = {
@@ -65,14 +67,17 @@ const HASHMAP_ADAPTERS = {
   }),
   [GRAPHQL_ENDPOINTS.PlayerSummaries]: (
     res: PlayerSummariesType
-  ): PlayerSummariesType => ({
+  ): { players: SearchUserAdapted[] } => ({
     players: res.players.map((player) => ({
-      steamid: player.steamid,
-      persona_state: player.persona_state ?? 'offline',
+      steamid: player.steamid ?? '',
+      state:
+        USER_STATES[player?.persona_state as keyof typeof USER_STATES] ??
+        'Offline',
       persona_name: player.persona_name ?? '',
       profile_url: player.profile_url ?? '',
       avatarfull: player.avatarfull ?? '',
-      lastlogoff: player.lastlogoff ?? 0,
+      lastlogoff:
+        new UnixToDate(player.lastlogoff).getDifferenceTime() ?? '???',
     })),
   }),
   [GRAPHQL_ENDPOINTS.RecentGames]: (res: RecentGamesType): RecentGamesType => ({

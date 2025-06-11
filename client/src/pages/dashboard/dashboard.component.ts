@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SteamContextService } from '../../services';
 import {
+  GRAPHQL_ENDPOINTS,
   GRAPHQLCallsService,
   HTTPCallsService,
 } from '../../services/endpoints';
@@ -41,22 +42,26 @@ export class DashboardComponent implements OnInit {
     this.dashboardState.set(val);
 
   ngOnInit() {
+    this.dashboardState.set(DASHBOARD_STATES.LOADING);
     const getRoute = this.route.snapshot.paramMap.get('steamid')?.trim();
+
     if (getRoute == null || getRoute.length < MIN_VANITYURL)
       return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
 
     const UserSearched = this.steamContext.getCurrentUser(getRoute);
-    console.log(UserSearched);
-    if (UserSearched == null)
-      // return this.HTTPCalls.POSTHttpEndpoint(HTTPPaths.searchUser, {
-      //   VanityUrl: getRoute,
-      // })?.subscribe((res) => {
-      //   if (res == null || res?.length == 0)
-      //     return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
-      //   this.steamContext.addCurrentUser(res?.at(0)!);
-      //   return this.dashboardState.set(DASHBOARD_STATES.GENERAL);
-      // });
 
-      this.dashboardState.set(DASHBOARD_STATES.GENERAL);
+    if (UserSearched == null)
+      return this.GRAPHQLCalls.GraphQLEndpoint([
+        { end: GRAPHQL_ENDPOINTS.PlayerSummaries, id: [Number(getRoute)] },
+      ]).subscribe(({ error, data: { getPlayerSummaries } }) => {
+        if (error != null || getPlayerSummaries == null)
+          return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
+        this.steamContext.addCurrentUser(
+          getPlayerSummaries['players']?.map((p) => p ?? null)
+        );
+        return this.dashboardState.set(DASHBOARD_STATES.GENERAL);
+      });
+
+    this.dashboardState.set(DASHBOARD_STATES.GENERAL);
   }
 }

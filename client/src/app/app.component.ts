@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ErrorHandlingService } from '../services';
+import { ErrorHandlingService, SteamContextService } from '../services';
 
 @Component({
   selector: 'app-root',
@@ -10,4 +10,11 @@ import { ErrorHandlingService } from '../services';
 })
 export class AppComponent {
   public errorService = inject(ErrorHandlingService);
+  private steamCtx = inject(SteamContextService);
+
+  //! load contexts
+  ngOnInit(): void {
+    this.steamCtx.overrideCurrentUser();
+    this.steamCtx.overrideDashboardState();
+  }
 }

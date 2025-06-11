@@ -1,4 +1,4 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { SearchUserAdapted } from '../../adapters/HTTPresponses';
 import {
@@ -9,7 +9,7 @@ import {
 @Injectable({
   providedIn: 'root',
 })
-export class SteamContextService implements OnInit {
+export class SteamContextService {
   constructor() {}
 
   private currentUser = new BehaviorSubject<
@@ -18,22 +18,38 @@ export class SteamContextService implements OnInit {
 
   //! user
   getCurrentUser(steamID: SearchUserAdapted['steamid']) {
-    console.log(this.currentUser.getValue());
-    return this.currentUser.getValue().get(steamID);
+    return this.currentUser.getValue().get(steamID) ?? null;
   }
 
-  addCurrentUser(val: SearchUserAdapted) {
-    this.currentUser.next(
-      this.getCurrentUser(val.steamid) != null
-        ? this.currentUser.value.set(val.steamid, val)
-        : new Map([[val.steamid, val]])
-    );
+  addCurrentUser(val: SearchUserAdapted | SearchUserAdapted[] | null) {
+    if (!val) return;
+    const CUserVal = this.currentUser.getValue();
 
+    if (Array.isArray(val)) val.forEach((e) => CUserVal.set(e.steamid, e));
+    else CUserVal.set(val.steamid, val);
+
+    this.currentUser.next(CUserVal);
     this.setLocalStorage(
       CONTEXT_DATASTREAM_NAME.currentUser,
-      this.currentUser.getValue()
+      CUserVal != null ? Object.fromEntries(CUserVal) : null
     );
   }
+
+  overrideCurrentUser = () => {
+    const val = this.getLocalStorage(CONTEXT_DATASTREAM_NAME.currentUser);
+    try {
+      if (typeof val !== 'object') return;
+
+      const newMap = new Map();
+      for (const SteamID in val) {
+        if (Object.prototype.hasOwnProperty.call(val, SteamID))
+          newMap.set(SteamID, val[SteamID]);
+      }
+      this.currentUser.next(newMap);
+    } catch {
+      this.currentUser.next(new Map());
+    }
+  };
 
   //! dashboard
   private DashboardState = new BehaviorSubject<DashboardStateType | null>(null);
@@ -46,26 +62,28 @@ export class SteamContextService implements OnInit {
     this.DashboardState.next(val as DashboardStateType);
     this.setLocalStorage(
       CONTEXT_DATASTREAM_NAME.DashboardState,
-      this.DashboardState.getValue()
+      this.DashboardState.getValue() ?? null
     );
   }
 
+  overrideDashboardState = () => {
+    const val = this.getLocalStorage(CONTEXT_DATASTREAM_NAME.currentUser);
+    this.DashboardState.next(val ?? {});
+  };
+
   //! set/get states
+  IsWindowUndefined = () =>
+    typeof globalThis === 'undefined' || typeof window === 'undefined';
 
   setLocalStorage = (key: CONTEXT_KEYNAMES, val: any) => {
-    if (window.localStorage == null) return;
-    window?.localStorage?.setItem(key, JSON.parse(val));
+    if (this.IsWindowUndefined()) return;
+    window.localStorage.setItem(key, JSON.stringify(val));
   };
 
   getLocalStorage = (key: CONTEXT_KEYNAMES) => {
-    const wLocal = window?.localStorage?.getItem(key);
+    if (this.IsWindowUndefined()) return;
+    const wLocal = window.localStorage.getItem(key);
+    console.log(wLocal);
     return wLocal != null ? JSON.parse(wLocal) : null;
   };
-
-  ngOnInit(): void {
-    const { DashboardState, currentUser } = CONTEXT_DATASTREAM_NAME;
-
-    this.currentUser.next(this.getLocalStorage(currentUser));
-    this.DashboardState.next(this.getLocalStorage(DashboardState));
-  }
 }

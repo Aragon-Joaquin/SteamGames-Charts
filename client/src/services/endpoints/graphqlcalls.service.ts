@@ -1,12 +1,9 @@
 import { inject, Injectable } from '@angular/core';
+import { onError } from '@apollo/client/link/error';
 import { Apollo, gql } from 'apollo-angular';
+import { AdaptedGraphqlTypes } from '../../adapters/graphqlAdapter';
 import { ErrorHandlingService } from '../errors/error-handling.service';
-import { ErrorMessages, ErrorStatus } from '../errors/errorTypes';
-import {
-  AllGraphQLEndpoints,
-  GRAPHQL_ENDPOINTS,
-  GraphQLResponses,
-} from './GRAPHQLendpoints';
+import { AllGraphQLEndpoints, GRAPHQL_ENDPOINTS } from './GRAPHQLendpoints';
 import {
   AchievementPercentagesStringify,
   FriendListStringified,
@@ -79,8 +76,13 @@ export class GRAPHQLCallsService {
       return hashmapFunc(idx);
     });
 
-    this.apolloService
-      .watchQuery<GraphQLResponses>({
+    // naming variables/types is my passion
+    type GraphqlResponseOfAdaptedType = {
+      [K in (typeof endpoints)[number]['end']]: AdaptedGraphqlTypes<K>;
+    };
+
+    return this.apolloService
+      .watchQuery<GraphqlResponseOfAdaptedType>({
         query: gql`
           ${allEndpoints.join('\n')}
         `,
@@ -93,18 +95,17 @@ export class GRAPHQLCallsService {
         errorPolicy: 'all',
       })
       .valueChanges.pipe((el) => {
-        return el;
-      })
-      .subscribe((result) => {
-        const { error, data } = result;
-        if (error != null)
-          return this.errorService.showError({
-            httpError: ErrorStatus.InternalServerError,
-            message: error?.name ?? ErrorMessages.UnknownError,
-            description: error?.cause?.name ?? ErrorMessages.UnknownError,
-          });
+        onError(({ graphQLErrors, networkError }) => {
+          if (graphQLErrors)
+            graphQLErrors.map(({ message, locations, path }) =>
+              console.log(
+                `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+              )
+            );
 
-        console.log(data);
+          if (networkError) console.log(`[Network error]: ${networkError}`);
+        });
+        return el;
       });
   }
 }
