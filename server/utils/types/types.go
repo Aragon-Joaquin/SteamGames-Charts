@@ -1,5 +1,25 @@
 package types
 
+//! graphql routes
+
+type Routes string
+
+const (
+	//* graphql
+	GetPlayer         Routes = "getPlayer"
+	GetFriends        Routes = "getFriends"
+	GetOwnGames       Routes = "getOwnGames"
+	GetRecentlyPlayed Routes = "getRecentlyPlayed"
+	GetSchema         Routes = "getSchema"
+	GetPlayerBans     Routes = "getPlayerBans"
+	GetAchievements   Routes = "getAchievements"
+	GetGameDetails    Routes = "getGameDetails"
+
+	//* http
+	VanityUrl  Routes = "searchVanityUrl"
+	TotalUsers Routes = "searchTotalUsers"
+)
+
 // ! resolve vanity
 type ResolveVanityURL struct {
 	Success int    `json:"success"`

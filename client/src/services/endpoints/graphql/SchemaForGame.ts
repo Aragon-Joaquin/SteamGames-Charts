@@ -11,17 +11,15 @@ type GameStats = {
 };
 
 export type SchemaForGameType = {
-  game: Array<{
-    gameName: string;
-    gameVersion: string;
-    availableGameStats: GameStats;
-  }>;
+  gameName: string;
+  gameVersion: string;
+  availableGameStats: GameStats;
+  achievements: GameStats;
 };
 
 export const SchemaForGameStringified = `
-	game {
     gameName
     gameVersion
     availableGameStats
-  }
+    achievements
 ` as const;

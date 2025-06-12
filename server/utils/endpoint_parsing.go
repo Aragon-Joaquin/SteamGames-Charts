@@ -3,7 +3,6 @@ package utils
 import (
 	"errors"
 	"net/url"
-	"reflect"
 	t "serverGo/utils/types"
 )
 
@@ -17,12 +16,22 @@ type QueriesStruct struct {
 }
 
 // this is access both by the client and server
-var API_ENDPOINTS = map[string]t.EndpointsStruct{
-	"getPlayer":   {Endpoint: "/ISteamUser/GetPlayerSummaries/v0002/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
-	"getFriends":  {Endpoint: "/ISteamUserStats/GetFriendList/v0001/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
-	"getOwnGames": {Endpoint: "/IPlayerService/GetOwnedGames/v0001/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
+var API_ENDPOINTS = map[t.Routes]t.EndpointsStruct{
+	//privates
+	t.GetPlayer:         {Endpoint: "/ISteamUser/GetPlayerSummaries/v0002/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
+	t.GetFriends:        {Endpoint: "/ISteamUserStats/GetFriendList/v0001/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
+	t.GetOwnGames:       {Endpoint: "/IPlayerService/GetOwnedGames/v0001/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
+	t.GetRecentlyPlayed: {Endpoint: "/IPlayerService/GetRecentlyPlayedGames/v0001/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
+	t.GetSchema:         {Endpoint: "/ISteamUserStats/GetSchemaForGame/v2/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
+	t.GetPlayerBans:     {Endpoint: "/ISteamUser/GetPlayerBans/v1/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
 
-	"getGameDetails": {Endpoint: "/api/appdetails", IsPrivate: false, DomainName: t.STORE_STEAMPOWERED},
+	// publics
+	t.GetAchievements: {Endpoint: "/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/", IsPrivate: false, DomainName: t.API_STEAMPOWERED},
+	t.GetGameDetails:  {Endpoint: "/api/appdetails", IsPrivate: false, DomainName: t.STORE_STEAMPOWERED},
+
+	//http ones
+	t.VanityUrl:  {Endpoint: "/ISteamUser/ResolveVanityURL/v1/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
+	t.TotalUsers: {Endpoint: "/ISteamChartsService/GetGamesByConcurrentPslayers/v1/", IsPrivate: false, DomainName: t.API_STEAMPOWERED},
 }
 
 func (u *URL_Endpoint) AddQueries(query ...QueriesStruct) {
@@ -37,13 +46,15 @@ func (u *URL_Endpoint) AddQueries(query ...QueriesStruct) {
 	u.URL.RawQuery = q.Encode()
 }
 
-func ConstructEndpoint(end t.EndpointsStruct) (URL_Endpoint, error) {
-	if EnvVars.API_KEY == "" || EnvVars.DOMAIN_NAME == "" {
-		return URL_Endpoint{}, errors.New("no environments variables set")
+func ConstructEndpoint(endName t.Routes) (URL_Endpoint, error) {
+	end, ok := API_ENDPOINTS[endName]
+
+	if !ok {
+		return URL_Endpoint{}, errors.New("empty endpoint struct")
 	}
 
-	if reflect.ValueOf(end).IsZero() {
-		return URL_Endpoint{}, errors.New("empty endpoint struct")
+	if EnvVars.API_KEY == "" || EnvVars.DOMAIN_NAME == "" {
+		return URL_Endpoint{}, errors.New("no environments variables set")
 	}
 
 	//! private

@@ -11,7 +11,7 @@ import (
 
 func GetTotalUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		end, err := u.MakeSubEndpoint("TotalUsers")
+		end, err := u.MakeSubEndpoint(t.TotalUsers)
 
 		if err != nil {
 			e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusInternalServerError, Message: err.Error()})

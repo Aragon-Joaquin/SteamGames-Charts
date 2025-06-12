@@ -7,22 +7,21 @@ package graph
 import (
 	"context"
 	"errors"
-	"fmt"
 	"serverGo/graph/model"
 	u "serverGo/utils"
+	t "serverGo/utils/types"
 	"strconv"
 )
 
 // GetGameDetails is the resolver for the getGameDetails field.
 func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int64) (*model.GDetailsRes, error) {
-	end, err := u.ConstructEndpoint(u.API_ENDPOINTS["getGameDetails"])
+	end, err := u.ConstructEndpoint(t.GetGameDetails)
 
 	if err != nil {
 		return nil, err
 	}
 
 	steamidString := strconv.FormatInt(steamAppid, 10)
-
 	end.AddQueries(u.QueriesStruct{Key: "appids", Val: steamidString})
 
 	go func() {
@@ -49,14 +48,13 @@ func (r *queryResolver) GetGameDetails(ctx context.Context, steamAppid int64) (*
 
 // GetUserOwnedGames is the resolver for the getUserOwnedGames field.
 func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid int64) (*model.UOGamesRes, error) {
-	end, err := u.ConstructEndpoint(u.API_ENDPOINTS["getOwnGames"])
+	end, err := u.ConstructEndpoint(t.GetOwnGames)
 
 	if err != nil {
 		return nil, err
 	}
 
 	steamidString := strconv.FormatInt(steamid, 10)
-
 	end.AddQueries(
 		u.QueriesStruct{Key: "steamid", Val: steamidString},
 		u.QueriesStruct{Key: "include_played_free_games", Val: "true"},
@@ -88,7 +86,7 @@ func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int64
 		return nil, errors.New("can only fetch between 1 and " + strconv.Itoa(u.MAX_PLAYERS_SUMMARIES) + " steam profiles.")
 	}
 
-	end, err := u.ConstructEndpoint(u.API_ENDPOINTS["getPlayer"])
+	end, err := u.ConstructEndpoint(t.GetPlayer)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +105,6 @@ func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int64
 	}
 
 	var wrapper map[string]*model.PSummariesRes
-
 	res, err := u.UnmarshalMapping(wrapper, &resp.BodyResponse, "response")
 
 	if err != nil {
@@ -119,14 +116,13 @@ func (r *queryResolver) GetPlayerSummaries(ctx context.Context, steamids []int64
 
 // GetFriendList is the resolver for the getFriendList field.
 func (r *queryResolver) GetFriendList(ctx context.Context, steamid int64) (*model.FListRes, error) {
-	end, err := u.ConstructEndpoint(u.API_ENDPOINTS["getFriends"])
+	end, err := u.ConstructEndpoint(t.GetFriends)
 
 	if err != nil {
 		return nil, err
 	}
 
 	steamidString := strconv.FormatInt(steamid, 10)
-
 	end.AddQueries(u.QueriesStruct{Key: "steamid", Val: steamidString})
 
 	go func() {
@@ -141,7 +137,6 @@ func (r *queryResolver) GetFriendList(ctx context.Context, steamid int64) (*mode
 	}
 
 	var wrapper *model.FListRes
-
 	if err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse); err != nil {
 		return nil, err
 	}
@@ -151,22 +146,128 @@ func (r *queryResolver) GetFriendList(ctx context.Context, steamid int64) (*mode
 
 // GetRecentGames is the resolver for the getRecentGames field.
 func (r *queryResolver) GetRecentGames(ctx context.Context, steamid int64) (*model.RGamesRes, error) {
-	panic(fmt.Errorf("not implemented: GetRecentGames - getRecentGames"))
+	end, err := u.ConstructEndpoint(t.GetRecentlyPlayed)
+
+	if err != nil {
+		return nil, err
+	}
+
+	steamidString := strconv.FormatInt(steamid, 10)
+	end.AddQueries(u.QueriesStruct{Key: "steamid", Val: steamidString})
+
+	go func() {
+		u.FetchAPI(ctx, end.URL.String(), r.ResChan)
+		defer close(r.ResChan)
+	}()
+
+	resp := <-r.ResChan
+
+	if resp.Error != nil {
+		return nil, resp.Error
+	}
+
+	var wrapper map[string]*model.RGamesRes
+	res, err := u.UnmarshalMapping(wrapper, &resp.BodyResponse, "response")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 // GetSchemaForGame is the resolver for the getSchemaForGame field.
-func (r *queryResolver) GetSchemaForGame(ctx context.Context, appid int64) (*model.SchemaRes, error) {
-	panic(fmt.Errorf("not implemented: GetSchemaForGame - getSchemaForGame"))
+func (r *queryResolver) GetSchemaForGame(ctx context.Context, appid int64) (*model.SchemaForGame, error) {
+	end, err := u.ConstructEndpoint(t.GetSchema)
+
+	if err != nil {
+		return nil, err
+	}
+
+	end.AddQueries(u.QueriesStruct{Key: "appid", Val: strconv.FormatInt(appid, 10)})
+
+	go func() {
+		u.FetchAPI(ctx, end.URL.String(), r.ResChan)
+		defer close(r.ResChan)
+	}()
+
+	resp := <-r.ResChan
+
+	if resp.Error != nil {
+		return nil, resp.Error
+	}
+
+	var wrapper map[string]*model.SchemaForGame
+	res, err := u.UnmarshalMapping(wrapper, &resp.BodyResponse, "response")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 // GetAchievementPercentages is the resolver for the getAchievementPercentages field.
-func (r *queryResolver) GetAchievementPercentages(ctx context.Context, gameid int64) (*model.APercentagesRes, error) {
-	panic(fmt.Errorf("not implemented: GetAchievementPercentages - getAchievementPercentages"))
+func (r *queryResolver) GetAchievementPercentages(ctx context.Context, gameid int64) (*model.AchievementPercentages, error) {
+	end, err := u.ConstructEndpoint(t.GetAchievements)
+
+	if err != nil {
+		return nil, err
+	}
+
+	end.AddQueries(u.QueriesStruct{Key: "gameid", Val: strconv.FormatInt(gameid, 10)})
+
+	go func() {
+		u.FetchAPI(ctx, end.URL.String(), r.ResChan)
+		defer close(r.ResChan)
+	}()
+
+	resp := <-r.ResChan
+
+	if resp.Error != nil {
+		return nil, resp.Error
+	}
+
+	var wrapper map[string]*model.AchievementPercentages
+	res, err := u.UnmarshalMapping(wrapper, &resp.BodyResponse, "achievementpercentages")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 // GetPlayerBans is the resolver for the getPlayerBans field.
 func (r *queryResolver) GetPlayerBans(ctx context.Context, steamids []int64) (*model.PBansRes, error) {
-	panic(fmt.Errorf("not implemented: GetPlayerBans - getPlayerBans"))
+	if len(steamids) >= u.MAX_PLAYERS_SUMMARIES || len(steamids) <= 0 {
+		return nil, errors.New("can only fetch between 1 and " + strconv.Itoa(u.MAX_PLAYERS_SUMMARIES) + " steam profiles.")
+	}
+
+	end, err := u.ConstructEndpoint(t.GetPlayerBans)
+	if err != nil {
+		return nil, err
+	}
+
+	end.AddQueries(u.QueriesStruct{Key: "steamids", Val: u.SliceIntoString(steamids)})
+
+	go func() {
+		u.FetchAPI(ctx, end.URL.String(), r.ResChan)
+		defer close(r.ResChan)
+	}()
+
+	resp := <-r.ResChan
+
+	if resp.Error != nil {
+		return nil, resp.Error
+	}
+
+	var wrapper *model.PBansRes
+	if err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse); err != nil {
+		return nil, err
+	}
+
+	return wrapper, nil
 }
 
 // Query returns QueryResolver implementation.

@@ -1,9 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { onError } from '@apollo/client/link/error';
 import { Apollo, gql } from 'apollo-angular';
 import { AdaptedGraphqlTypes } from '../../adapters/graphqlAdapter';
 import { ErrorHandlingService } from '../errors/error-handling.service';
-import { AllGraphQLEndpoints, GRAPHQL_ENDPOINTS } from './GRAPHQLendpoints';
 import {
   AchievementPercentagesStringify,
   FriendListStringified,
@@ -23,89 +21,131 @@ export class GRAPHQLCallsService {
   private apolloService = inject(Apollo);
 
   //! single endpoint makers
-  private HASHMAP_GRAPHQLFIELDS: Record<
-    (typeof GRAPHQL_ENDPOINTS)[AllGraphQLEndpoints],
-    (idNum: number) => string
-  > = {
-    getGameDetails: (
-      idNum: number
-    ) => `getGameDetails(steam_appid: $id${idNum}) {
-        ${GameDetailsStringified}
-      }`,
-
-    getUserOwnedGames: (
-      idNum: number
-    ) => `getUserOwnedGames(steam_id: $id${idNum}) {
-      ${UserOwnedGamesStringified}
-    }`,
-    getPlayerSummaries: (
-      idNum: number
-    ) => `getPlayerSummaries(steamids: $id${idNum}) {
-      ${PlayerSummariesStringified}
-    }`,
-    getFriendList: (idNum: number) => `getFriendList(steam_id: $id${idNum}) {
-      ${FriendListStringified}
-    }`,
-    getRecentGames: (idNum: number) => `getRecentGames(steam_id: $id${idNum}) {
-      ${RecentGamesStringified}
-    }`,
-    getSchemaForGame: (idNum: number) => `getSchemaForGame(appid: $id${idNum}) {
-      ${SchemaForGameStringified}
-    }`,
-    getAchievementPercentages: (
-      idNum: number
-    ) => `getAchievementPercentages(game_id: $id${idNum}) {
-      ${AchievementPercentagesStringify}
-    }`,
-    getPlayerBans: (idNum: number) => `getPlayerBans(steamids: $id${idNum}) {
-      ${PlayerBansStringified}
-    }`,
-  };
-
-  //! multiEndpoint maker - temporal solution
-  GraphQLEndpoint<T extends (typeof GRAPHQL_ENDPOINTS)[AllGraphQLEndpoints]>(
-    endpoints: Array<{
-      end: T;
-      id: T extends 'getPlayerBans' | 'getPlayerSummaries' ? number[] : number;
-    }>
-  ) {
-    const allEndpoints = endpoints.map(({ end }, idx) => {
-      const hashmapFunc = this.HASHMAP_GRAPHQLFIELDS[end];
-
-      if (hashmapFunc == undefined) return;
-      return hashmapFunc(idx);
-    });
-
-    // naming variables/types is my passion
-    type GraphqlResponseOfAdaptedType = {
-      [K in (typeof endpoints)[number]['end']]: AdaptedGraphqlTypes<K>;
-    };
-
-    return this.apolloService
-      .watchQuery<GraphqlResponseOfAdaptedType>({
-        query: gql`
-          ${allEndpoints.join('\n')}
+  getGameDetails(steamAppId: number) {
+    return this.apolloService.watchQuery<{
+      getGameDetails: AdaptedGraphqlTypes<'getGameDetails'>;
+    }>({
+      query: gql`
+          query GetGameDetails($steamAppId: Float!) {
+            getGameDetails(steam_appid: $steamAppId) {
+              ${GameDetailsStringified}
+            }
+          }
         `,
-        variables: Object.assign(
-          {},
-          ...endpoints.map(({ id }, idx) => ({
-            [`id${idx + 1}`]: id,
-          }))
-        ),
-        errorPolicy: 'all',
-      })
-      .valueChanges.pipe((el) => {
-        onError(({ graphQLErrors, networkError }) => {
-          if (graphQLErrors)
-            graphQLErrors.map(({ message, locations, path }) =>
-              console.log(
-                `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-              )
-            );
+      variables: { steamAppId },
+      errorPolicy: 'all',
+    }).valueChanges;
+  }
 
-          if (networkError) console.log(`[Network error]: ${networkError}`);
-        });
-        return el;
-      });
+  getUserOwnedGames(steamId: number) {
+    return this.apolloService.watchQuery<{
+      getUserOwnedGames: AdaptedGraphqlTypes<'getUserOwnedGames'>;
+    }>({
+      query: gql`
+          query GetUserOwnedGames($steamId: Float!) {
+            getUserOwnedGames(steam_id: $steamId) {
+              ${UserOwnedGamesStringified}
+            }
+          }
+        `,
+      variables: { steamId },
+      errorPolicy: 'all',
+    }).valueChanges;
+  }
+
+  getPlayerSummaries(steamIds: number[]) {
+    return this.apolloService.watchQuery<{
+      getPlayerSummaries: AdaptedGraphqlTypes<'getPlayerSummaries'>;
+    }>({
+      query: gql`
+          query GetPlayerSummaries($steamIds: [Float!]!) {
+            getPlayerSummaries(steamids: $steamIds) {
+              ${PlayerSummariesStringified}
+            }
+          }
+        `,
+      variables: { steamIds },
+      errorPolicy: 'all',
+    }).valueChanges;
+  }
+
+  getFriendList(steamId: number) {
+    return this.apolloService.watchQuery<{
+      getFriendList: AdaptedGraphqlTypes<'getFriendList'>;
+    }>({
+      query: gql`
+          query GetFriendList($steamId: Float!) {
+            getFriendList(steam_id: $steamId) {
+              ${FriendListStringified}
+            }
+          }
+        `,
+      variables: { steamId },
+      errorPolicy: 'all',
+    }).valueChanges;
+  }
+
+  getRecentGames(steamId: number) {
+    return this.apolloService.watchQuery<{
+      getRecentGames: AdaptedGraphqlTypes<'getRecentGames'>;
+    }>({
+      query: gql`
+          query GetRecentGames($steamId: Float!) {
+            getRecentGames(steam_id: $steamId) {
+              ${RecentGamesStringified}
+            }
+          }
+        `,
+      variables: { steamId },
+      errorPolicy: 'all',
+    }).valueChanges;
+  }
+
+  getSchemaForGame(appId: number) {
+    return this.apolloService.watchQuery<{
+      getSchemaForGame: AdaptedGraphqlTypes<'getSchemaForGame'>;
+    }>({
+      query: gql`
+          query GetSchemaForGame($appId: Float!) {
+            getSchemaForGame(appid: $appId) {
+              ${SchemaForGameStringified}
+            }
+          }
+        `,
+      variables: { appId },
+      errorPolicy: 'all',
+    }).valueChanges;
+  }
+
+  getAchievementPercentages(gameId: number) {
+    return this.apolloService.watchQuery<{
+      getAchievementPercentages: AdaptedGraphqlTypes<'getAchievementPercentages'>;
+    }>({
+      query: gql`
+          query GetAchievementPercentages($gameId: Float!) {
+            getAchievementPercentages(gameId: $gameId) {
+              ${AchievementPercentagesStringify}
+            }
+          }
+        `,
+      variables: { gameId },
+      errorPolicy: 'all',
+    }).valueChanges;
+  }
+
+  getPlayerBans(steamIds: number[]) {
+    return this.apolloService.watchQuery<{
+      getPlayerBans: AdaptedGraphqlTypes<'getPlayerBans'>;
+    }>({
+      query: gql`
+          query GetPlayerBans($steamIds: [Float!]!) {
+            getPlayerBans(steamids: $steamIds) {
+              ${PlayerBansStringified}
+            }
+          }
+        `,
+      variables: { steamIds },
+      errorPolicy: 'all',
+    }).valueChanges;
   }
 }

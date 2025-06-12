@@ -24,7 +24,7 @@ func SearchUser() gin.HandlerFunc {
 			return
 		}
 
-		end, err := u.MakeSubEndpoint("VanityUrl", u.QueriesStruct{Key: "vanityurl", Val: req.VanityUrl})
+		end, err := u.MakeSubEndpoint(t.VanityUrl, u.QueriesStruct{Key: "vanityurl", Val: req.VanityUrl})
 
 		if err != nil {
 			e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusInternalServerError, Message: err.Error()})

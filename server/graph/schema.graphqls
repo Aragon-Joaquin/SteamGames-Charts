@@ -103,6 +103,7 @@ type SchemaForGame {
 	gameName: String!
 	gameVersion: String!
 	availableGameStats: GameStats!
+	achievements: [Achievement]
 }
 
 type AchievementPercentages {
@@ -144,14 +145,6 @@ type RGamesRes {
 	games: [RecentlyGames!]!
 }
 
-type SchemaRes {
-	game: SchemaForGame!
-}
-
-type APercentagesRes {
-	achievementpercentages: AchievementPercentages!
-}
-
 type PBansRes {
 	players: [PlayerBans!]!
 }
@@ -163,7 +156,7 @@ type Query {
 	getPlayerSummaries(steamids: [ID!]!): PSummariesRes!
 	getFriendList(steamid: ID!): FListRes!
 	getRecentGames(steamid: ID!): RGamesRes!
-	getSchemaForGame(appid: ID!): SchemaRes!
-	getAchievementPercentages(gameid: ID!): APercentagesRes!
+	getSchemaForGame(appid: ID!): SchemaForGame!
+	getAchievementPercentages(gameid: ID!): AchievementPercentages!
 	getPlayerBans(steamids: [ID!]!): PBansRes!
 }
