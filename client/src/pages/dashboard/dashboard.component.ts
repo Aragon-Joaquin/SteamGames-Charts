@@ -47,16 +47,16 @@ export class DashboardComponent implements OnInit {
     const UserSearched = this.steamContext.getCurrentUser(getRoute);
 
     if (UserSearched == null)
-      return this.GRAPHQLCalls.getPlayerSummaries([getRoute])?.subscribe(
-        (res) => {
-          if (res == null)
-            return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
-          this.steamContext.addCurrentUser(
-            res?.data?.getPlayerSummaries['players']?.map((p) => p ?? null)
-          );
-          return this.dashboardState.set(DASHBOARD_STATES.GENERAL);
-        }
-      );
+      return this.GRAPHQLCalls.QueryGraphQL([
+        this.GRAPHQLCalls.getPlayerSummaries([getRoute]),
+      ])?.subscribe((res) => {
+        if (res == null)
+          return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
+        this.steamContext.addCurrentUser(
+          res?.data?.getPlayerSummaries['players']?.map((p) => p ?? null)
+        );
+        return this.dashboardState.set(DASHBOARD_STATES.GENERAL);
+      });
 
     this.dashboardState.set(DASHBOARD_STATES.GENERAL);
   }

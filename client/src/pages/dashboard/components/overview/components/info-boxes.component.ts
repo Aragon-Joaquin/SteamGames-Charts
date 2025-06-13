@@ -38,7 +38,8 @@ import { Component, input } from '@angular/core';
   .info-stats {
     & > .important-data {
       font-size: 1.5em;
-      font-family: var(--Poppins-bold);
+      font-family: var(--Poppins);
+      font-weight: bold;
       text-wrap: nowrap;
       color: var(--dark3-color)
     }
