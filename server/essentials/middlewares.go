@@ -58,7 +58,7 @@ func Timeout(timeout time.Duration) gin.HandlerFunc {
 func CORS(originsUrl []string) gin.HandlerFunc {
 	return cors.New(cors.Config{
 		AllowOrigins:     originsUrl,
-		AllowMethods:     []string{"PUT", "GET"},
+		AllowMethods:     []string{"POST", "GET", "OPTIONS"},
 		AllowHeaders:     []string{"Origin"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,

@@ -1,7 +1,6 @@
 package essentials
 
 import (
-	"log"
 	"serverGo/graph"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -41,6 +40,5 @@ func QueryHandler(port string) gin.HandlerFunc {
 	})
 	return func(c *gin.Context) {
 		srv.ServeHTTP(c.Writer, c.Request)
-		log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	}
 }

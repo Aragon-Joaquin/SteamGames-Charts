@@ -60,7 +60,7 @@ export class GRAPHQLCallsService {
   //! single endpoint makers
   getGameDetails(steam_appid: number) {
     return this.queryGraphQL<typeof GRAPHQL_ENDPOINTS.GameDetails>({
-      GQLQuery: `query GetGameDetails($steam_appid: Int!) {
+      GQLQuery: `query GetGameDetails($steam_appid: ID!) {
             getGameDetails(steam_appid: $steam_appid) {
               ${GameDetailsStringified}
             }
@@ -71,7 +71,7 @@ export class GRAPHQLCallsService {
 
   getUserOwnedGames(steamid: number) {
     return this.queryGraphQL<typeof GRAPHQL_ENDPOINTS.UserOwnedGames>({
-      GQLQuery: `query GetUserOwnedGames($steamid: Int!) {
+      GQLQuery: `query GetUserOwnedGames($steamid: ID!) {
             getUserOwnedGames(steamid: $steamid) {
               ${UserOwnedGamesStringified}
             }
@@ -82,7 +82,7 @@ export class GRAPHQLCallsService {
 
   getPlayerSummaries(steamids: number[]) {
     return this.queryGraphQL<typeof GRAPHQL_ENDPOINTS.PlayerSummaries>({
-      GQLQuery: `query GetPlayerSummaries($steamids: [Int!]!) {
+      GQLQuery: `query GetPlayerSummaries($steamids: [ID!]!) {
             getPlayerSummaries(steamids: $steamids) {
               ${PlayerSummariesStringified}
             }
@@ -93,7 +93,7 @@ export class GRAPHQLCallsService {
 
   getFriendList(steamid: number) {
     return this.queryGraphQL<typeof GRAPHQL_ENDPOINTS.FriendList>({
-      GQLQuery: `query GetFriendList($steamid: Int!) {
+      GQLQuery: `query GetFriendList($steamid: ID!) {
             getFriendList(steamid: $steamid) {
               ${FriendListStringified}
             }
@@ -104,7 +104,7 @@ export class GRAPHQLCallsService {
 
   getRecentGames(steamid: number) {
     return this.queryGraphQL<typeof GRAPHQL_ENDPOINTS.RecentGames>({
-      GQLQuery: `query GetRecentGames($steamid: Int!) {
+      GQLQuery: `query GetRecentGames($steamid: ID!) {
             getRecentGames(steamid: $steamid) {
               ${RecentGamesStringified}
             }
@@ -115,7 +115,7 @@ export class GRAPHQLCallsService {
 
   getSchemaForGame(appid: number) {
     return this.queryGraphQL<typeof GRAPHQL_ENDPOINTS.SchemaForGame>({
-      GQLQuery: `query GetSchemaForGame($appid: Int!) {
+      GQLQuery: `query GetSchemaForGame($appid: ID!) {
             getSchemaForGame(appid: $appid) {
               ${SchemaForGameStringified}
             }
@@ -126,7 +126,7 @@ export class GRAPHQLCallsService {
 
   getAchievementPercentages(gameid: number) {
     return this.queryGraphQL<typeof GRAPHQL_ENDPOINTS.AchievementPercentages>({
-      GQLQuery: `query GetAchievementPercentages($gameid: Int!) {
+      GQLQuery: `query GetAchievementPercentages($gameid: ID!) {
             getAchievementPercentages(gameid: $gameid) {
               ${AchievementPercentagesStringify}
             }
@@ -137,7 +137,7 @@ export class GRAPHQLCallsService {
 
   getPlayerBans(steamids: number[]) {
     return this.queryGraphQL<typeof GRAPHQL_ENDPOINTS.PlayerBans>({
-      GQLQuery: `query GetPlayerBans($steamids: [Int!]!) {
+      GQLQuery: `query GetPlayerBans($steamids: [ID!]!) {
             getPlayerBans(steamids: $steamids) {
               ${PlayerBansStringified}
             }

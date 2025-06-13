@@ -9,12 +9,13 @@ export type PlayerSummariesType = {
   }>;
 };
 
+//! the three standing out are different as the ones typed... yeah im dumb i dont wanna rename all of this to adapted types
 export const PlayerSummariesStringified = `
 players {
   steamid
-  persona_state
-  persona_names
-  profile_url
+  		personaname
+  		personastate
+  		profileurl
   avatarfull
   lastlogoff
 }

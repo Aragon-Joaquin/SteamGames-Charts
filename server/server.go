@@ -15,8 +15,9 @@ import (
 )
 
 const (
-	defaultPort = "8080"
-	CLIENT_URL  = "http://localhost:4200"
+	defaultPort string = "8080"
+	CLIENT_URL  string = "http://localhost:4200"
+	SERVER_URL  string = "http://localhost:8080"
 )
 
 func main() {
@@ -33,7 +34,7 @@ func main() {
 
 	//* middlewares
 	r.Use(e.RateLimiter())
-	r.Use(e.CORS([]string{CLIENT_URL}))
+	r.Use(e.CORS([]string{CLIENT_URL, SERVER_URL}))
 	r.Use(e.Timeout(u.MAX_TIMEOUT_TIME))
 
 	//* routes

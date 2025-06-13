@@ -45,6 +45,9 @@ export class DashboardComponent implements OnInit {
 
     const UserSearched = this.steamContext.getCurrentUser(getRoute);
 
+    //!there's a bug here: IEEE 754 Double-Precision Floating-Point Numbers
+    //! the steamid is int64 and the standard only supports upto 2^53
+    //TODO: i have no idea how to fix it, unless i pray that i can send it as a bigInt/String and works magically by the json.stringify
     if (UserSearched == null)
       return this.GRAPHQLCalls.getPlayerSummaries([Number(getRoute)]).subscribe(
         (res) => {
