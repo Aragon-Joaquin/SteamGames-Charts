@@ -83,7 +83,6 @@ export class SteamContextService {
   getLocalStorage = (key: CONTEXT_KEYNAMES) => {
     if (this.IsWindowUndefined()) return;
     const wLocal = window.localStorage.getItem(key);
-    console.log(wLocal);
     return wLocal != null ? JSON.parse(wLocal) : null;
   };
 }

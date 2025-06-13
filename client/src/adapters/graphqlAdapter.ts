@@ -16,8 +16,8 @@ import { SearchUserAdapted, USER_STATES } from './HTTPresponses';
 const HASHMAP_ADAPTERS = {
   [GRAPHQL_ENDPOINTS.AchievementPercentages]: (
     res: AchievementPercentagesType
-  ): AchievementPercentagesType['achievementpercentages'] => ({
-    achievements: res['achievementpercentages']?.achievements.map((el) => ({
+  ): AchievementPercentagesType => ({
+    achievements: res?.achievements.map((el) => ({
       name: el?.name ?? '',
       percent: el?.percent ?? 0,
     })),
@@ -94,14 +94,13 @@ const HASHMAP_ADAPTERS = {
       playtime_windows_forever: game.playtime_windows_forever ?? 0,
     })),
   }),
-  [GRAPHQL_ENDPOINTS.SchemaForGame]: ({
-    game,
-  }: SchemaForGameType): SchemaForGameType => ({
-    game: game.map((el) => ({
-      gameName: el?.gameName ?? '',
-      gameVersion: el?.gameVersion ?? '',
-      availableGameStats: el?.availableGameStats ?? { achievements: [] },
-    })),
+  [GRAPHQL_ENDPOINTS.SchemaForGame]: (
+    res: SchemaForGameType
+  ): SchemaForGameType => ({
+    gameName: res?.gameName ?? '',
+    gameVersion: res?.gameVersion ?? '',
+    availableGameStats: res?.availableGameStats ?? { achievements: [] },
+    achievements: res.achievements ?? { achievements: [] },
   }),
   [GRAPHQL_ENDPOINTS.UserOwnedGames]: (
     res: UserOwnedGamesType

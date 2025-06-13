@@ -26,6 +26,10 @@ export type AllGraphQLIDs =
   | 'appid'
   | 'gameid';
 
+export type GraphQLIDTypes<T extends AllGraphQLIDs> = T extends 'steamids'
+  ? number[]
+  : number;
+
 export type GraphQLResponses =
   | AchievementPercentagesType
   | FriendListType

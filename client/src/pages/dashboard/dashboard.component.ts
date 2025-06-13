@@ -1,10 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SteamContextService } from '../../services';
-import {
-  GRAPHQLCallsService,
-  HTTPCallsService,
-} from '../../services/endpoints';
+import { GRAPHQLCallsService } from '../../services/endpoints';
 import { MIN_VANITYURL } from '../../utils/constants';
 import { OverviewComponent } from './components/overview/overview.component';
 
@@ -30,7 +27,6 @@ type DASHBOARD_STATE_GRABBER =
 export class DashboardComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private steamContext = inject(SteamContextService);
-  private HTTPCalls = inject(HTTPCallsService);
   private GRAPHQLCalls = inject(GRAPHQLCallsService);
 
   public dashboardState = signal<DASHBOARD_STATE_GRABBER>(
@@ -51,11 +47,11 @@ export class DashboardComponent implements OnInit {
 
     if (UserSearched == null)
       return this.GRAPHQLCalls.getPlayerSummaries([Number(getRoute)]).subscribe(
-        ({ error, data: { getPlayerSummaries } }) => {
-          if (error != null || getPlayerSummaries == null)
+        (res) => {
+          if (res == null)
             return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
           this.steamContext.addCurrentUser(
-            getPlayerSummaries['players']?.map((p) => p ?? null)
+            res.data.getPlayerSummaries['players']?.map((p) => p ?? null)
           );
           return this.dashboardState.set(DASHBOARD_STATES.GENERAL);
         }
