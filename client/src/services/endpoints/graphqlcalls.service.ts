@@ -4,7 +4,7 @@ import { Apollo, gql } from 'apollo-angular';
 import { catchError, of } from 'rxjs';
 import { AdaptedGraphqlTypes } from '../../adapters/graphqlAdapter';
 import { ErrorHandlingService } from '../errors/error-handling.service';
-import { ErrorStatus } from '../errors/errorTypes';
+import { ErrorMessages, ErrorStatus } from '../errors/errorTypes';
 import {
   AchievementPercentagesStringify,
   FriendListStringified,
@@ -16,15 +16,19 @@ import {
   UserOwnedGamesStringified,
 } from './graphql/index';
 import {
-  AllGraphQLIDs,
   getGraphqlEndpoints,
+  GQL_INT64,
   GRAPHQL_ENDPOINTS,
+  GRAPHQL_VARIABLES_NAME,
   GraphQLIDTypes,
 } from './GRAPHQLendpoints';
 
-interface IQueryGraphQL {
+// todo: fix these types
+interface IQueryGraphQL<T extends getGraphqlEndpoints> {
   GQLQuery: string;
-  Variables: Partial<{ [key in AllGraphQLIDs]: GraphQLIDTypes<key> }>;
+  Variables: {
+    [key in T]: GraphQLIDTypes<(typeof GRAPHQL_VARIABLES_NAME)[key]>;
+  };
 }
 @Injectable({
   providedIn: 'root',
@@ -34,12 +38,18 @@ export class GRAPHQLCallsService {
   private apolloService = inject(Apollo);
 
   //* utils?
-  private queryGraphQL<K extends getGraphqlEndpoints>({
+  private queryGraphQL<T extends getGraphqlEndpoints>({
     GQLQuery,
     Variables,
-  }: IQueryGraphQL) {
+  }: IQueryGraphQL<T>) {
+    if (!this.TestForGQL_INT64<T>(Variables))
+      return this.errorService.showError({
+        httpError: ErrorStatus.BadRequest,
+        message: ErrorMessages.NotGQL_INT64,
+      });
+
     return this.apolloService
-      .watchQuery<{ [P in K]: AdaptedGraphqlTypes<P> }>({
+      .watchQuery<{ [P in T]: AdaptedGraphqlTypes<P> }>({
         query: gql`
           ${GQLQuery}
         `,
@@ -57,92 +67,108 @@ export class GRAPHQLCallsService {
         })
       );
   }
+
+  private TestForGQL_INT64<T extends getGraphqlEndpoints>(
+    allVars: IQueryGraphQL<T>['Variables']
+  ) {
+    return Object.entries(allVars).every(([_, val]) => {
+      if (Array.isArray(val))
+        return val.every((e) => this.Validate_GQLINT64(e as GQL_INT64));
+      return this.Validate_GQLINT64(val as GQL_INT64);
+    });
+  }
+
+  private Validate_GQLINT64 = (val: GQL_INT64) =>
+    typeof val == 'string' && val?.length > 0
+      ? new RegExp(/^\d+$/).test(val)
+      : false;
+
   //! single endpoint makers
-  getGameDetails(steam_appid: number) {
+  getGameDetails(steam_appid: GQL_INT64) {
     return this.queryGraphQL<typeof GRAPHQL_ENDPOINTS.GameDetails>({
-      GQLQuery: `query GetGameDetails($steam_appid: ID!) {
-            getGameDetails(steam_appid: $steam_appid) {
+      GQLQuery: `query GetGameDetails($${GRAPHQL_ENDPOINTS.GameDetails}: ID!) {
+            getGameDetails(steam_appid: $${GRAPHQL_ENDPOINTS.GameDetails}) {
               ${GameDetailsStringified}
             }
           }`,
-      Variables: { steam_appid },
+      Variables: { getGameDetails: steam_appid },
     });
   }
 
-  getUserOwnedGames(steamid: number) {
+  getUserOwnedGames(steamid: GQL_INT64) {
     return this.queryGraphQL<typeof GRAPHQL_ENDPOINTS.UserOwnedGames>({
-      GQLQuery: `query GetUserOwnedGames($steamid: ID!) {
-            getUserOwnedGames(steamid: $steamid) {
+      GQLQuery: `query GetUserOwnedGames($${GRAPHQL_ENDPOINTS.UserOwnedGames}: ID!) {
+            getUserOwnedGames(steamid: $${GRAPHQL_ENDPOINTS.UserOwnedGames}) {
               ${UserOwnedGamesStringified}
             }
           }`,
-      Variables: { steamid },
+      Variables: { getUserOwnedGames: steamid },
     });
   }
 
-  getPlayerSummaries(steamids: number[]) {
+  getPlayerSummaries(steamids: GQL_INT64[]) {
     return this.queryGraphQL<typeof GRAPHQL_ENDPOINTS.PlayerSummaries>({
-      GQLQuery: `query GetPlayerSummaries($steamids: [ID!]!) {
-            getPlayerSummaries(steamids: $steamids) {
+      GQLQuery: `query GetPlayerSummaries($${GRAPHQL_ENDPOINTS.PlayerSummaries}: [ID!]!) {
+            getPlayerSummaries(steamids: $${GRAPHQL_ENDPOINTS.PlayerSummaries}) {
               ${PlayerSummariesStringified}
             }
           }`,
-      Variables: { steamids },
+      Variables: { getPlayerSummaries: steamids },
     });
   }
 
-  getFriendList(steamid: number) {
+  getFriendList(steamid: GQL_INT64) {
     return this.queryGraphQL<typeof GRAPHQL_ENDPOINTS.FriendList>({
-      GQLQuery: `query GetFriendList($steamid: ID!) {
-            getFriendList(steamid: $steamid) {
+      GQLQuery: `query GetFriendList($${GRAPHQL_ENDPOINTS.FriendList}: ID!) {
+            getFriendList(steamid: $${GRAPHQL_ENDPOINTS.FriendList}) {
               ${FriendListStringified}
             }
           }`,
-      Variables: { steamid },
+      Variables: { getFriendList: steamid },
     });
   }
 
-  getRecentGames(steamid: number) {
+  getRecentGames(steamid: GQL_INT64) {
     return this.queryGraphQL<typeof GRAPHQL_ENDPOINTS.RecentGames>({
-      GQLQuery: `query GetRecentGames($steamid: ID!) {
-            getRecentGames(steamid: $steamid) {
+      GQLQuery: `query GetRecentGames($${GRAPHQL_ENDPOINTS.RecentGames}: ID!) {
+            getRecentGames(steamid: $${GRAPHQL_ENDPOINTS.RecentGames}) {
               ${RecentGamesStringified}
             }
           }`,
-      Variables: { steamid },
+      Variables: { getRecentGames: steamid },
     });
   }
 
-  getSchemaForGame(appid: number) {
+  getSchemaForGame(appid: GQL_INT64) {
     return this.queryGraphQL<typeof GRAPHQL_ENDPOINTS.SchemaForGame>({
-      GQLQuery: `query GetSchemaForGame($appid: ID!) {
-            getSchemaForGame(appid: $appid) {
+      GQLQuery: `query GetSchemaForGame($${GRAPHQL_ENDPOINTS.SchemaForGame}: ID!) {
+            getSchemaForGame(appid: $${GRAPHQL_ENDPOINTS.SchemaForGame}) {
               ${SchemaForGameStringified}
             }
           }`,
-      Variables: { appid },
+      Variables: { getSchemaForGame: appid },
     });
   }
 
-  getAchievementPercentages(gameid: number) {
+  getAchievementPercentages(gameid: GQL_INT64) {
     return this.queryGraphQL<typeof GRAPHQL_ENDPOINTS.AchievementPercentages>({
-      GQLQuery: `query GetAchievementPercentages($gameid: ID!) {
-            getAchievementPercentages(gameid: $gameid) {
+      GQLQuery: `query GetAchievementPercentages($${GRAPHQL_ENDPOINTS.AchievementPercentages}: ID!) {
+            getAchievementPercentages(gameid: $${GRAPHQL_ENDPOINTS.AchievementPercentages}) {
               ${AchievementPercentagesStringify}
             }
           }`,
-      Variables: { gameid },
+      Variables: { getAchievementPercentages: gameid },
     });
   }
 
-  getPlayerBans(steamids: number[]) {
+  getPlayerBans(steamids: GQL_INT64[]) {
     return this.queryGraphQL<typeof GRAPHQL_ENDPOINTS.PlayerBans>({
-      GQLQuery: `query GetPlayerBans($steamids: [ID!]!) {
-            getPlayerBans(steamids: $steamids) {
+      GQLQuery: `query GetPlayerBans($${GRAPHQL_ENDPOINTS.PlayerBans}: [ID!]!) {
+            getPlayerBans(steamids: $${GRAPHQL_ENDPOINTS.PlayerBans}) {
               ${PlayerBansStringified}
             }
           }`,
-      Variables: { steamids },
+      Variables: { getPlayerBans: steamids },
     });
   }
 }

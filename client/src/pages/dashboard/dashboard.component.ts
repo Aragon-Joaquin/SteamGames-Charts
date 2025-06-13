@@ -37,6 +37,7 @@ export class DashboardComponent implements OnInit {
     this.dashboardState.set(val);
 
   ngOnInit() {
+    if (typeof window === 'undefined') return;
     this.dashboardState.set(DASHBOARD_STATES.LOADING);
     const getRoute = this.route.snapshot.paramMap.get('steamid')?.trim();
 
@@ -45,16 +46,13 @@ export class DashboardComponent implements OnInit {
 
     const UserSearched = this.steamContext.getCurrentUser(getRoute);
 
-    //!there's a bug here: IEEE 754 Double-Precision Floating-Point Numbers
-    //! the steamid is int64 and the standard only supports upto 2^53
-    //TODO: i have no idea how to fix it, unless i pray that i can send it as a bigInt/String and works magically by the json.stringify
     if (UserSearched == null)
-      return this.GRAPHQLCalls.getPlayerSummaries([Number(getRoute)]).subscribe(
+      return this.GRAPHQLCalls.getPlayerSummaries([getRoute])?.subscribe(
         (res) => {
           if (res == null)
             return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
           this.steamContext.addCurrentUser(
-            res.data.getPlayerSummaries['players']?.map((p) => p ?? null)
+            res?.data?.getPlayerSummaries['players']?.map((p) => p ?? null)
           );
           return this.dashboardState.set(DASHBOARD_STATES.GENERAL);
         }

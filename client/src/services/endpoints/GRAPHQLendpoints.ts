@@ -19,6 +19,10 @@ export type AllGraphQLEndpoints =
   | 'AchievementPercentages'
   | 'PlayerBans';
 
+//! the steamid is int64 and the standard only supports upto 2^53 (IEEE 754 Double-Precision Floating-Point Numbers)
+//! BigInt doesnt work with JSON.stringify nor Number()/ParseInt() cuz it looses precision.
+export type GQL_INT64 = string;
+
 export type AllGraphQLIDs =
   | 'steam_appid'
   | 'steamid'
@@ -27,8 +31,8 @@ export type AllGraphQLIDs =
   | 'gameid';
 
 export type GraphQLIDTypes<T extends AllGraphQLIDs> = T extends 'steamids'
-  ? number[]
-  : number;
+  ? GQL_INT64[]
+  : GQL_INT64;
 
 export type GraphQLResponses =
   | AchievementPercentagesType
@@ -53,6 +57,18 @@ export const GRAPHQL_ENDPOINTS: GetEndpoints<AllGraphQLEndpoints> = {
   SchemaForGame: 'getSchemaForGame',
   AchievementPercentages: 'getAchievementPercentages',
   PlayerBans: 'getPlayerBans',
+} as const;
+
+//! this is the worst i've done. refactor later please <3
+export const GRAPHQL_VARIABLES_NAME = {
+  getGameDetails: 'steam_appid',
+  getUserOwnedGames: 'steamid',
+  getPlayerSummaries: 'steamids',
+  getFriendList: 'steamid',
+  getRecentGames: 'steamid',
+  getSchemaForGame: 'appid',
+  getAchievementPercentages: 'gameid',
+  getPlayerBans: 'steamids',
 } as const;
 
 export type getGraphqlEndpoints =

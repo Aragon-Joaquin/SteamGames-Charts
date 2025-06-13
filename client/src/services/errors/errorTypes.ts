@@ -16,6 +16,7 @@ export const ErrorStatus = {
 export const ErrorMessages = {
   UnknownError: 'Unknown Error',
   ServerNotFound: "Server won't respond. Please try again later.",
+  NotGQL_INT64: 'The ID passed is not valid',
 } as const;
 
 //! it just to select the error instead of typing it all
