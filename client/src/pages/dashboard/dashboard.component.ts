@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SteamContextService } from '../../services';
 import { GRAPHQLCallsService } from '../../services/endpoints';
-import { MIN_VANITYURL } from '../../utils/constants';
+import { STEAM_ID_DIGITS } from '../../utils/constants';
 import { OverviewComponent } from './components/overview/overview.component';
 
 const DASHBOARD_STATES = {
@@ -41,7 +41,7 @@ export class DashboardComponent implements OnInit {
     this.dashboardState.set(DASHBOARD_STATES.LOADING);
     const getRoute = this.route.snapshot.paramMap.get('steamid')?.trim();
 
-    if (getRoute == null || getRoute.length < MIN_VANITYURL)
+    if (getRoute == null || getRoute.length < STEAM_ID_DIGITS)
       return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
 
     const UserSearched = this.steamContext.getCurrentUser(getRoute);

@@ -31,7 +31,7 @@ var API_ENDPOINTS = map[t.Routes]t.EndpointsStruct{
 
 	//http ones
 	t.VanityUrl:  {Endpoint: "/ISteamUser/ResolveVanityURL/v1/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
-	t.TotalUsers: {Endpoint: "/ISteamChartsService/GetGamesByConcurrentPslayers/v1/", IsPrivate: false, DomainName: t.API_STEAMPOWERED},
+	t.TotalUsers: {Endpoint: "/ISteamChartsService/GetGamesByConcurrentPlayers/v1/", IsPrivate: false, DomainName: t.API_STEAMPOWERED},
 }
 
 func (u *URL_Endpoint) AddQueries(query ...QueriesStruct) {

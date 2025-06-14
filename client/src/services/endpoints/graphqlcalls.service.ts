@@ -37,7 +37,6 @@ export class GRAPHQLCallsService {
   private apolloService = inject(Apollo);
 
   //* utils?
-
   public QueryGraphQL<T extends getGraphqlEndpoints>(
     queries: (T extends getGraphqlEndpoints ? IQueryGraphQL<T> : never)[]
   ) {

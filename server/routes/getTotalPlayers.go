@@ -31,7 +31,7 @@ func GetTotalUsers() gin.HandlerFunc {
 		resMap, err2 := u.UnmarshalMapping(response, &res.BodyResponse, "response")
 
 		if err2 != nil || len(resMap.Ranks) == 0 {
-			e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusBadRequest, Message: "Unsuccesful request."})
+			e.SendHttpError(c, &e.HTTPError{StatusCode: http.StatusBadRequest, Message: err2.Error()})
 			return
 		}
 
