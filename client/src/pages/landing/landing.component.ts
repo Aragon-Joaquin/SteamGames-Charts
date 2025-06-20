@@ -106,7 +106,7 @@ export class LandingComponent implements OnInit, OnDestroy, AfterViewInit {
     const getUser = this.showUsers()[idx];
 
     if (getUser == null) return;
-    this.SteamContext.addCurrentUser(getUser);
+    this.SteamContext.addUsersMap(getUser);
     this.router.navigateByUrl(`/dashboard/${getUser.steamid ?? ''}`);
   }
   @ViewChild('imageContainer')

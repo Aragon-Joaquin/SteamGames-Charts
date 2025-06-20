@@ -14,7 +14,7 @@ export class AppComponent {
 
   //! load contexts
   ngOnInit(): void {
-    this.steamCtx.overrideCurrentUser();
+    this.steamCtx.overrideUsersMap();
     this.steamCtx.overrideDashboardState();
   }
 }

@@ -1,8 +1,12 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SteamContextService } from '../../services';
-import { GRAPHQLCallsService } from '../../services/endpoints';
-import { STEAM_ID_DIGITS } from '../../utils/constants';
+import {
+  getGraphqlEndpoints,
+  GRAPHQLCallsService,
+} from '../../services/endpoints';
+import { GQLQUERIES } from '../../services/endpoints/graphql/utils/ENDPOINTS_HASHMAP';
+import { IsWindowUndefined, STEAM_ID_DIGITS } from '../../utils/constants';
 import { OverviewComponent } from './components/overview/overview.component';
 
 const DASHBOARD_STATES = {
@@ -36,28 +40,52 @@ export class DashboardComponent implements OnInit {
   setDashboardState = (val: DASHBOARD_STATE_GRABBER) =>
     this.dashboardState.set(val);
 
+  // this is a mess
   ngOnInit() {
-    if (typeof window === 'undefined') return;
-    this.dashboardState.set(DASHBOARD_STATES.LOADING);
+    if (IsWindowUndefined()) return;
+    this.setDashboardState(DASHBOARD_STATES.LOADING);
     const getRoute = this.route.snapshot.paramMap.get('steamid')?.trim();
 
     if (getRoute == null || getRoute.length < STEAM_ID_DIGITS)
       return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
 
-    const UserSearched = this.steamContext.getCurrentUser(getRoute);
+    const UserSearched = this.steamContext.getUsersMap(getRoute);
 
     if (UserSearched == null)
-      return this.GRAPHQLCalls.QueryGraphQL([
-        this.GRAPHQLCalls.getPlayerSummaries([getRoute]),
+      this.GRAPHQLCalls.QueryGraphQL([
+        GQLQUERIES.getPlayerSummaries([getRoute]),
       ])?.subscribe((res) => {
         if (res == null)
           return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
-        this.steamContext.addCurrentUser(
+        this.steamContext.addUsersMap(
           res?.data?.getPlayerSummaries['players']?.map((p) => p ?? null)
         );
-        return this.dashboardState.set(DASHBOARD_STATES.GENERAL);
       });
 
-    this.dashboardState.set(DASHBOARD_STATES.GENERAL);
+    this.steamContext.usersMap.subscribe((userMap) => {
+      const userExists = userMap.get(getRoute);
+      if (userExists == null)
+        return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
+
+      this.steamContext.setCurrentUser(userExists);
+    });
+
+    this.steamContext.currentUser?.subscribe((user) => {
+      console.log('user:', user);
+      if (!user) return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
+      const { steamid } = user;
+      const res = this.GRAPHQLCalls.QueryGraphQL<getGraphqlEndpoints>([
+        GQLQUERIES.getUserOwnedGames(steamid),
+        GQLQUERIES.getFriendList(steamid),
+        GQLQUERIES.getRecentGames(steamid),
+        GQLQUERIES.getPlayerBans([steamid]),
+      ]);
+
+      if (res == null) return;
+
+      res.subscribe((c) => console.log(c));
+    });
+
+    this.setDashboardState(DASHBOARD_STATES.GENERAL);
   }
 }

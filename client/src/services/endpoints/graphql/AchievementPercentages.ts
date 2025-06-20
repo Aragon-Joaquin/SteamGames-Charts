@@ -5,7 +5,7 @@ export type AchievementPercentagesType = {
   }>;
 };
 
-export const AchievementPercentagesStringify = `
+export const AchievementPercentagesStringified = `
         achievements {
           name
           percent

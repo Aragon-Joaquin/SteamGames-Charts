@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { SearchUserAdapted } from '../../adapters/HTTPresponses';
+import { IsWindowUndefined } from '../../utils';
 import {
   CONTEXT_DATASTREAM_NAME,
   CONTEXT_KEYNAMES,
@@ -12,31 +13,34 @@ import {
 export class SteamContextService {
   constructor() {}
 
-  private currentUser = new BehaviorSubject<
+  public usersMap = new BehaviorSubject<
     Map<SearchUserAdapted['steamid'], SearchUserAdapted>
   >(new Map<SearchUserAdapted['steamid'], SearchUserAdapted>());
 
-  //! user
-  getCurrentUser(steamID: SearchUserAdapted['steamid']) {
-    return this.currentUser.getValue().get(steamID) ?? null;
-  }
+  public currentUser = new BehaviorSubject<SearchUserAdapted | null>(null);
 
-  addCurrentUser(val: SearchUserAdapted | SearchUserAdapted[] | null) {
+  //! user
+  getUsersMap = (steamID: SearchUserAdapted['steamid']) =>
+    this.usersMap.getValue().get(steamID) ?? null;
+
+  addUsersMap(val: SearchUserAdapted | SearchUserAdapted[] | null) {
     if (!val) return;
-    const CUserVal = this.currentUser.getValue();
+    const CUserVal = this.usersMap.getValue();
 
     if (Array.isArray(val)) val.forEach((e) => CUserVal.set(e.steamid, e));
     else CUserVal.set(val.steamid, val);
 
-    this.currentUser.next(CUserVal);
-    this.setLocalStorage(
-      CONTEXT_DATASTREAM_NAME.currentUser,
+    this.usersMap.next(CUserVal);
+    this.setSessionStorage(
+      CONTEXT_DATASTREAM_NAME.usersMap,
       CUserVal != null ? Object.fromEntries(CUserVal) : null
     );
   }
 
-  overrideCurrentUser = () => {
-    const val = this.getLocalStorage(CONTEXT_DATASTREAM_NAME.currentUser);
+  setCurrentUser = (val: SearchUserAdapted) => this.currentUser.next(val);
+
+  overrideUsersMap() {
+    const val = this.getSessionStorage(CONTEXT_DATASTREAM_NAME.usersMap);
     try {
       if (typeof val !== 'object') return;
 
@@ -45,11 +49,11 @@ export class SteamContextService {
         if (Object.prototype.hasOwnProperty.call(val, SteamID))
           newMap.set(SteamID, val[SteamID]);
       }
-      this.currentUser.next(newMap);
+      this.usersMap.next(newMap);
     } catch {
-      this.currentUser.next(new Map());
+      this.usersMap.next(new Map());
     }
-  };
+  }
 
   //! dashboard
   private DashboardState = new BehaviorSubject<DashboardStateType | null>(null);
@@ -60,29 +64,26 @@ export class SteamContextService {
 
   setDashboardState(val: Partial<DashboardStateType>) {
     this.DashboardState.next(val as DashboardStateType);
-    this.setLocalStorage(
+    this.setSessionStorage(
       CONTEXT_DATASTREAM_NAME.DashboardState,
       this.DashboardState.getValue() ?? null
     );
   }
 
-  overrideDashboardState = () => {
-    const val = this.getLocalStorage(CONTEXT_DATASTREAM_NAME.currentUser);
+  overrideDashboardState() {
+    const val = this.getSessionStorage(CONTEXT_DATASTREAM_NAME.usersMap);
     this.DashboardState.next(val ?? {});
-  };
+  }
 
   //! set/get states
-  IsWindowUndefined = () =>
-    typeof globalThis === 'undefined' || typeof window === 'undefined';
-
-  setLocalStorage = (key: CONTEXT_KEYNAMES, val: any) => {
-    if (this.IsWindowUndefined()) return;
-    window.localStorage.setItem(key, JSON.stringify(val));
+  setSessionStorage = (key: CONTEXT_KEYNAMES, val: any) => {
+    if (IsWindowUndefined()) return;
+    window.sessionStorage.setItem(key, JSON.stringify(val));
   };
 
-  getLocalStorage = (key: CONTEXT_KEYNAMES) => {
-    if (this.IsWindowUndefined()) return;
-    const wLocal = window.localStorage.getItem(key);
+  getSessionStorage = (key: CONTEXT_KEYNAMES) => {
+    if (IsWindowUndefined()) return;
+    const wLocal = window.sessionStorage.getItem(key);
     return wLocal != null ? JSON.parse(wLocal) : null;
   };
 }

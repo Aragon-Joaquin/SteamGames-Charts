@@ -13,3 +13,9 @@ export const numberFormat = (val: number) =>
     style: 'decimal',
     maximumFractionDigits: 1,
   }).format(val);
+
+/**
+ * @returns TRUE if window DOESN'T exist
+ */
+export const IsWindowUndefined = () =>
+  typeof globalThis === 'undefined' || typeof window === 'undefined';

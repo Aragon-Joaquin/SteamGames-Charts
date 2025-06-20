@@ -13,7 +13,7 @@ export interface DashboardStateType {
 
 // not sure what i meant by datastream but lgtm 👍
 export const CONTEXT_DATASTREAM_NAME = {
-  currentUser: 'C_User',
+  usersMap: 'C_Users',
   DashboardState: 'DashB_State',
 } as const;
 
