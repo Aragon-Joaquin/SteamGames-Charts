@@ -18,12 +18,14 @@ type QueriesStruct struct {
 // this is access both by the client and server
 var API_ENDPOINTS = map[t.Routes]t.EndpointsStruct{
 	//privates
-	t.GetPlayer:         {Endpoint: "/ISteamUser/GetPlayerSummaries/v0002/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
-	t.GetFriends:        {Endpoint: "/ISteamUserStats/GetFriendList/v0001/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
+	t.GetPlayer:     {Endpoint: "/ISteamUser/GetPlayerSummaries/v0002/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
+	t.GetFriends:    {Endpoint: "/ISteamUser/GetFriendList/v0001/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
+	t.GetPlayerBans: {Endpoint: "/ISteamUser/GetPlayerBans/v1/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
+
 	t.GetOwnGames:       {Endpoint: "/IPlayerService/GetOwnedGames/v0001/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
 	t.GetRecentlyPlayed: {Endpoint: "/IPlayerService/GetRecentlyPlayedGames/v0001/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
-	t.GetSchema:         {Endpoint: "/ISteamUserStats/GetSchemaForGame/v2/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
-	t.GetPlayerBans:     {Endpoint: "/ISteamUser/GetPlayerBans/v1/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
+
+	t.GetSchema: {Endpoint: "/ISteamUserStats/GetSchemaForGame/v2/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
 
 	// publics
 	t.GetAchievements: {Endpoint: "/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/", IsPrivate: false, DomainName: t.API_STEAMPOWERED},

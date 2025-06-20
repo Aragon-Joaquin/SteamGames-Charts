@@ -7,6 +7,7 @@ package graph
 import (
 	"context"
 	"errors"
+	"fmt"
 	"serverGo/graph/model"
 	u "serverGo/utils"
 	t "serverGo/utils/types"
@@ -71,9 +72,9 @@ func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid int64) (*
 		return nil, resp.Error
 	}
 
-	var wrapper *model.UOGamesRes
+	wrapper, err := u.UnmarshalWithoutMapping[*model.UOGamesRes](&resp.BodyResponse)
 
-	if err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse); err != nil {
+	if err != nil {
 		return nil, err
 	}
 
@@ -136,8 +137,9 @@ func (r *queryResolver) GetFriendList(ctx context.Context, steamid int64) (*mode
 		return nil, resp.Error
 	}
 
-	var wrapper *model.FListRes
-	if err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse); err != nil {
+	wrapper, err := u.UnmarshalWithoutMapping[*model.FListRes](&resp.BodyResponse)
+
+	if err != nil {
 		return nil, err
 	}
 
@@ -251,6 +253,7 @@ func (r *queryResolver) GetPlayerBans(ctx context.Context, steamids []int64) (*m
 
 	end.AddQueries(u.QueriesStruct{Key: "steamids", Val: u.SliceIntoString(steamids)})
 
+	fmt.Println(end.URL.String())
 	go func() {
 		u.FetchAPI(ctx, end.URL.String(), r.ResChan)
 		defer close(r.ResChan)
@@ -262,8 +265,9 @@ func (r *queryResolver) GetPlayerBans(ctx context.Context, steamids []int64) (*m
 		return nil, resp.Error
 	}
 
-	var wrapper *model.PBansRes
-	if err := u.UnmarshalWithoutMapping(wrapper, &resp.BodyResponse); err != nil {
+	wrapper, err := u.UnmarshalWithoutMapping[*model.PBansRes](&resp.BodyResponse)
+
+	if err != nil {
 		return nil, err
 	}
 

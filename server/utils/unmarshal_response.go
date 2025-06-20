@@ -3,15 +3,21 @@ package utils
 import (
 	"encoding/json"
 	"errors"
-	"reflect"
+	"serverGo/graph/model"
 )
 
-func UnmarshalWithoutMapping[T any](graphModel T, body *[]byte) error {
+type UnmarshalRes interface {
+	*model.PBansRes | *model.FListRes | *model.UOGamesRes
+}
+
+func UnmarshalWithoutMapping[T UnmarshalRes](body *[]byte) (T, error) {
+	var graphModel T
+
 	if err := json.Unmarshal(*body, &graphModel); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return graphModel, nil
 }
 
 // ! is this necessary? it looks nasty good i like it
@@ -22,10 +28,11 @@ func UnmarshalMapping[T map[string]U, U any](wrapper T, body *[]byte, param stri
 		return emptyVal, err
 	}
 
-	wrapperInfo := wrapper[param]
-	if !reflect.ValueOf(wrapperInfo).IsZero() {
-		return wrapperInfo, nil
+	wrapperInfo, ok := wrapper[param]
+
+	if !ok {
+		return emptyVal, errors.New("could't access the json")
 	}
 
-	return emptyVal, errors.New("could't access the json")
+	return wrapperInfo, nil
 }
