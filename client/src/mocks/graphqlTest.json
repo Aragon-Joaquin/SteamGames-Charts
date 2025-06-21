@@ -1,0 +1,72 @@
+{
+  "data": {
+    "getUserOwnedGames": {
+      "__typename": "UOGamesRes",
+      "game_count": 0,
+      "games": []
+    },
+    "getFriendList": {
+      "__typename": "FListRes",
+      "friends": []
+    },
+    "getRecentGames": {
+      "__typename": "RGamesRes",
+      "total_count": 3,
+      "games": [
+        {
+          "__typename": "RecentlyGames",
+          "appid": 632360,
+          "name": "Risk of Rain 2",
+          "playtime_2weeks": 1127,
+          "playtime_forever": 4135,
+          "img_icon_url": "0b809ac6f25e6570fecae5fc47bca0139a7bf70c",
+          "playtime_windows_forever": 1681,
+          "playtime_mac_forever": 0,
+          "playtime_linux_forever": 2453,
+          "playtime_deck_forever": 0
+        },
+        {
+          "__typename": "RecentlyGames",
+          "appid": 1091500,
+          "name": "Honkai: Star Rail",
+          "playtime_2weeks": 0,
+          "playtime_forever": 0,
+          "img_icon_url": "f1c3b4d5e6a7b8c9d0e1f2a3b4c5d6e7f8g9h0i1",
+          "playtime_windows_forever": 0,
+          "playtime_mac_forever": 0,
+          "playtime_linux_forever": 0,
+          "playtime_deck_forever": 0
+        },
+        {
+          "__typename": "RecentlyGames",
+          "appid": 730,
+          "name": "Counter-Strike 2",
+          "playtime_2weeks": 0,
+          "playtime_forever": 0,
+          "img_icon_url": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t",
+          "playtime_windows_forever": 0,
+          "playtime_mac_forever": 0,
+          "playtime_linux_forever": 0,
+          "playtime_deck_forever": 0
+        }
+      ]
+    },
+    "getPlayerBans": {
+      "__typename": "PBansRes",
+      "players": [
+        {
+          "__typename": "PlayerBans",
+          "SteamId": "76561198000000000",
+          "CommunityBanned": false,
+          "VACBanned": false,
+          "NumberOfVACBans": 0,
+          "DaysSinceLastBan": 0,
+          "NumberOfGameBans": 0,
+          "EconomyBan": "none"
+        }
+      ]
+    }
+  },
+  "loading": false,
+  "networkStatus": 7
+}

@@ -34,15 +34,28 @@ export type GraphQLIDTypes<T extends AllGraphQLIDs> = T extends 'steamids'
   ? GQL_INT64[]
   : GQL_INT64;
 
-export type GraphQLResponses =
-  | AchievementPercentagesType
-  | FriendListType
-  | GameDetailsType
-  | PlayerSummariesType
-  | PlayerBansType
-  | RecentGamesType
-  | SchemaForGameType
-  | UserOwnedGamesType;
+export interface GraphQLResponsesMap {
+  AchievementPercentages: AchievementPercentagesType;
+  FriendList: FriendListType;
+  GameDetails: GameDetailsType;
+  PlayerSummaries: PlayerSummariesType;
+  PlayerBans: PlayerBansType;
+  RecentGames: RecentGamesType;
+  SchemaForGame: SchemaForGameType;
+  UserOwnedGames: UserOwnedGamesType;
+}
+
+type EndpointToKey<T extends getGraphqlEndpoints> = {
+  [K in keyof typeof GRAPHQL_ENDPOINTS]: (typeof GRAPHQL_ENDPOINTS)[K] extends T
+    ? K
+    : never;
+}[keyof typeof GRAPHQL_ENDPOINTS];
+
+export type ResponseDataType = {
+  [K in getGraphqlEndpoints]: {
+    __typename: K;
+  } & GraphQLResponsesMap[EndpointToKey<K>];
+};
 
 type GetEndpoints<T extends AllGraphQLEndpoints> = {
   [K in T]: `get${K}`;
@@ -59,6 +72,9 @@ export const GRAPHQL_ENDPOINTS: GetEndpoints<AllGraphQLEndpoints> = {
   PlayerBans: 'getPlayerBans',
 } as const;
 
+export type getGraphqlEndpoints =
+  (typeof GRAPHQL_ENDPOINTS)[keyof typeof GRAPHQL_ENDPOINTS];
+
 //! this is the worst i've done. refactor later please <3
 export const GRAPHQL_VARIABLES_NAME = {
   getGameDetails: 'steam_appid',
@@ -70,6 +86,3 @@ export const GRAPHQL_VARIABLES_NAME = {
   getAchievementPercentages: 'gameid',
   getPlayerBans: 'steamids',
 } as const;
-
-export type getGraphqlEndpoints =
-  (typeof GRAPHQL_ENDPOINTS)[keyof typeof GRAPHQL_ENDPOINTS];

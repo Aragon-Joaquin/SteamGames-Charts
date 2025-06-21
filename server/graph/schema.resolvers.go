@@ -7,7 +7,6 @@ package graph
 import (
 	"context"
 	"errors"
-	"fmt"
 	"serverGo/graph/model"
 	u "serverGo/utils"
 	t "serverGo/utils/types"
@@ -253,7 +252,6 @@ func (r *queryResolver) GetPlayerBans(ctx context.Context, steamids []int64) (*m
 
 	end.AddQueries(u.QueriesStruct{Key: "steamids", Val: u.SliceIntoString(steamids)})
 
-	fmt.Println(end.URL.String())
 	go func() {
 		u.FetchAPI(ctx, end.URL.String(), r.ResChan)
 		defer close(r.ResChan)

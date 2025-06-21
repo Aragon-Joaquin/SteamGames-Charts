@@ -12,7 +12,6 @@ import {
 import { UnixToDate } from '../utils';
 import { SearchUserAdapted, USER_STATES } from './HTTPresponses';
 
-//! not in use (yet)
 const HASHMAP_ADAPTERS = {
   [GRAPHQL_ENDPOINTS.AchievementPercentages]: (
     res: AchievementPercentagesType

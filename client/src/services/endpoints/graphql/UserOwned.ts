@@ -23,6 +23,10 @@ export const UserOwnedGamesStringified = `
 	      name
 	      img_icon_url
 	      playtime_forever
-	      playtime_platforms
+	      playtime_platforms {
+          linux
+          mac
+          windows
+        }
 	      rtime_last_played
     }` as const;

@@ -56,14 +56,18 @@ export class SteamContextService {
   }
 
   //! dashboard
-  private DashboardState = new BehaviorSubject<DashboardStateType | null>(null);
+  private DashboardState = new BehaviorSubject<DashboardStateType>(
+    {} as DashboardStateType
+  );
 
   getDashboardState() {
     return this.DashboardState.getValue();
   }
 
-  setDashboardState(val: Partial<DashboardStateType>) {
-    this.DashboardState.next(val as DashboardStateType);
+  addDashboardState(val: Partial<DashboardStateType>) {
+    const currentVal = this.DashboardState.value;
+
+    this.DashboardState.next({ ...currentVal, ...val });
     this.setSessionStorage(
       CONTEXT_DATASTREAM_NAME.DashboardState,
       this.DashboardState.getValue() ?? null
