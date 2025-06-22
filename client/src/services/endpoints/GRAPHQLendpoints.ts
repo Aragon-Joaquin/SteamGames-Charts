@@ -45,7 +45,7 @@ export interface GraphQLResponsesMap {
   UserOwnedGames: UserOwnedGamesType;
 }
 
-type EndpointToKey<T extends getGraphqlEndpoints> = {
+export type EndpointToKey<T extends getGraphqlEndpoints> = {
   [K in keyof typeof GRAPHQL_ENDPOINTS]: (typeof GRAPHQL_ENDPOINTS)[K] extends T
     ? K
     : never;

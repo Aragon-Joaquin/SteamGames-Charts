@@ -6,7 +6,7 @@ import {
   GRAPHQLCallsService,
 } from '../../services/endpoints';
 import { GQLQUERIES } from '../../services/endpoints/graphql/utils/ENDPOINTS_HASHMAP';
-import { IsWindowUndefined } from '../../utils/constants';
+import { IsWindowUndefined, STEAM_ID_DIGITS } from '../../utils/constants';
 import { OverviewComponent } from './components/overview/overview.component';
 
 const DASHBOARD_STATES = {
@@ -44,40 +44,30 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     if (IsWindowUndefined()) return;
     this.setDashboardState(DASHBOARD_STATES.LOADING);
-    // const getRoute = this.route.snapshot.paramMap.get('steamid')?.trim();
+    const getRoute = this.route.snapshot.paramMap.get('steamid')?.trim();
 
-    // if (getRoute == null || getRoute.length < STEAM_ID_DIGITS)
-    //   return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
+    if (getRoute == null || getRoute.length < STEAM_ID_DIGITS)
+      return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
 
-    // const UserSearched = this.steamContext.getUsersMap(getRoute);
+    const UserSearched = this.steamContext.getUsersMap(getRoute);
 
-    // if (UserSearched == null)
-    //   this.GRAPHQLCalls.QueryGraphQL([
-    //     GQLQUERIES.getPlayerSummaries([getRoute]),
-    //   ])?.subscribe((res) => {
-    //     if (res == null)
-    //       return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
-    //     this.steamContext.addUsersMap(
-    //       res?.data?.getPlayerSummaries['players']?.map((p) => p ?? null)
-    //     );
-    //   });
+    if (UserSearched == null)
+      this.GRAPHQLCalls.QueryGraphQL([
+        GQLQUERIES.getPlayerSummaries([getRoute]),
+      ])?.subscribe((res) => {
+        if (res == null)
+          return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
+        this.steamContext.addUsersMap(
+          res?.PlayerSummaries?.players?.map((p) => p ?? null) ?? null
+        );
+      });
 
-    // this.steamContext.usersMap.subscribe((userMap) => {
-    //   const userExists = userMap.get(getRoute);
-    //   if (userExists == null)
-    //     return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
+    this.steamContext.usersMap.subscribe((userMap) => {
+      const userExists = userMap.get(getRoute);
+      if (userExists == null)
+        return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
 
-    //   this.steamContext.setCurrentUser(userExists);
-    // });
-
-    //! testing
-    this.steamContext.setCurrentUser({
-      steamid: '231123123',
-      state: 'Offline',
-      persona_name: '',
-      profile_url: '',
-      avatarfull: '',
-      lastlogoff: '???',
+      this.steamContext.setCurrentUser(userExists);
     });
 
     this.steamContext.currentUser.subscribe((user) => {
@@ -91,11 +81,9 @@ export class DashboardComponent implements OnInit {
       ]);
 
       if (res == null) return;
-
-      res.subscribe((c) => {
-        console.log('final output:', c);
-        this.steamContext.addDashboardState(c);
-      });
+      res.subscribe(
+        (c) => c && this.steamContext.addDashboardState(c)
+      );
     });
 
     this.setDashboardState(DASHBOARD_STATES.GENERAL);

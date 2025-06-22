@@ -24,8 +24,7 @@ var API_ENDPOINTS = map[t.Routes]t.EndpointsStruct{
 
 	t.GetOwnGames:       {Endpoint: "/IPlayerService/GetOwnedGames/v0001/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
 	t.GetRecentlyPlayed: {Endpoint: "/IPlayerService/GetRecentlyPlayedGames/v0001/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
-
-	t.GetSchema: {Endpoint: "/ISteamUserStats/GetSchemaForGame/v2/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
+	t.GetSchema:         {Endpoint: "/ISteamUserStats/GetSchemaForGame/v2/", IsPrivate: true, DomainName: t.API_STEAMPOWERED},
 
 	// publics
 	t.GetAchievements: {Endpoint: "/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/", IsPrivate: false, DomainName: t.API_STEAMPOWERED},

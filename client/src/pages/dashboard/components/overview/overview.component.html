@@ -1,17 +1,31 @@
 <div class="overview-info-boxes">
-  <overview-info-boxes boxTitle="Last game played" numberShown="" />
-  <overview-info-boxes boxTitle="Total hours played" numberShown="" />
-  <overview-info-boxes boxTitle="Hours this week" numberShown="" />
-  <overview-info-boxes boxTitle="Games owned" numberShown="" />
+  <overview-info-boxes
+    boxTitle="Last game played"
+    [numberShown]="this.DashboardState().RecentGames?.games?.at(0)?.name ?? ''"
+  />
+  <overview-info-boxes
+    boxTitle="Total hours played"
+    [numberShown]="this.TotalHoursPlayed()"
+  />
+  <overview-info-boxes
+    boxTitle="Hours last 2 weeks"
+    [numberShown]="this.HoursWeek()"
+  />
+  <overview-info-boxes
+    boxTitle="Games owned"
+    [numberShown]="this.DashboardState().UserOwnedGames?.games_count ?? 0"
+  />
 </div>
 
 <section class="overview-graphs">
-  <overview-time-graph></overview-time-graph>
+  <overview-time-graph
+    [data]="this.DashboardState().RecentGames?.games ?? []"
+  ></overview-time-graph>
 
   <div class="graphs-inline">
     <span class="graph">
       <h4>Favorite genres</h4>
-      <overview-pie-chart [data]="[]"></overview-pie-chart>
+      <overview-pie-chart [data]="this.PieChartData()"></overview-pie-chart>
     </span>
 
     <span>

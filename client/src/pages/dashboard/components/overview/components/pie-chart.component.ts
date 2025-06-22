@@ -10,7 +10,10 @@ import {
 import { arc, pie, PieArcDatum, scaleOrdinal, select, selectAll } from 'd3';
 import { Graph, removeWhiteSpace } from '../../../../../utils';
 
-type dataShape = { genre: string; quantity: number };
+export type PieChartDataShape = {
+  platform: 'linux' | 'mac' | 'windows';
+  hours: number;
+};
 
 @Component({
   selector: 'overview-pie-chart',
@@ -32,7 +35,7 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
   private graphClass = new Graph(this.width, this.height);
   private radius = Math.min(this.width, this.height) / 2 - this.margin;
 
-  data = input.required<dataShape[] | []>();
+  data = input.required<PieChartDataShape[] | []>();
   helperArrows = input<boolean>(false);
 
   // guide from https://d3-graph-gallery.com/graph/donut_label.html cuz this is insane
@@ -42,8 +45,8 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
       this.data()?.length > 0
         ? this.data()
             .slice(0, this.MAXIMUM_ELEMENTS)
-            .sort((a, b) => (b?.quantity ?? 0) - (a?.quantity ?? 0))
-        : [{ genre: 'No available information', quantity: 1 }];
+            .sort((a, b) => (b?.hours ?? 0) - (a?.hours ?? 0))
+        : [{ platform: 'No available information' as 'windows', hours: 0 }];
 
     //! clean up
     select(this.chartContainer.nativeElement).selectAll('*').remove();
@@ -67,16 +70,16 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
     );
 
     //this can be sorted inverse
-    const pieGraph = pie<dataShape>()
+    const pieGraph = pie<PieChartDataShape>()
       .sort(null)
-      .value((d) => d.quantity);
+      .value((d) => d.hours);
     const data_ready = pieGraph(sortedData);
 
-    const innerArc = arc<PieArcDatum<dataShape>>()
+    const innerArc = arc<PieArcDatum<PieChartDataShape>>()
       .innerRadius(this.radius * 0.5)
       .outerRadius(this.radius * 0.8);
 
-    const outerArc = arc<PieArcDatum<dataShape>>()
+    const outerArc = arc<PieArcDatum<PieChartDataShape>>()
       .innerRadius(this.radius * 0.8)
       .outerRadius(this.radius * 0.6);
 
@@ -101,7 +104,7 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
           .style('opacity', 1)
           .style('cursor', 'pointer');
 
-        select(`.inner-text-${removeWhiteSpace(d.data.genre)}`).style(
+        select(`.inner-text-${removeWhiteSpace(d.data.platform)}`).style(
           'visibility',
           'visible'
         );
@@ -110,7 +113,7 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
         selectAll('path').style('opacity', 0.8);
         select(this).style('scale', 1);
 
-        select(`.inner-text-${removeWhiteSpace(d.data.genre)}`).style(
+        select(`.inner-text-${removeWhiteSpace(d.data.platform)}`).style(
           'visibility',
           'hidden'
         );
@@ -120,12 +123,12 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
       .selectAll('text')
       .data(data_ready)
       .join('foreignObject')
-      .text((d) => d.data.genre)
+      .text((d) => d.data.platform)
       .attr('x', `-${this.radius * 0.4}`)
       .attr('y', `-${this.radius * 0.4}`)
       .attr(
         'class',
-        (d) => `inner-text inner-text-${removeWhiteSpace(d.data.genre)}`
+        (d) => `inner-text inner-text-${removeWhiteSpace(d.data.platform)}`
       )
       .style('width', `${this.radius * 0.8}px`)
       .style('height', `${this.radius * 0.8}px`)
@@ -160,9 +163,9 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
       .data(data_ready)
       .join('text')
       .text((d) =>
-        d.data.genre.length > this.MAX_CHAR_DISPLAY + 1
-          ? d.data.genre.substring(0, this.MAX_CHAR_DISPLAY) + '...'
-          : d.data.genre
+        d.data.platform.length > this.MAX_CHAR_DISPLAY + 1
+          ? d.data.platform.substring(0, this.MAX_CHAR_DISPLAY) + '...'
+          : d.data.platform
       )
       .attr('transform', (d) => {
         const pos = outerArc.centroid(d);
@@ -175,7 +178,7 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
         return midangle < Math.PI ? 'start' : 'end';
       })
       .append('title')
-      .text((d) => d.data.genre);
+      .text((d) => d.data.platform);
 
     // return [sortedData, colors.range()];
   }

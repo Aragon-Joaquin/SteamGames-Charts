@@ -4,10 +4,11 @@ import { catchError, map, of } from 'rxjs';
 import { ErrorHandlingService } from '../errors/error-handling.service';
 import { ErrorMessages, ErrorStatus } from '../errors/errorTypes';
 import {
+  EndpointToKey,
   getGraphqlEndpoints,
   GQL_INT64,
   GRAPHQL_ENDPOINTS,
-  ResponseDataType,
+  GraphQLResponsesMap,
 } from './GRAPHQLendpoints';
 import { IQueryGraphQL } from './graphql/utils/ENDPOINTS_HASHMAP';
 
@@ -42,8 +43,18 @@ export class GRAPHQLCallsService {
         message: ErrorMessages.NotGQL_INT64,
       });
 
+    console.log(
+      `
+        query GraphQLEndpoint(${queries
+          ?.map((el) => el?.Types ?? '')
+          ?.join(',')}) {
+          ${queries?.map((el) => el?.GQLQuery ?? '')?.join('\n')}
+        }
+      `,
+      Variables
+    );
     const apolloQuery = this.apolloService.watchQuery<{
-      [P in T]: AdaptedGraphqlTypes<P>;
+      [P in T]: GraphQLResponsesMap[EndpointToKey<P>];
     }>({
       query: gql`
         query GraphQLEndpoint(${queries
@@ -58,20 +69,19 @@ export class GRAPHQLCallsService {
 
     return apolloQuery.valueChanges.pipe(
       map((val) => {
-        const data = val?.data as Partial<ResponseDataType>;
+        const data = val?.data;
         if (!data) return;
 
-        const responseAdapted = Object.values(GRAPHQL_ENDPOINTS)
-          .filter((k) => data[k])
-          .map((key) => {
+        const responseAdapted = Object.entries(GRAPHQL_ENDPOINTS)
+          .filter(([_, k]) => data[k as keyof typeof data])
+          .map(([val, key]) => {
             const result = data[key as keyof typeof data];
-            return result && { [key]: AdaptGRAPHQLRequest(key, result) };
+            return result && { [val]: AdaptGRAPHQLRequest(key, result) };
           });
 
-        return Object.assign(
-          {} as { [K in T]: AdaptedGraphqlTypes<K> },
-          ...responseAdapted
-        );
+        return Object.assign({}, ...responseAdapted) as Partial<{
+          [K in T as EndpointToKey<K>]: AdaptedGraphqlTypes<K>;
+        }>;
       }),
       catchError((err: ApolloError) => {
         this.errorService.showError({
@@ -82,23 +92,6 @@ export class GRAPHQLCallsService {
         return of(null);
       })
     );
-
-    //! goal: {getUserOwnedGames: {…}, getFriendList: {…}, getRecentGames: {…}, getPlayerBans: {…}}
-    // return of(mockJSON['data'] as unknown as ResponseDataType).pipe(
-    //   map((val) => {
-    //     const test = Object.values(GRAPHQL_ENDPOINTS)
-    //       .filter((k) => val[k])
-    //       .map((key) => {
-    //         const result = val[key as keyof typeof val];
-    //         return result && { [key]: AdaptGRAPHQLRequest(key, result) };
-    //       });
-
-    //     return Object.assign(
-    //       {} as { [K in T]: AdaptedGraphqlTypes<K> },
-    //       ...test
-    //     );
-    //   })
-    // );
   }
 
   private TestForGQL_INT64<T extends getGraphqlEndpoints>(

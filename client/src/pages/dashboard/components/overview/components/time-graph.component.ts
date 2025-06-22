@@ -2,11 +2,13 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  input,
   OnDestroy,
   ViewChild,
 } from '@angular/core';
 import { axisBottom, axisLeft, max, scaleBand, scaleLinear, select } from 'd3';
-import { RecentlyPlayedAdapted } from '../../../../../adapters/HTTPresponses';
+import { AdaptedGraphqlTypes } from '../../../../../adapters/graphqlAdapter';
+import { GRAPHQL_ENDPOINTS } from '../../../../../services/endpoints';
 import { Graph, Rectangle } from '../../../../../utils';
 @Component({
   selector: 'overview-time-graph',
@@ -28,11 +30,13 @@ export class TimeGraphComponent implements AfterViewInit, OnDestroy {
 
   private graphClass = new Graph(this.width, this.height);
 
-  private data: Partial<RecentlyPlayedAdapted>[] = [];
+  data = input.required<
+    AdaptedGraphqlTypes<typeof GRAPHQL_ENDPOINTS.RecentGames>['games'] | []
+  >();
 
   ngAfterViewInit(): void {
     //! Defining data form
-    const sortedData = this.data
+    const sortedData = this.data()
       .slice(0, 10)
       .sort((a, b) => (b.playtime_2weeks ?? 0) - (a.playtime_2weeks ?? 0));
 

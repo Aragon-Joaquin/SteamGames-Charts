@@ -71,13 +71,14 @@ func (r *queryResolver) GetUserOwnedGames(ctx context.Context, steamid int64) (*
 		return nil, resp.Error
 	}
 
-	wrapper, err := u.UnmarshalWithoutMapping[*model.UOGamesRes](&resp.BodyResponse)
+	var wrapper map[string]*model.UOGamesRes
+	res, err := u.UnmarshalMapping(wrapper, &resp.BodyResponse, "response")
 
 	if err != nil {
 		return nil, err
 	}
 
-	return wrapper, nil
+	return res, nil
 }
 
 // GetPlayerSummaries is the resolver for the getPlayerSummaries field.
