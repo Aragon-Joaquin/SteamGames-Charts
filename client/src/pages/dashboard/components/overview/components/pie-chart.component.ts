@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 
 import { arc, pie, PieArcDatum, scaleOrdinal, select, selectAll } from 'd3';
-import { Graph, removeWhiteSpace } from '../../../../../utils';
+import { Graph, removeWhiteSpace, RoundDecimals } from '../../../../../utils';
 
 export type PieChartDataShape = {
   platform: 'linux' | 'mac' | 'windows';
@@ -40,13 +40,14 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
 
   // guide from https://d3-graph-gallery.com/graph/donut_label.html cuz this is insane
   ngAfterViewInit(): void {
-    this.data().length;
-    const sortedData =
-      this.data()?.length > 0
-        ? this.data()
-            .slice(0, this.MAXIMUM_ELEMENTS)
-            .sort((a, b) => (b?.hours ?? 0) - (a?.hours ?? 0))
-        : [{ platform: 'No available information' as 'windows', hours: 0 }];
+    const checkIfEmpty =
+      this.data().reduce((acc, val) => acc + val.hours, 0) > 0;
+
+    const sortedData = checkIfEmpty
+      ? this.data()
+          .slice(0, this.MAXIMUM_ELEMENTS)
+          .sort((a, b) => (b?.hours ?? 0) - (a?.hours ?? 0))
+      : [{ platform: 'No available information' as 'windows', hours: 1 }];
 
     //! clean up
     select(this.chartContainer.nativeElement).selectAll('*').remove();
@@ -64,9 +65,7 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
 
     //! useful variables
     const colors = scaleOrdinal().range(
-      this.data().length > 0
-        ? this.graphClass.colors
-        : [this.graphClass.notFoundColor]
+      checkIfEmpty ? this.graphClass.colors : [this.graphClass.notFoundColor]
     );
 
     //this can be sorted inverse
@@ -123,7 +122,12 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
       .selectAll('text')
       .data(data_ready)
       .join('foreignObject')
-      .text((d) => d.data.platform)
+      .text(
+        (d) =>
+          `${d.data.platform}${
+            checkIfEmpty ? ' (' + RoundDecimals(d.data.hours / 60) + 'hs)' : ''
+          }`
+      )
       .attr('x', `-${this.radius * 0.4}`)
       .attr('y', `-${this.radius * 0.4}`)
       .attr(
@@ -141,7 +145,7 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
       .style('text-align', 'center')
       .style('color', 'black');
 
-    if (!this.helperArrows()) return;
+    if (!this.helperArrows() || !checkIfEmpty) return;
 
     svg
       .selectAll('allPolylines')

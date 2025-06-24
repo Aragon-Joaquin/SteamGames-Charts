@@ -43,16 +43,6 @@ export class GRAPHQLCallsService {
         message: ErrorMessages.NotGQL_INT64,
       });
 
-    console.log(
-      `
-        query GraphQLEndpoint(${queries
-          ?.map((el) => el?.Types ?? '')
-          ?.join(',')}) {
-          ${queries?.map((el) => el?.GQLQuery ?? '')?.join('\n')}
-        }
-      `,
-      Variables
-    );
     const apolloQuery = this.apolloService.watchQuery<{
       [P in T]: GraphQLResponsesMap[EndpointToKey<P>];
     }>({

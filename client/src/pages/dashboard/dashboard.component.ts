@@ -12,8 +12,6 @@ import { OverviewComponent } from './components/overview/overview.component';
 const DASHBOARD_STATES = {
   // views
   GENERAL: 'General',
-  OWNED_GAMES: 'Owned Games',
-  FRIENDS: 'Friends',
   // extras
   NOT_FOUND: 'Not found',
   LOADING: 'Loading',
@@ -30,9 +28,9 @@ type DASHBOARD_STATE_GRABBER =
 })
 export class DashboardComponent implements OnInit {
   private route = inject(ActivatedRoute);
-  private steamContext = inject(SteamContextService);
   private GRAPHQLCalls = inject(GRAPHQLCallsService);
 
+  public steamContext = inject(SteamContextService);
   public dashboardState = signal<DASHBOARD_STATE_GRABBER>(
     DASHBOARD_STATES.LOADING
   );
@@ -51,7 +49,8 @@ export class DashboardComponent implements OnInit {
 
     const UserSearched = this.steamContext.getUsersMap(getRoute);
 
-    if (UserSearched == null)
+    if (UserSearched != null) this.steamContext.setCurrentUser(UserSearched);
+    else
       this.GRAPHQLCalls.QueryGraphQL([
         GQLQUERIES.getPlayerSummaries([getRoute]),
       ])?.subscribe((res) => {
@@ -81,11 +80,8 @@ export class DashboardComponent implements OnInit {
       ]);
 
       if (res == null) return;
-      res.subscribe(
-        (c) => c && this.steamContext.addDashboardState(c)
-      );
+      res.subscribe((c) => c && this.steamContext.addDashboardState(c));
+      this.setDashboardState(DASHBOARD_STATES.GENERAL);
     });
-
-    this.setDashboardState(DASHBOARD_STATES.GENERAL);
   }
 }

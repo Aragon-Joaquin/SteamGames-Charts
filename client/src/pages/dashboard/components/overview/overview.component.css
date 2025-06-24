@@ -8,11 +8,28 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 40px;
+  gap: 60px;
 }
 
 .graphs-inline {
+  text-align: center;
   display: flex;
   width: 100%;
   justify-content: space-around;
+
+  & h4 {
+    color: var(--dark2-color);
+  }
+}
+
+.never-played {
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  gap: 10px;
+
+  & > span {
+    height: 500px;
+    overflow-y: scroll;
+  }
 }

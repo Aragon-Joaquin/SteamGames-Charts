@@ -5,15 +5,15 @@
   />
   <overview-info-boxes
     boxTitle="Total hours played"
-    [numberShown]="this.TotalHoursPlayed()"
+    [numberShown]="this.TotalHoursPlayed() + `hs`"
   />
   <overview-info-boxes
     boxTitle="Hours last 2 weeks"
-    [numberShown]="this.HoursWeek()"
+    [numberShown]="this.HoursWeek() + `hs`"
   />
   <overview-info-boxes
     boxTitle="Games owned"
-    [numberShown]="this.DashboardState().UserOwnedGames?.games_count ?? 0"
+    [numberShown]="this.DashboardState().UserOwnedGames?.game_count ?? 0"
   />
 </div>
 
@@ -24,12 +24,18 @@
 
   <div class="graphs-inline">
     <span class="graph">
-      <h4>Favorite genres</h4>
+      <h4>Favorite platforms</h4>
       <overview-pie-chart [data]="this.PieChartData()"></overview-pie-chart>
     </span>
 
-    <span>
+    <div class="never-played">
       <h4>Games you have and never played</h4>
-    </span>
+      <span>
+        @if(this.DashboardState().UserOwnedGames?.games) { @for (game of
+        this.DashboardState().UserOwnedGames?.games ?? []; track game.appid) {
+        <overview-never-played [game]="game"></overview-never-played>
+        } }
+      </span>
+    </div>
   </div>
 </section>

@@ -1,17 +1,13 @@
-type PlaytimePlatformsTypes = {
-  linux: number;
-  mac: number;
-  windows: number;
-};
-
 export type UserOwnedGamesType = {
-  games_count: number;
+  game_count: number;
   games: Array<{
     appid: string;
     name: string;
     img_icon_url?: string;
     playtime_forever: number;
-    playtime_platforms: PlaytimePlatformsTypes;
+    playtime_windows_forever: number;
+    playtime_mac_forever: number;
+    playtime_linux_forever: number;
     rtime_last_played: number;
   }>;
 };
@@ -23,10 +19,8 @@ export const UserOwnedGamesStringified = `
 	      name
 	      img_icon_url
 	      playtime_forever
-	      playtime_platforms {
-          linux
-          mac
-          windows
-        }
+        playtime_windows_forever
+        playtime_mac_forever
+        playtime_linux_forever
 	      rtime_last_played
     }` as const;

@@ -104,17 +104,15 @@ const HASHMAP_ADAPTERS = {
   [GRAPHQL_ENDPOINTS.UserOwnedGames]: (
     res: UserOwnedGamesType
   ): UserOwnedGamesType => ({
-    games_count: res.games_count ?? 0,
+    game_count: res.game_count ?? 0,
     games: res.games.map((game) => ({
       appid: game.appid,
       name: game.name ?? '',
       playtime_forever: game.playtime_forever ?? 0,
       img_icon_url: game.img_icon_url ?? '',
-      playtime_platforms: game.playtime_platforms ?? {
-        linux: 0,
-        mac: 0,
-        windows: 0,
-      },
+      playtime_windows_forever: game.playtime_windows_forever ?? 0,
+      playtime_mac_forever: game.playtime_mac_forever ?? 0,
+      playtime_linux_forever: game.playtime_linux_forever ?? 0,
       rtime_last_played: game.rtime_last_played ?? 0,
     })),
   }),

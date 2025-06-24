@@ -10,21 +10,21 @@
         <h5>Menu</h5>
         <a> General</a>
       </li>
-      <li>
+      <!-- <li>
         <h5>Endpoints</h5>
         <a>Owned Games</a>
         <a>Friends</a>
-      </li>
+      </li> -->
     </ul>
-
-    <span class="info-account"><!-- steam acc --></span>
   </aside>
   <article class="main-graphs">
     <h2 class="heading-title">{{ this.dashboardState() }}</h2>
 
-    @switch (this.dashboardState()) { @case ("Not found") { } @case ("General")
-    { <dashboard-overview></dashboard-overview>
-    } @case ("Owned Games") { }@case ("Friends") { } @default {
+    @switch (this.dashboardState()) { @case ("Not found") {
+    <p>User not found</p>
+    } @case ("General"){
+    <dashboard-overview></dashboard-overview>
+    } @default {
     <div class="loading">
       <img src="/svgs/loading.svg" class="loading-svg" />
     </div>

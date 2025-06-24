@@ -16,12 +16,6 @@ type release_date_types {
 	date: String
 }
 
-type playtime_platforms_types {
-	linux: Int
-	mac: Int
-	windows: Int
-}
-
 type genres_types {
 	id: String!
 	description: String
@@ -67,7 +61,9 @@ type UserOwnedGames {
 	name: String!
 	img_icon_url: String
 	playtime_forever: Int
-	playtime_platforms: playtime_platforms_types
+	playtime_windows_forever: Int
+	playtime_mac_forever: Int
+	playtime_linux_forever: Int
 	rtime_last_played: Int
 }
 
