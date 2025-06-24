@@ -1,3 +1,5 @@
+@let recentGames = this.DashboardState().RecentGames;
+
 <div class="overview-info-boxes">
   <overview-info-boxes
     boxTitle="Last game played"
@@ -15,17 +17,25 @@
     boxTitle="Games owned"
     [numberShown]="this.DashboardState().UserOwnedGames?.game_count ?? 0"
   />
+
+  <overview-info-boxes
+    boxTitle="Friend count"
+    [numberShown]="this.DashboardState().FriendList?.friends?.length ?? 0"
+  />
 </div>
 
 <section class="overview-graphs">
-  <overview-time-graph
-    [data]="this.DashboardState().RecentGames?.games ?? []"
-  ></overview-time-graph>
+  @if (recentGames?.games != null) {
+  <overview-time-graph [data]="recentGames?.games!" />
+  } @else {<overview-time-graph [data]="[]" />}
 
   <div class="graphs-inline">
     <span class="graph">
       <h4>Favorite platforms</h4>
-      <overview-pie-chart [data]="this.PieChartData()"></overview-pie-chart>
+
+      @if (this.PieChartData().length) {
+      <overview-pie-chart [data]="this.PieChartData()" />
+      } @else { <overview-pie-chart [data]="[]" />}
     </span>
 
     <div class="never-played">

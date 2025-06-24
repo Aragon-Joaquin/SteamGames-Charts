@@ -28,12 +28,12 @@ export class OverviewComponent {
   public DashboardState = signal<DashboardStateType>({} as DashboardStateType);
 
   public PieChartData = signal<PieChartDataShape[]>([]);
-
   public TotalHoursPlayed = signal<number>(0);
   public HoursWeek = signal<number>(0);
 
   constructor() {
     this.Dashboard.subscribe((c) => {
+      console.log(c);
       this.setPieChartData(c?.UserOwnedGames ?? null);
 
       const totalHours =

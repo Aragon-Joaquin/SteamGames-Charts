@@ -12,7 +12,7 @@ import { Component, input } from '@angular/core';
     </span>
     <span class="info-stats">
       <strong class="important-data">{{
-        numberShown() != '' ? numberShown() : 'Error'
+        numberShown() != '' ? numberShown() : '0'
       }}</strong>
     </span>
   </div> `,

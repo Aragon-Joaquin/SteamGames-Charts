@@ -11,11 +11,39 @@
 }
 
 .sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   position: relative;
   height: 100%;
-  width: fit-content;
+  width: clamp(150px, 175px, 200px);
   padding: 20px 10px;
   background-color: var(--white1-color);
+
+  & > .user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    & > img {
+      width: 75px;
+      height: 75px;
+      border-radius: 10px;
+    }
+
+    & > h4 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--dark1-color);
+    }
+  }
+}
+
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 
   & > .logo {
     display: flex;
@@ -26,7 +54,6 @@
   }
 
   & > .sidebar-menu {
-    margin-top: 40px;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -57,7 +84,7 @@
 }
 
 .main-graphs {
-  padding: 20px 30px;
+  padding: 40px 30px 20px 30px;
   flex-grow: 1;
   overflow-y: auto;
 

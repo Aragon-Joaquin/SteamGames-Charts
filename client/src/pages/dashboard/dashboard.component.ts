@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { SteamContextService } from '../../services';
 import {
@@ -34,6 +35,9 @@ export class DashboardComponent implements OnInit {
   public dashboardState = signal<DASHBOARD_STATE_GRABBER>(
     DASHBOARD_STATES.LOADING
   );
+  public cUser = toSignal(this.steamContext.currentUser, {
+    initialValue: null,
+  });
 
   setDashboardState = (val: DASHBOARD_STATE_GRABBER) =>
     this.dashboardState.set(val);

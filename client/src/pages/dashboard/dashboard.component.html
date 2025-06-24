@@ -1,21 +1,37 @@
+@let cUser = this.cUser();
 <!-- <header></header> -->
 <main class="dashboard-layout">
   <aside class="sidebar">
-    <h2 class="logo">
-      Logo
-      <img src="/svgs/chevron-arrow.svg" class="arrow-svg" />
-    </h2>
-    <ul class="sidebar-menu">
-      <li>
-        <h5>Menu</h5>
-        <a> General</a>
-      </li>
-      <!-- <li>
+    <div class="sidebar-header">
+      <h2 class="logo">
+        Logo
+        <img src="/svgs/chevron-arrow.svg" class="arrow-svg" />
+      </h2>
+      <ul class="sidebar-menu">
+        <li>
+          <h5>Menu</h5>
+          <a> General</a>
+        </li>
+        <!-- <li>
         <h5>Endpoints</h5>
         <a>Owned Games</a>
         <a>Friends</a>
       </li> -->
-    </ul>
+      </ul>
+    </div>
+
+    @if (cUser != null) {
+    <span class="user-info">
+      <img
+        #imgRef
+        [src]="cUser?.avatarfull"
+        alt="User Avatar"
+        class="user-avatar"
+        (error)="imgRef.src = '/img/not-found.webp'"
+      />
+      <h4 class="user-name">{{ cUser?.persona_name }}</h4>
+    </span>
+    }
   </aside>
   <article class="main-graphs">
     <h2 class="heading-title">{{ this.dashboardState() }}</h2>
@@ -23,7 +39,7 @@
     @switch (this.dashboardState()) { @case ("Not found") {
     <p>User not found</p>
     } @case ("General"){
-    <dashboard-overview></dashboard-overview>
+    <dashboard-overview />
     } @default {
     <div class="loading">
       <img src="/svgs/loading.svg" class="loading-svg" />
