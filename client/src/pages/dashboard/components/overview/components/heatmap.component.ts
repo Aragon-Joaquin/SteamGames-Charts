@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   input,
+  OnDestroy,
   ViewChild,
 } from '@angular/core';
 import { axisBottom, axisLeft, scaleBand, scaleLinear, select } from 'd3';
@@ -13,12 +14,12 @@ import { Graph } from '../../../../../utils';
   template: `<svg class="heatmap" #heatmap></svg>`,
   styles: ``,
 })
-export class HeatMapComponent implements AfterViewInit {
+export class HeatMapComponent implements AfterViewInit, OnDestroy {
   @ViewChild('heatmap') private chartContainer!: ElementRef<HTMLElement>;
 
-  private width = 500;
-  private height = 500;
   private margin = 30;
+  private width = 800 - this.margin;
+  private height = 500 - this.margin;
 
   private graphClass = new Graph(
     this.width - this.margin,
@@ -27,17 +28,17 @@ export class HeatMapComponent implements AfterViewInit {
 
   data =
     input.required<
-      { Xgroup: string; Ygroup: string; description: string; value: number }[]
+      { Xgroup: string; Ygroup: string; description?: string; value: number }[]
     >();
 
-  ngAfterViewInit(): void {
-    const XLabels = [...(new Set(this.data().map((e) => e.Xgroup)) ?? ['A'])];
-    const YLabels = [...(new Set(this.data().map((e) => e.Ygroup)) ?? ['1'])];
+  ngAfterViewInit() {
+    const data = this.data();
+    const XLabels = [...new Set(data.map((e) => e.Xgroup))];
+    const YLabels = [...new Set(data.map((e) => e.Ygroup))];
 
     const svg = select(this.chartContainer.nativeElement)
-      .append('svg')
       .attr('width', this.width + this.margin * 2)
-      .attr('height', this.height + this.height * 2)
+      .attr('height', this.height + this.margin * 2)
       .append('g')
       .attr('transform', 'translate(' + this.margin + ',' + this.margin + ')');
 
@@ -53,28 +54,33 @@ export class HeatMapComponent implements AfterViewInit {
 
     svg.append('g').call(axisLeft(y));
 
+    if (!data.length) return svg.append('text').text('no data');
+
     //! color
     const color = scaleLinear<string>()
       .domain([1, 100])
       .range(['white', this.graphClass.pickRandomColor()]);
 
     //! tooltip
-    const tooltip = select(this.chartContainer.nativeElement)
-      .append('div')
+    const tooltip = select(this.chartContainer.nativeElement.parentElement)
+      .append('span')
+      .style('position', 'absolute')
+      .style('pointer-events', 'none')
+      .style('padding', '2px 4px')
       .style('opacity', 0)
       .attr('class', 'tooltip')
       .style('background-color', 'white')
       .style('border', 'solid')
+      .style('color', 'black')
       .style('border-width', '2px')
       .style('border-radius', '5px')
-      .style('padding', '5px');
+      .style('font-size', '12px')
+      .style('z-index', '1');
 
     //! add the squares
     svg
       .selectAll()
-      .data(this.data, function (d) {
-        return d?.Xgroup + ':' + d?.Ygroup;
-      })
+      .data(data)
       .enter()
       .append('rect')
       .attr('x', (d) => x(d.Xgroup) ?? 0)
@@ -82,13 +88,33 @@ export class HeatMapComponent implements AfterViewInit {
       .attr('width', x.bandwidth())
       .attr('height', y.bandwidth())
       .style('fill', (d) => color(d.value))
-      .on('mouseover', () => tooltip.style('opacity', 1))
-      .on('mousemove', (event, d) => {
-        tooltip
-          .html('The exact value of<br>this cell is: ' + d.value)
-          .style('left', event.x / 2 + 'px')
-          .style('top', event.y / 2 + 'px');
+      .style('transition', 'all 0.1s ease-in-out')
+      .on('mouseover', function () {
+        tooltip.style('opacity', 1);
+        const rect = select(this);
+        const cx = +rect.attr('x') + x.bandwidth() / 2;
+        const cy = +rect.attr('y') + y.bandwidth() / 2;
+        rect
+          .transition()
+          .duration(100)
+          .attr(
+            'transform',
+            `translate(${cx},${cy}) scale(0.9) translate(${-cx},${-cy})`
+          );
       })
-      .on('mouseleave', () => tooltip.style('opacity', 0));
+      .on('mouseout', function () {
+        tooltip.style('opacity', 0);
+        select(this).attr('transform', null);
+      })
+      .on('mousemove', (event: MouseEvent, d) => {
+        tooltip
+          .html(`${d.description}:  <b style='color: black'>${d.value}</b>`)
+          .style('left', event.x + 10 + 'px')
+          .style('top', event.y - (tooltip.node()?.offsetHeight ?? 0) + 'px');
+      });
+    return;
   }
+
+  ngOnDestroy = () =>
+    select(this.chartContainer.nativeElement).selectAll('*').remove();
 }

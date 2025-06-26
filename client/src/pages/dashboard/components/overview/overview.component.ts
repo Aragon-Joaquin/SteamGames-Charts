@@ -6,12 +6,12 @@ import { GRAPHQL_ENDPOINTS } from '../../../../services/endpoints';
 import { RoundDecimals } from '../../../../utils';
 import {
   GamesNeverPlayedComponent,
+  HeatMapComponent,
   InfoBoxesComponent,
   PieChartComponent,
   PieChartDataShape,
   TimeGraphComponent,
 } from './components';
-import { HeatMapComponent } from './components/heatmap.component';
 
 @Component({
   selector: 'dashboard-overview',
