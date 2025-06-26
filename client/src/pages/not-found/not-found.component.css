@@ -1,0 +1,30 @@
+.not-found-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+
+  & > h1 {
+    color: var(--errorColor);
+    font-size: 4rem;
+    margin-bottom: 10px;
+  }
+}
+
+.not-found-info {
+  & > h3 {
+    color: var(--dark3-color);
+    margin-bottom: 4px;
+  }
+  & > p {
+    color: var(--textDescriptive);
+    margin-bottom: 24px;
+  }
+  & > a {
+    color: #3897f0;
+    text-decoration: underline;
+  }
+}

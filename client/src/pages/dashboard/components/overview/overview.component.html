@@ -40,7 +40,7 @@
 
     <div class="never-played">
       <h4>Games you have and never played</h4>
-      <span>
+      <span class="never-played-list">
         @if(this.DashboardState().UserOwnedGames?.games) { @for (game of
         this.DashboardState().UserOwnedGames?.games ?? []; track game.appid) {
         <overview-never-played [game]="game"></overview-never-played>
@@ -48,4 +48,6 @@
       </span>
     </div>
   </div>
+
+  <overview-heatmap [data]="[]" />
 </section>

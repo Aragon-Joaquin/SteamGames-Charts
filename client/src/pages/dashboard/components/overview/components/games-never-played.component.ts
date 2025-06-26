@@ -37,7 +37,6 @@ import { GRAPHQL_ENDPOINTS } from '../../../../../services/endpoints';
       padding: 8px 30px 8px 10px;
       margin-bottom: 16px;
       transition: box-shadow 0.2s;
-      width: 80%;
 
       &:hover {
         box-shadow: 0 4px 16px rgba(0,0,0,0.10);

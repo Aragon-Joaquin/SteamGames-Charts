@@ -39,6 +39,12 @@ func FetchAPI(ctx context.Context, end string, ResultsChan chan *ResChanType) {
 	}
 	defer response.Body.Close()
 
+	//! very, but extremely vague check error.
+	if response.Header.Get("Content-Type") == "text/html" {
+		ResultsChan <- makeResChanError("timed out from the steam api. slow down.")
+		return
+	}
+
 	// read body
 	b, err := io.ReadAll(response.Body)
 	if err != nil {

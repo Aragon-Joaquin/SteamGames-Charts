@@ -11,6 +11,7 @@ import {
   PieChartDataShape,
   TimeGraphComponent,
 } from './components';
+import { HeatMapComponent } from './components/heatmap.component';
 
 @Component({
   selector: 'dashboard-overview',
@@ -19,6 +20,7 @@ import {
     TimeGraphComponent,
     PieChartComponent,
     GamesNeverPlayedComponent,
+    HeatMapComponent,
   ],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.css',

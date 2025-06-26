@@ -8,6 +8,8 @@ import {
 } from '../../services/endpoints';
 import { GQLQUERIES } from '../../services/endpoints/graphql/utils/ENDPOINTS_HASHMAP';
 import { IsWindowUndefined, STEAM_ID_DIGITS } from '../../utils/constants';
+import { LoaderComponent } from '../components/loader/loader.component';
+import { NotFoundComponent } from '../not-found/not-found.component';
 import { OverviewComponent } from './components/overview/overview.component';
 
 const DASHBOARD_STATES = {
@@ -23,7 +25,7 @@ type DASHBOARD_STATE_GRABBER =
 
 @Component({
   selector: 'app-dashboard',
-  imports: [OverviewComponent],
+  imports: [OverviewComponent, LoaderComponent, NotFoundComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })

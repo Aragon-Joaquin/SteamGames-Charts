@@ -24,16 +24,22 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    border: 2px solid var(--white2-color);
+    background-color: #cdcdcd;
+    border-radius: 10px;
+    padding-top: 10px;
     gap: 10px;
 
     & > img {
       width: 75px;
       height: 75px;
-      border-radius: 10px;
+      border-radius: 3px;
     }
 
     & > h4 {
-      font-size: 1.2rem;
+      text-align: center;
+      word-break: break-word;
+      font-size: 1.1rem;
       font-weight: 600;
       color: var(--dark1-color);
     }
@@ -88,7 +94,7 @@
   flex-grow: 1;
   overflow-y: auto;
 
-  & > .heading-title {
+  .heading-title {
     font-size: 1.9em;
     font-family: var(--Poppins);
     margin-bottom: 30px;

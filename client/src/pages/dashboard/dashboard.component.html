@@ -35,15 +35,13 @@
   </aside>
   <article class="main-graphs">
     <h2 class="heading-title">{{ this.dashboardState() }}</h2>
-
     @switch (this.dashboardState()) { @case ("Not found") {
-    <p>User not found</p>
+    <p>(yes, i recicled it without any changes whatsoever)</p>
+    <app-not-found />
     } @case ("General"){
     <dashboard-overview />
     } @default {
-    <div class="loading">
-      <img src="/svgs/loading.svg" class="loading-svg" />
-    </div>
+    <components-loader />
     } }
   </article>
 </main>
