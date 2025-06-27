@@ -40,42 +40,40 @@ export class SteamContextService {
   setCurrentUser = (val: SearchUserAdapted) => this.currentUser.next(val);
 
   overrideUsersMap() {
-    const val = this.getSessionStorage(CONTEXT_DATASTREAM_NAME.usersMap);
-    try {
-      if (typeof val !== 'object') return;
-
-      const newMap = new Map();
-      for (const SteamID in val) {
-        if (Object.prototype.hasOwnProperty.call(val, SteamID))
-          newMap.set(SteamID, val[SteamID]);
-      }
-      this.usersMap.next(newMap);
-    } catch {
-      this.usersMap.next(new Map());
-    }
+    const res = this.JSONToMap(
+      this.getSessionStorage(CONTEXT_DATASTREAM_NAME.usersMap)
+    );
+    this.usersMap.next(res);
   }
 
   //! dashboard
-  public DashboardState = new BehaviorSubject<DashboardStateType>(
-    {} as DashboardStateType
-  );
+  public DashboardState = new BehaviorSubject<
+    Map<SearchUserAdapted['steamid'], DashboardStateType>
+  >(new Map());
 
-  getDashboardState() {
-    return this.DashboardState.getValue();
+  getDashboardState(steamid: SearchUserAdapted['steamid'] | null) {
+    return this.DashboardState.getValue().get(steamid ?? '') ?? null;
   }
 
-  addDashboardState(val: Partial<DashboardStateType>) {
+  addDashboardState(
+    cUser: SearchUserAdapted['steamid'] | undefined,
+    val: Partial<DashboardStateType>
+  ) {
+    if (!cUser) return;
     const currentVal = this.DashboardState.value;
-    this.DashboardState.next({ ...currentVal, ...val });
+    this.DashboardState.next(currentVal.set(cUser, val as DashboardStateType));
+
     this.setSessionStorage(
       CONTEXT_DATASTREAM_NAME.DashboardState,
-      this.DashboardState.getValue() ?? null
+      currentVal != null ? Object.fromEntries(currentVal) : null
     );
   }
 
   overrideDashboardState() {
-    const val = this.getSessionStorage(CONTEXT_DATASTREAM_NAME.usersMap);
-    this.DashboardState.next(val ?? {});
+    const res = this.JSONToMap(
+      this.getSessionStorage(CONTEXT_DATASTREAM_NAME.DashboardState)
+    );
+    this.DashboardState.next(res);
   }
 
   //! set/get states
@@ -89,4 +87,20 @@ export class SteamContextService {
     const wLocal = window.sessionStorage.getItem(key);
     return wLocal != null ? JSON.parse(wLocal) : null;
   };
+
+  private JSONToMap(val: any) {
+    const newMap = new Map();
+    try {
+      if (typeof val !== 'object') return newMap;
+
+      for (const key in val) {
+        if (Object.prototype.hasOwnProperty.call(val, key))
+          newMap.set(key, val[key]);
+      }
+
+      return newMap;
+    } catch {
+      return new Map();
+    }
+  }
 }

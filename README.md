@@ -10,6 +10,10 @@
 - im not going to do backend + frontend anymore. its just tedious.
 - insanely boring
 
+### could fix:
+
+- performance issues session storage (limit upto 20 items)
+
 ### what i've used
 
 - Front (ts):

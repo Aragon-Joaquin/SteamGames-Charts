@@ -7,6 +7,7 @@ import { RoundDecimals } from '../../../../utils';
 import {
   GamesNeverPlayedComponent,
   HeatMapComponent,
+  heatMapDataType,
   InfoBoxesComponent,
   PieChartComponent,
   PieChartDataShape,
@@ -26,16 +27,20 @@ import {
   styleUrl: './overview.component.css',
 })
 export class OverviewComponent {
-  private Dashboard = inject(SteamContextService).DashboardState;
+  private steamCTX = inject(SteamContextService);
   public DashboardState = signal<DashboardStateType>({} as DashboardStateType);
 
   public PieChartData = signal<PieChartDataShape[]>([]);
   public TotalHoursPlayed = signal<number>(0);
   public HoursWeek = signal<number>(0);
+  public HeatMapData = signal<heatMapDataType[]>([]);
 
   constructor() {
-    this.Dashboard.subscribe((c) => {
-      console.log(c);
+    this.steamCTX.DashboardState.subscribe((data) => {
+      const c =
+        data.get(this.steamCTX.currentUser.value?.steamid ?? '') ?? null;
+      if (!c) return;
+
       this.setPieChartData(c?.UserOwnedGames ?? null);
 
       const totalHours =
@@ -52,6 +57,28 @@ export class OverviewComponent {
         ) ?? 0;
 
       this.HoursWeek.set(RoundDecimals(hoursWeek / 60));
+
+      const heatmap =
+        c.PlayerBans?.players.flatMap((g) => {
+          return Object.entries(g).flatMap(([key, val]) => {
+            if (key == 'SteamId') return [];
+            const validateVal =
+              (typeof val === 'string' && (val === 'none' ? 0 : 1)) ||
+              (typeof val === 'boolean' && Number(val)) ||
+              (typeof val == 'number' && val);
+            return {
+              Xgroup:
+                this.steamCTX.getUsersMap(g.SteamId)?.persona_name ?? g.SteamId,
+              Ygroup: key,
+              value: validateVal == false ? 0 : validateVal,
+              description:
+                this.steamCTX.usersMap.value.get(g?.SteamId)?.persona_name ??
+                '???',
+            };
+          });
+        }) ?? [];
+
+      this.HeatMapData.set(heatmap);
 
       this.DashboardState.set(c);
     });

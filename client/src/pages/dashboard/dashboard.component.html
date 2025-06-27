@@ -29,12 +29,23 @@
         class="user-avatar"
         (error)="imgRef.src = '/img/not-found.webp'"
       />
-      <h4 class="user-name">{{ cUser?.persona_name }}</h4>
+      <h4 class="user-name">{{ cUser?.persona_name ?? "???" }}</h4>
     </span>
     }
   </aside>
   <article class="main-graphs">
-    <h2 class="heading-title">{{ this.dashboardState() }}</h2>
+    <span class="main-header">
+      <h2 class="heading-title">{{ this.dashboardState() }}</h2>
+      <form class="search-form">
+        <label for="game-search-input">im not going to over-style this</label>
+        <input
+          type="text"
+          id="game-search-input"
+          class="terciary-button"
+          placeholder="search games"
+        />
+      </form>
+    </span>
     @switch (this.dashboardState()) { @case ("Not found") {
     <p>(yes, i recicled it without any changes whatsoever)</p>
     <app-not-found />

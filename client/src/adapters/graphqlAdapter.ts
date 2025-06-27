@@ -70,10 +70,10 @@ const HASHMAP_ADAPTERS = {
     players: res.players.map((player) => ({
       steamid: player.steamid ?? '',
       state:
-        USER_STATES[player?.persona_state as keyof typeof USER_STATES] ??
+        USER_STATES[player?.personastate as keyof typeof USER_STATES] ??
         'Offline',
-      persona_name: player.persona_name ?? '',
-      profile_url: player.profile_url ?? '',
+      persona_name: player.personaname ?? '',
+      profile_url: player.profileurl ?? '',
       avatarfull: player.avatarfull ?? '',
       lastlogoff:
         new UnixToDate(player.lastlogoff).getDifferenceTime() ?? '???',

@@ -77,7 +77,12 @@ export class DashboardComponent implements OnInit {
 
     this.steamContext.currentUser.subscribe((user) => {
       if (!user) return this.setDashboardState(DASHBOARD_STATES.NOT_FOUND);
+
       const { steamid } = user;
+
+      if (this.steamContext.getDashboardState(steamid) != null)
+        return this.setDashboardState(DASHBOARD_STATES.GENERAL);
+
       const res = this.GRAPHQLCalls.QueryGraphQL<getGraphqlEndpoints>([
         GQLQUERIES.getUserOwnedGames(steamid),
         GQLQUERIES.getFriendList(steamid),
@@ -86,7 +91,10 @@ export class DashboardComponent implements OnInit {
       ]);
 
       if (res == null) return;
-      res.subscribe((c) => c && this.steamContext.addDashboardState(c));
+      res.subscribe(
+        (c) =>
+          c && this.steamContext.addDashboardState(UserSearched?.steamid, c)
+      );
       this.setDashboardState(DASHBOARD_STATES.GENERAL);
     });
   }

@@ -49,5 +49,10 @@
     </div>
   </div>
 
-  <overview-heatmap [data]="[]" />
+  <span>
+    <h4>Players ban history</h4>
+    @if (this.HeatMapData().length > 0) {
+    <overview-heatmap [data]="this.HeatMapData()" />
+    } @else { <overview-heatmap [data]="[]" /> }
+  </span>
 </section>

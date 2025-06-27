@@ -8,6 +8,13 @@ import {
 } from '@angular/core';
 import { axisBottom, axisLeft, scaleBand, scaleLinear, select } from 'd3';
 import { Graph } from '../../../../../utils';
+
+export type heatMapDataType = {
+  Xgroup: string;
+  Ygroup: string;
+  description?: string;
+  value: number;
+};
 @Component({
   selector: 'overview-heatmap',
   imports: [],
@@ -17,19 +24,13 @@ import { Graph } from '../../../../../utils';
 export class HeatMapComponent implements AfterViewInit, OnDestroy {
   @ViewChild('heatmap') private chartContainer!: ElementRef<HTMLElement>;
 
-  private margin = 30;
-  private width = 800 - this.margin;
-  private height = 500 - this.margin;
+  private margin = { X: 100, Y: 20 };
+  private width = 800 - this.margin.X;
+  private height = 500 - this.margin.Y;
 
-  private graphClass = new Graph(
-    this.width - this.margin,
-    this.height - this.margin
-  );
+  private graphClass = new Graph(this.width, this.height);
 
-  data =
-    input.required<
-      { Xgroup: string; Ygroup: string; description?: string; value: number }[]
-    >();
+  data = input.required<heatMapDataType[]>();
 
   ngAfterViewInit() {
     const data = this.data();
@@ -37,10 +38,14 @@ export class HeatMapComponent implements AfterViewInit, OnDestroy {
     const YLabels = [...new Set(data.map((e) => e.Ygroup))];
 
     const svg = select(this.chartContainer.nativeElement)
-      .attr('width', this.width + this.margin * 2)
-      .attr('height', this.height + this.margin * 2)
+      .attr('width', this.width + this.margin.X * 2)
+      .attr('height', this.height + this.margin.Y * 2)
+      .style('overflow', 'visible')
       .append('g')
-      .attr('transform', 'translate(' + this.margin + ',' + this.margin + ')');
+      .attr(
+        'transform',
+        'translate(' + this.margin.X + ',' + this.margin.Y + ')'
+      );
 
     //! axis declarations
     const x = scaleBand().range([0, this.width]).domain(XLabels).padding(0.01);
@@ -54,11 +59,29 @@ export class HeatMapComponent implements AfterViewInit, OnDestroy {
 
     svg.append('g').call(axisLeft(y));
 
-    if (!data.length) return svg.append('text').text('no data');
+    // Style axis labels to wrap and expand vertically when there's no more horizontal space
+    svg
+      .selectAll('text')
+      .style('fill', 'black')
+      .style('font-weight', '600')
+      .style('overflow', 'visible');
+
+    if (data?.length == 0)
+      return svg
+        .append('text')
+        .attr('x', this.width / 2)
+        .attr('y', this.height / 2)
+        .attr('text-anchor', 'middle')
+        .attr('transform', `rotate(-5, ${this.width / 2}, ${this.height / 2})`)
+        .text('No data available!')
+        .style('fill', 'red')
+        .style('font-size', '2rem')
+        .style('font-weight', 'bold')
+        .style('opacity', 0.7);
 
     //! color
     const color = scaleLinear<string>()
-      .domain([1, 100])
+      .domain([1, 10])
       .range(['white', this.graphClass.pickRandomColor()]);
 
     //! tooltip
@@ -87,20 +110,17 @@ export class HeatMapComponent implements AfterViewInit, OnDestroy {
       .attr('y', (d) => y(d.Ygroup) ?? 0)
       .attr('width', x.bandwidth())
       .attr('height', y.bandwidth())
-      .style('fill', (d) => color(d.value))
-      .style('transition', 'all 0.1s ease-in-out')
+      .style('fill', (d) => color(d.value + 3))
+      .style('transition', 'all 0.2s ease-in-out')
       .on('mouseover', function () {
         tooltip.style('opacity', 1);
         const rect = select(this);
         const cx = +rect.attr('x') + x.bandwidth() / 2;
         const cy = +rect.attr('y') + y.bandwidth() / 2;
-        rect
-          .transition()
-          .duration(100)
-          .attr(
-            'transform',
-            `translate(${cx},${cy}) scale(0.9) translate(${-cx},${-cy})`
-          );
+        rect.attr(
+          'transform',
+          `translate(${cx},${cy}) scale(0.9) translate(${-cx},${-cy})`
+        );
       })
       .on('mouseout', function () {
         tooltip.style('opacity', 0);

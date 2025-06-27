@@ -1,9 +1,9 @@
 export type PlayerSummariesType = {
   players: Array<{
     steamid: string;
-    persona_state: number;
-    persona_name: string;
-    profile_url: string;
+    personastate: number;
+    personaname: string;
+    profileurl: string;
     avatarfull?: string;
     lastlogoff: number;
   }>;
@@ -13,9 +13,9 @@ export type PlayerSummariesType = {
 export const PlayerSummariesStringified = `
 players {
   steamid
-  		personaname
-  		personastate
-  		profileurl
+  personaname
+  personastate
+  profileurl
   avatarfull
   lastlogoff
 }

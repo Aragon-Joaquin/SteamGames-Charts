@@ -17,6 +17,7 @@ import {
   AdaptedGraphqlTypes,
   AdaptGRAPHQLRequest,
 } from '../../adapters/graphqlAdapter';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -60,7 +61,15 @@ export class GRAPHQLCallsService {
     return apolloQuery.valueChanges.pipe(
       map((val) => {
         const data = val?.data;
-        if (!data) return;
+        if (val?.errors != null && val.errors?.length > 0)
+          return this.errorService.showError({
+            httpError:
+              val.errors?.at(0) != null
+                ? ErrorStatus.InternalServerError
+                : ErrorStatus.BadRequest,
+            message: ErrorMessages.UnknownError,
+            description: val.errors?.at(0)?.message ?? 'No data returned',
+          });
 
         const responseAdapted = Object.entries(GRAPHQL_ENDPOINTS)
           .filter(([_, k]) => data[k as keyof typeof data])

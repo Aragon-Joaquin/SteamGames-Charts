@@ -93,11 +93,35 @@
   padding: 40px 30px 20px 30px;
   flex-grow: 1;
   overflow-y: auto;
+}
 
-  .heading-title {
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+
+  & > .heading-title {
     font-size: 1.9em;
     font-family: var(--Poppins);
-    margin-bottom: 30px;
+  }
+
+  & > .search-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+
+    & > label {
+      font-weight: 600;
+      font-size: 0.8em;
+      color: var(--errorColor);
+    }
+
+    & > input {
+      cursor: inherit;
+    }
   }
 }
 
